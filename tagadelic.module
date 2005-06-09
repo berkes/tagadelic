@@ -1,0 +1,112 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_help
+ */
+function tagadelic_help($section) {
+  switch ($section) {
+    case 'admin/modules#description':
+      return t('tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
+  }
+}
+
+/**
+ * Implementation of hook_settings
+ */
+function tagadelic_settings() {
+  return $output;
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function tagadelic_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic",
+                      'callback' => 'tagadelic_page',
+                      'access' => user_access('access content'));
+     foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
+       if ($vocabulary->tags) {
+         $items[] = array('title' => $vocabulary->name,
+                          'path' => "tagadelic/$vocabulary->vid",
+                          'callback' => 'tagadelic_page',
+                          'access' => user_access('access content'));
+         }
+       }
+  }
+  return $items;
+}
+
+/**
+ * menu callback renders a tagadelic page
+ */
+function tagadelic_page() {
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+  if($vid = arg(1)) {
+    $output = theme('tagadelic_weighted', tagadelic_get_weighted_tags($vid));
+  }
+  else {
+    foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
+      if ($vocabulary->tags) {
+        $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags($vocabulary->vid)));
+      }
+    }
+  }
+  $output = "<div class=\"wrapper tagadelic\">$output</div>";
+  print theme('page', $output);
+}
+
+/**
+ * API that returns an array with weighted tags
+ */
+function tagadelic_get_weighted_tags($vid) {
+  $tree = taxonomy_get_tree($vid);
+  foreach($tree as $term) {
+     $count = db_fetch_object(db_query('SELECT COUNT(DISTINCT(nid)) AS count FROM term_node WHERE tid = %d', $term->tid));
+     $terms[$term->tid] = $term;
+     $terms[$term->tid]->count = $count->count;
+  }
+  usort($terms, "_tagadelic_sort_by_count");
+
+  $amount = count($terms);
+  if ($amount > 60) { //this 60 should be a configurable amount,
+    $terms = array_slice($terms, -60);
+    $amount = 60;
+  }
+  $step = 1;
+  foreach ($terms as $key => $value) {
+    if($stepped > round($amount/10)) {
+      $step++;
+      $stepped = 0;
+    }
+    $terms[$key]->weight = $step;
+    $stepped++;
+  }
+  
+  //sort($terms, SORT_NUMERIC); //sorts by tid
+  shuffle($terms);
+  return $terms;
+}
+
+/**
+ * theme function that renders the HTML for the tags
+ */
+function theme_tagadelic_weighted($terms) {
+  foreach ($terms as $term) {
+    $output .= l(check_plain($term->name),"taxonomy/term/$term->tid", array('class'=>"tagadelic level$term->weight")) ." \n";
+  }
+  return $output;
+}
+
+/**
+ * callback for usort
+ */
+function _tagadelic_sort_by_count($a, $b) {
+  if ($a->count == $b->count) { return 0; }
+  return ($a->count < $b->count) ? -1 : 1;
+}
+?>
