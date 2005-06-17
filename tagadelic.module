@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.2 2005/06/17 19:46:09 ber Exp $
+// $Id: tagadelic.module,v 1.3 2005/06/17 19:48:10 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -97,7 +97,7 @@ function tagadelic_get_weighted_tags($vid) {
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
-    $output .= l(check_plain($term->name),"taxonomy/term/$term->tid", array('class'=>"tagadelic level$term->weight")) ." \n";
+    $output .= l($term->name,"taxonomy/term/$term->tid", array('class'=>"tagadelic level$term->weight")) ." \n";
   }
   return $output;
 }
