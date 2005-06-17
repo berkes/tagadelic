@@ -74,21 +74,21 @@ function tagadelic_get_weighted_tags($vid) {
 
   $amount = count($terms);
   if ($amount > 60) { //this 60 should be a configurable amount,
-    $terms = array_slice($terms, -60);
+    $terms = array_slice($terms, -60); //chop off anything under the sixty items we need//
     $amount = 60;
   }
-  $step = 1;
+  $step = 1; //we start at weight 1
   foreach ($terms as $key => $value) {
-    if($stepped > round($amount/10)) {
-      $step++;
-      $stepped = 0;
+    if($stepped > round($amount/10)) { //check if we need to increase the weight
+      $step++; //the fontsize/weight will increase
+      $stepped = 0; //we use stepped to run this loop over all the items in a single fontsize/weight
     }
-    $terms[$key]->weight = $step;
-    $stepped++;
+    $terms[$key]->weight = $step; //now commit the weight to the array
+    $stepped++; // and increase the step. 
   }
   
   //sort($terms, SORT_NUMERIC); //sorts by tid
-  shuffle($terms);
+  shuffle($terms); // we need a better sorting method.
   return $terms;
 }
 
