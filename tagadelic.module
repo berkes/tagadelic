@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.4 2005/07/03 13:16:48 ber Exp $
+// $Id: tagadelic.module,v 1.5 2005/07/03 13:47:35 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -27,6 +27,11 @@ function tagadelic_menu($may_cache) {
   $items = array();
 
   if ($may_cache) {
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic",
+                      'callback' => 'tagadelic_page_chunk',
+                      'access' => user_access('access content'),
+                      'type' => MENU_SUGGESTED_ITEM);
      $items[] = array('title' => t('tags'),
                       'path' => "tagadelic/list",
                       'callback' => 'tagadelic_page_list',
@@ -61,8 +66,12 @@ function tagadelic_page_chunk() {
   elseif (preg_match('/^([0-9]+,){1,5}}[0-9]+$/', $vocs)) {
     $vocs = explode(',', $vocs);
   }
-  else {
-    return drupal_not_found();
+  else { //create a chunk from all free tagging vocs
+   foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
+      if ($vocabulary->tags) {
+        $vocs[] = $vocabulary->vid;
+      }
+    }
   }
 
   $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs));
