@@ -63,10 +63,10 @@ function tagadelic_page_chunk() {
   if (is_numeric($vocs)) {
     $vocs = array($vocs);
   }
-  elseif (preg_match('/^([0-9]+,){1,5}}[0-9]+$/', $vocs)) {
+  elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
     $vocs = explode(',', $vocs);
   }
-  else { //create a chunk from all free tagging vocs
+  elseif($vocs == NULL) { //create a chunk from all free tagging vocs
    foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
       if ($vocabulary->tags) {
         $vocs[] = $vocabulary->vid;
