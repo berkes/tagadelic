@@ -7,7 +7,9 @@
 function tagadelic_help($section) {
   switch ($section) {
     case 'admin/modules#description':
-      return t('tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
+      return t('Tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
+   case 'admin/help#creativecommons':
+      return t('tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
 
@@ -26,17 +28,23 @@ function tagadelic_menu($may_cache) {
 
   if ($may_cache) {
      $items[] = array('title' => t('tags'),
-                      'path' => "tagadelic",
-                      'callback' => 'tagadelic_page',
-                      'access' => user_access('access content'));
+                      'path' => "tagadelic/list",
+                      'callback' => 'tagadelic_page_list',
+                      'access' => user_access('access content'),
+                      'type' => MENU_CALLBACK);
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic/chunk",
+                      'callback' => 'tagadelic_page_chunk',
+                      'access' => user_access('access content'),
+                      'type' => MENU_CALLBACK);
      foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
        if ($vocabulary->tags) {
          $items[] = array('title' => $vocabulary->name,
-                          'path' => "tagadelic/$vocabulary->vid",
-                          'callback' => 'tagadelic_page',
+                          'path' => "tagadelic/chunk/$vocabulary->vid",
+                          'callback' => 'tagadelic_page_chunk',
                           'access' => user_access('access content'));
-         }
        }
+     }
   }
   return $items;
 }
@@ -44,27 +52,79 @@ function tagadelic_menu($may_cache) {
 /**
  * menu callback renders a tagadelic page
  */
-function tagadelic_page() {
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
-  if($vid = arg(1)) {
-    $output = theme('tagadelic_weighted', tagadelic_get_weighted_tags($vid));
+function tagadelic_page_chunk() {
+  $vocs = arg(2);
+
+  if (is_numeric($vocs)) {
+    $vocs = array($vocs);
+  }
+  elseif (preg_match('/^([0-9]+,){1,5}}[0-9]+$/', $vocs)) {
+    $vocs = explode(',', $vocs);
   }
   else {
-    foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
-      if ($vocabulary->tags) {
-        $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags($vocabulary->vid)));
-      }
-    }
+    return drupal_not_found();
   }
+
+  $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs));
+  
+  if (!$output) {
+    return drupal_not_found();
+  }
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+
+  $output = "<div class=\"wrapper tagadelic\">$output</div>";
+  
+  print theme('page', $output);
+}
+
+/**
+ * menu callback renders a tagadelic page with listed items: each voc
+ */
+function tagadelic_page_list() {
+  $vocs = arg(2);
+
+  if (is_numeric($vocs)) {
+    $vocs = array($vocs);
+  }
+  elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
+    $vocs = explode(',', $vocs);
+  }
+  else {
+    return drupal_not_found();
+  }
+
+  foreach ($vocs as $vid) {
+    $vocabulary = taxonomy_get_vocabulary($vid);
+    if ($vocabulary->description) {
+      $output .= theme("box", NULL, $vocabulary->description);
+    }
+    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid))));
+  }
+  
+  if (!$output) {
+    return drupal_not_found();
+  }
+  
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+  
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   print theme('page', $output);
 }
 
 /**
  * API that returns an array with weighted tags
+ * This is the hard part. People with better ideas ar every very welcome to send these to ber@webschuur.com. istribution is one thing that needs attention.
  */
-function tagadelic_get_weighted_tags($vid) {
-  $tree = taxonomy_get_tree($vid);
+function tagadelic_get_weighted_tags($vids) {
+  if (!is_array($vids)) {
+    return array();
+  }
+  
+  foreach ($vids as $vid) {
+    $tree = array_merge(taxonomy_get_tree($vid), $tree);
+  }
+
+
   foreach($tree as $term) {
      $count = db_fetch_object(db_query('SELECT COUNT(DISTINCT(nid)) AS count FROM term_node WHERE tid = %d', $term->tid));
      $terms[$term->tid] = $term;
@@ -87,8 +147,7 @@ function tagadelic_get_weighted_tags($vid) {
     $stepped++; // and increase the step. 
   }
   
-  //sort($terms, SORT_NUMERIC); //sorts by tid
-  shuffle($terms); // we need a better sorting method.
+  usort($terms,"_tagadelic_sort_by_title");
   return $terms;
 }
 
@@ -103,10 +162,16 @@ function theme_tagadelic_weighted($terms) {
 }
 
 /**
- * callback for usort
+ * callback for usort, sort by count
  */
 function _tagadelic_sort_by_count($a, $b) {
   if ($a->count == $b->count) { return 0; }
   return ($a->count < $b->count) ? -1 : 1;
+}
+/**
+ * callback for usort, sort by count
+ */
+function _tagadelic_sort_by_title($a, $b) {
+  return strnatcmp($a->name,$b->name);
 }
 ?>
