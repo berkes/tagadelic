@@ -130,7 +130,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   }
 
   // Fetch tags
-  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name FROM term_data d INNER JOIN term_node n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
+  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
 
   // Find minimum and maximum log-count.
   $tags = array();
