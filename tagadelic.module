@@ -124,40 +124,42 @@ function tagadelic_page_list() {
  * API that returns an array with weighted tags
  * This is the hard part. People with better ideas ar every very welcome to send these to ber@webschuur.com. istribution is one thing that needs attention.
  */
-function tagadelic_get_weighted_tags($vids) {
-  if (!is_array($vids)) {
+function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
+  if (!is_array($vids) || count($vids) == 0) {
     return array();
   }
-  
-  foreach ($vids as $vid) {
-    $tree = array_merge(taxonomy_get_tree($vid), $tree);
+
+  // Fetch tags
+  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name FROM term_data d INNER JOIN term_node n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
+
+  // Find minimum and maximum log-count.
+  $tags = array();
+  $min = 1e9;
+  $max = -1e9;
+  while ($tag = db_fetch_object($result)) {
+    $tag->count = log($tag->count);
+    $min = min($min, $tag->count);
+    $max = max($max, $tag->count);
+    $tags[$tag->tid] = $tag;
+  }  
+  // Note: we need to ensure the range is slightly too large to make sure even
+  // the largest element is rounded down.
+  $range = max(.01, $max - $min) * 1.0001;
+
+  foreach ($tags as $key => $value) {
+    $tags[$key]->weight = 1 + floor($steps * ($value->count - $min) / $range);
   }
 
+  // Sort by title
+  usort($tags, "_tagadelic_sort_by_title");
+  return $tags;
+}
 
-  foreach($tree as $term) {
-     $count = db_fetch_object(db_query('SELECT COUNT(DISTINCT(nid)) AS count FROM term_node WHERE tid = %d', $term->tid));
-     $terms[$term->tid] = $term;
-     $terms[$term->tid]->count = $count->count;
-  }
-  usort($terms, "_tagadelic_sort_by_count");
-
-  $amount = count($terms);
-  if ($amount > 60) { //this 60 should be a configurable amount,
-    $terms = array_slice($terms, -60); //chop off anything under the sixty items we need//
-    $amount = 60;
-  }
-  $step = 1; //we start at weight 1
-  foreach ($terms as $key => $value) {
-    if($stepped > round($amount/10)) { //check if we need to increase the weight
-      $step++; //the fontsize/weight will increase
-      $stepped = 0; //we use stepped to run this loop over all the items in a single fontsize/weight
-    }
-    $terms[$key]->weight = $step; //now commit the weight to the array
-    $stepped++; // and increase the step. 
-  }
-  
-  usort($terms,"_tagadelic_sort_by_title");
-  return $terms;
+/**
+ * callback for usort, sort by count
+ */
+function _tagadelic_sort_by_title($a, $b) {
+  return strnatcmp($a->name, $b->name);
 }
 
 /**
@@ -170,17 +172,4 @@ function theme_tagadelic_weighted($terms) {
   return $output;
 }
 
-/**
- * callback for usort, sort by count
- */
-function _tagadelic_sort_by_count($a, $b) {
-  if ($a->count == $b->count) { return 0; }
-  return ($a->count < $b->count) ? -1 : 1;
-}
-/**
- * callback for usort, sort by count
- */
-function _tagadelic_sort_by_title($a, $b) {
-  return strnatcmp($a->name,$b->name);
-}
 ?>
