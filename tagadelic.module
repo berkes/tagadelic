@@ -25,6 +25,7 @@ function tagadelic_settings() {
  */
 function tagadelic_menu($may_cache) {
   $items = array();
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
 
   if ($may_cache) {
      $items[] = array('title' => t('tags'),
@@ -79,11 +80,10 @@ function tagadelic_page_chunk() {
   if (!$output) {
     return drupal_not_found();
   }
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   
-  print theme('page', $output);
+  return $output;
 }
 
 /**
@@ -122,7 +122,7 @@ function tagadelic_page_list() {
 
 /**
  * API that returns an array with weighted tags
- * This is the hard part. People with better ideas ar every very welcome to send these to ber@webschuur.com. istribution is one thing that needs attention.
+ * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   if (!is_array($vids) || count($vids) == 0) {
@@ -164,6 +164,7 @@ function _tagadelic_sort_by_title($a, $b) {
 
 /**
  * theme function that renders the HTML for the tags
+ * @ingroup themable
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
@@ -172,4 +173,21 @@ function theme_tagadelic_weighted($terms) {
   return $output;
 }
 
+/**
+ * implementation of hook_block
+ */
+function tagadelic_block($op = 'list', $delta = O) {
+  if ($op == 'view') {
+    if ($voc = taxonomy_get_vocabulary($delta)) {
+      $blocks['subject'] = t('tags in %voc', array('%voc' => $voc->name));
+      $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, 12));//return a chunk of 12 tags
+    }
+  }
+  elseif ($op == 'list') {
+    foreach(taxonomy_get_vocabularies() as $voc) {
+      $blocks[$voc->vid]['info'] = t('tags in %voc', array('%voc' => $voc->name));
+    }
+  }
+  return $blocks;
+}
 ?>
