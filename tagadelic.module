@@ -156,7 +156,7 @@ function tagadelic_tags_lists($node) {
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
       foreach ($terms as $term) {
-        $items[] = l($term->name, "/taxonomy/page/or/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+        $items[] = l($term->name, "/taxonomy/term/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
       }
       $output .= theme('item_list', $items, $title);
     }
