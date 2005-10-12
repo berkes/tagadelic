@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.9 2005/10/02 09:06:15 ber Exp $
+// $Id: tagadelic.module,v 1.10 2005/10/12 07:40:14 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -55,6 +55,15 @@ function tagadelic_menu($may_cache) {
   return $items;
 }
 
+/** 
+ * Implementation of hook_nodeapi
+ */
+function tagadelic_nodeapi($node, $op) {
+  if ($op == 'load') {
+    $output['tags'] = tagadelic_node_get_terms($node);
+    return $output;
+  }
+}
 /**
  * menu callback renders a tagadelic page
  */
@@ -121,6 +130,41 @@ function tagadelic_page_list() {
 }
 
 /**
+ * API that returns a multidimensional array with tags given a node
+ * 
+ */
+function tagadelic_node_get_terms($node) {
+  if ($terms = taxonomy_node_get_terms($node->nid, 'tid')) {
+    $vocs = taxonomy_get_vocabularies($node->type);
+    foreach ($terms as $tid => $term) {
+      if ($vocs[$term->vid]->tags) {
+        $tags[$term->vid][$tid] = $term;
+      }
+    }
+    return $tags;
+  }
+}
+
+
+/**
+ * API function that returns the tags of a node in fancy titled lists
+ */
+function tagadelic_tags_lists($node) {
+  if (is_array($node->tags)) {
+    foreach($node->tags as $vid => $terms) {
+      $vocabulary = taxonomy_get_vocabulary($vid);
+      $title = l($vocabulary->name, "tagadelic/chunk/$vid");
+      $items = array();
+      foreach ($terms as $term) {
+        $items[] = l($term->name, "/taxonomy/page/or/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+      }
+      $output .= theme('item_list', $items, $title);
+    }
+    return $output;
+  }
+}
+
+/**
  * API that returns an array with weighted tags
  * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
  */
@@ -141,7 +185,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     $min = min($min, $tag->count);
     $max = max($max, $tag->count);
     $tags[$tag->tid] = $tag;
-  }  
+  }
   // Note: we need to ensure the range is slightly too large to make sure even
   // the largest element is rounded down.
   $range = max(.01, $max - $min) * 1.0001;
@@ -160,6 +204,13 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
  */
 function _tagadelic_sort_by_title($a, $b) {
   return strnatcmp($a->name, $b->name);
+}
+
+/**
+ * callback for usort, sort by weight
+ */
+function _tagadelic_sort_by_weight($a, $b) {
+  return $a->weight > $b->weight;
 }
 
 /**
@@ -182,11 +233,16 @@ function tagadelic_block($op = 'list', $delta = O) {
       $blocks['subject'] = t('tags in %voc', array('%voc' => $voc->name));
       $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, 12));//return a chunk of 12 tags
     }
+    elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+      $blocks['subject'] = t('tags for %title', array('%title' => check_plain($node->title)));
+      $blocks['content'] = tagadelic_tags_lists($node);
+    }
   }
   elseif ($op == 'list') {
     foreach(taxonomy_get_vocabularies() as $voc) {
       $blocks[$voc->vid]['info'] = t('tags in %voc', array('%voc' => $voc->name));
     }
+    $blocks[0]['info'] = t('tags for the current post');
   }
   return $blocks;
 }
