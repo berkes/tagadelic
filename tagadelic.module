@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.11 2005/10/12 16:08:55 ber Exp $
+// $Id: tagadelic.module,v 1.12 2005/10/27 12:32:44 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -11,13 +11,6 @@ function tagadelic_help($section) {
    case 'admin/help#creativecommons':
       return t('tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
-}
-
-/**
- * Implementation of hook_settings
- */
-function tagadelic_settings() {
-  return $output;
 }
 
 /**
@@ -57,6 +50,7 @@ function tagadelic_menu($may_cache) {
 
 /** 
  * Implementation of hook_nodeapi
+ * Yuo will have a nice variable in $node available for processing tags!
  */
 function tagadelic_nodeapi($node, $op) {
   if ($op == 'load') {
@@ -64,6 +58,7 @@ function tagadelic_nodeapi($node, $op) {
     return $output;
   }
 }
+
 /**
  * menu callback renders a tagadelic page
  */
@@ -85,13 +80,13 @@ function tagadelic_page_chunk() {
   }
 
   $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs));
-  
+
   if (!$output) {
     return drupal_not_found();
   }
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
-  
+
   return $output;
 }
 
@@ -118,13 +113,13 @@ function tagadelic_page_list() {
     }
     $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid))));
   }
-  
+
   if (!$output) {
     return drupal_not_found();
   }
-  
+
   drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
-  
+
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   print theme('page', $output);
 }
