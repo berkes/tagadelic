@@ -194,7 +194,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
  * callback for usort, sort by count
  */
 function _tagadelic_sort_by_title($a, $b) {
-  return strnatcmp($a->name, $b->name);
+  return strnatcasecmp($a->name, $b->name);
 }
 
 /**
