@@ -218,10 +218,10 @@ function theme_tagadelic_weighted($terms) {
 /**
  * implementation of hook_block
  */
-function tagadelic_block($op = 'list', $delta = O) {
+function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
-      $blocks['subject'] = t('tags in %voc', array('%voc' => $voc->name));
+      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name)));
       $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, 12));//return a chunk of 12 tags
     }
     elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
@@ -231,9 +231,19 @@ function tagadelic_block($op = 'list', $delta = O) {
   }
   elseif ($op == 'list') {
     foreach(taxonomy_get_vocabularies() as $voc) {
-      $blocks[$voc->vid]['info'] = t('tags in %voc', array('%voc' => $voc->name));
+      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in %voc', array('%voc' => $voc->name)));
     }
     $blocks[0]['info'] = t('tags for the current post');
+  }
+  elseif ($op == 'configure') {
+    $voc = taxonomy_get_vocabulary($delta);
+    return form_textfield(t('Block title'), 'tagadelic_block_title_'. $delta, variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))), 60, 64, t('The title of the block as shown to the user.'));
+  }
+  elseif ($op == 'save') {
+    dprint_r($edit);
+    variable_set('tagadelic_block_title_'. $delta, $edit['tagadelic_block_title_'. $delta]);
+    dprint_r(variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))));
+    return;
   }
   return $blocks;
 }
