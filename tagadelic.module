@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.15 2005/12/04 13:33:51 ber Exp $
+// $Id: tagadelic.module,v 1.16 2005/12/18 12:01:35 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -237,12 +237,17 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   }
   elseif ($op == 'configure') {
     $voc = taxonomy_get_vocabulary($delta);
-    return form_textfield(t('Block title'), 'tagadelic_block_title_'. $delta, variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))), 60, 64, t('The title of the block as shown to the user.'));
+    $form['title'] = array(
+                        '#type' => 'textfield', 
+                        '#title' => t('Block title'),
+                        '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
+                        '#maxlength' => 64,
+                        '#description' => t('The title of the block as shown to the user.'),
+                     );
+    return $form;
   }
   elseif ($op == 'save') {
-    dprint_r($edit);
-    variable_set('tagadelic_block_title_'. $delta, $edit['tagadelic_block_title_'. $delta]);
-    dprint_r(variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))));
+    variable_set('tagadelic_block_title_'. $delta, $edit['title']);
     return;
   }
   return $blocks;
