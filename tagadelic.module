@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.16 2005/12/18 12:01:35 ber Exp $
+// $Id: tagadelic.module,v 1.17 2005/12/20 16:56:26 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -55,6 +55,21 @@ function tagadelic_nodeapi($node, $op) {
     $output['tags'] = tagadelic_node_get_terms($node);
     return $output;
   }
+}
+
+/**
+ * Implementation of hook_settings
+ */
+function tagadelic_settings() {
+  $options = array('weight,asc' => t('by weight, ascending'), 'weight,desc' => t('by weight, descending'), 'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'), 'random,none' => t('random'));
+  $form['tagadelic_sort_order'] = array(
+    '#type' => 'radios',
+    '#title' => t('Tagadelic sort order'),
+    '#options' => $options,
+    '#default_value' => variable_get('tagadelic_sort_order', 'title,asc'),
+    '#description' => t('Determines the sort order of the tags on the freetagging page.'),
+  );
+  return $form;
 }
 
 /**
@@ -185,8 +200,21 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     $tags[$key]->weight = 1 + floor($steps * ($value->count - $min) / $range);
   }
 
-  // Sort by title
-  usort($tags, "_tagadelic_sort_by_title");
+  list($sort, $order) = explode(',', variable_get('tagadelic_sort_order', 'title,asc'));
+  switch ($sort) {
+    case 'title':
+      usort($tags, "_tagadelic_sort_by_title");
+      break;
+    case 'weight':
+      usort($tags, "_tagadelic_sort_by_weight");
+      break;
+    case 'random':
+      shuffle($tags);
+      break;
+  }
+  if ($order == 'desc') {
+    $tags = array_reverse($tags);
+  }
   return $tags;
 }
 
