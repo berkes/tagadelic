@@ -8,7 +8,7 @@ function tagadelic_help($section) {
   switch ($section) {
     case 'admin/modules#description':
       return t('Tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
-   case 'admin/help#creativecommons':
+   case 'admin/help#tagadelic':
       return t('tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
@@ -46,7 +46,7 @@ function tagadelic_menu($may_cache) {
   return $items;
 }
 
-/** 
+/**
  * Implementation of hook_nodeapi
  * Yuo will have a nice variable in $node available for processing tags!
  */
@@ -137,7 +137,7 @@ function tagadelic_page_list() {
 
 /**
  * API that returns a multidimensional array with tags given a node
- * 
+ *
  */
 function tagadelic_node_get_terms($node) {
   if ($terms = taxonomy_node_get_terms($node->nid, 'tid')) {
@@ -266,7 +266,7 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   elseif ($op == 'configure') {
     $voc = taxonomy_get_vocabulary($delta);
     $form['title'] = array(
-                        '#type' => 'textfield', 
+                        '#type' => 'textfield',
                         '#title' => t('Block title'),
                         '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
                         '#maxlength' => 64,
