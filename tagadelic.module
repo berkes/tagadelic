@@ -250,7 +250,7 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
       $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name)));
-      $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, 12));//return a chunk of 12 tags
+      $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12)));//return a chunk of 12 tags
     }
     elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('tags for %title', array('%title' => check_plain($node->title)));
@@ -272,10 +272,18 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
                         '#maxlength' => 64,
                         '#description' => t('The title of the block as shown to the user.'),
                      );
+    $form['tags'] = array(
+                        '#type' => 'textfield',
+                        '#title' => t('Tags to show'),
+                        '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
+                        '#maxlength' => 3,
+                        '#description' => t('The number of tags to show in this block.'),
+                     );
     return $form;
   }
   elseif ($op == 'save') {
     variable_set('tagadelic_block_title_'. $delta, $edit['title']);
+    variable_set('tagadelic_block_tags_'. $delta, $edit['tags']);
     return;
   }
   return $blocks;
