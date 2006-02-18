@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.19 2006/02/15 19:11:54 ber Exp $
+// $Id: tagadelic.module,v 1.20 2006/02/18 11:56:48 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -18,7 +18,7 @@ function tagadelic_help($section) {
  */
 function tagadelic_menu($may_cache) {
   $items = array();
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+  drupal_set_html_head('<style type="text/css">@import url('. base_path() . drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
 
   if ($may_cache) {
      $items[] = array('title' => t('tags'),
@@ -129,7 +129,7 @@ function tagadelic_page_list() {
     return drupal_not_found();
   }
 
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+  drupal_set_html_head('<style type="text/css">@import url('. base_path() . drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   print theme('page', $output);
