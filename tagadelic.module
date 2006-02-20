@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.20 2006/02/18 11:56:48 ber Exp $
+// $Id: tagadelic.module,v 1.21 2006/02/20 10:32:36 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -162,7 +162,7 @@ function tagadelic_tags_lists($node) {
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
       foreach ($terms as $term) {
-        $items[] = l($term->name, "/taxonomy/term/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+        $items[] = l($term->name, "taxonomy/term/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
       }
       $output .= theme('item_list', $items, $title);
     }
