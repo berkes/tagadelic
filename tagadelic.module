@@ -26,21 +26,22 @@ function tagadelic_menu($may_cache) {
                       'callback' => 'tagadelic_page_chunk',
                       'access' => user_access('access content'),
                       'type' => MENU_SUGGESTED_ITEM);
-     $items[] = array('title' => t('tags'),
+     $items[] = array('title' => t('list of tag clouds'),
                       'path' => "tagadelic/list",
                       'callback' => 'tagadelic_page_list',
                       'access' => user_access('access content'),
-                      'type' => MENU_CALLBACK);
-     $items[] = array('title' => t('tags'),
+                      'type' => MENU_ITEM_GROUPING);
+     $items[] = array('title' => t('tag cloud'),
                       'path' => "tagadelic/chunk",
                       'callback' => 'tagadelic_page_chunk',
                       'access' => user_access('access content'),
-                      'type' => MENU_CALLBACK);
+                      'type' => MENU_ITEM_GROUPING);
      foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
        $items[] = array('title' => $vocabulary->name,
-                          'path' => "tagadelic/chunk/$vocabulary->vid",
-                          'callback' => 'tagadelic_page_chunk',
-                          'access' => user_access('access content'));
+                        'path' => "tagadelic/chunk/$vocabulary->vid",
+                        'callback' => 'tagadelic_page_chunk',
+                        'access' => user_access('access content'),
+                        'type' => MENU_SUGGESTED_ITEM);
      }
   }
   return $items;
@@ -131,9 +132,8 @@ function tagadelic_page_list() {
   }
 
   theme('add_style', drupal_get_path('module', 'tagadelic') .'/tagadelic.css');
-
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
-  print theme('page', $output);
+  return $output;
 }
 
 /**
