@@ -1,0 +1,93 @@
+# LANGUAGE translation of Drupal (tagadelic.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: tagadelic.module,v 1.19 2006/02/15 19:11:54 ber
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2006-04-13 22:21+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tagadelic.module:10
+msgid "Tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size."
+msgstr ""
+
+#: tagadelic.module:12
+msgid "tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies."
+msgstr ""
+
+#: tagadelic.module:24;29;34
+msgid "tags"
+msgstr ""
+
+#: tagadelic.module:64
+msgid "by weight, ascending"
+msgstr ""
+
+#: tagadelic.module:64
+msgid "by weight, descending"
+msgstr ""
+
+#: tagadelic.module:64
+msgid "by title, ascending"
+msgstr ""
+
+#: tagadelic.module:64
+msgid "by title, descending"
+msgstr ""
+
+#: tagadelic.module:64
+msgid "random"
+msgstr ""
+
+#: tagadelic.module:67
+msgid "Tagadelic sort order"
+msgstr ""
+
+#: tagadelic.module:70
+msgid "Determines the sort order of the tags on the freetagging page."
+msgstr ""
+
+#: tagadelic.module:165
+msgid "view all posts tagged with \"%tag\""
+msgstr ""
+
+#: tagadelic.module:252;262;271
+msgid "tags in %voc"
+msgstr ""
+
+#: tagadelic.module:256
+msgid "tags for %title"
+msgstr ""
+
+#: tagadelic.module:264
+msgid "tags for the current post"
+msgstr ""
+
+#: tagadelic.module:270
+msgid "Block title"
+msgstr ""
+
+#: tagadelic.module:273
+msgid "The title of the block as shown to the user."
+msgstr ""
+
+#: tagadelic.module:277
+msgid "Tags to show"
+msgstr ""
+
+#: tagadelic.module:280
+msgid "The number of tags to show in this block."
+msgstr ""
+
+#: tagadelic.module:0
+msgid "tagadelic"
+msgstr ""
+
