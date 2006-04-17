@@ -1,0 +1,291 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_help
+ */
+function tagadelic_help($section) {
+  switch ($section) {
+    case 'admin/modules#description':
+      return t('Tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
+   case 'admin/help#tagadelic':
+      return t('tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
+  }
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function tagadelic_menu($may_cache) {
+  $items = array();
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+
+  if ($may_cache) {
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic",
+                      'callback' => 'tagadelic_page_chunk',
+                      'access' => user_access('access content'),
+                      'type' => MENU_SUGGESTED_ITEM);
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic/list",
+                      'callback' => 'tagadelic_page_list',
+                      'access' => user_access('access content'),
+                      'type' => MENU_CALLBACK);
+     $items[] = array('title' => t('tags'),
+                      'path' => "tagadelic/chunk",
+                      'callback' => 'tagadelic_page_chunk',
+                      'access' => user_access('access content'),
+                      'type' => MENU_CALLBACK);
+     foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
+       $items[] = array('title' => $vocabulary->name,
+                          'path' => "tagadelic/chunk/$vocabulary->vid",
+                          'callback' => 'tagadelic_page_chunk',
+                          'access' => user_access('access content'));
+     }
+  }
+  return $items;
+}
+
+/**
+ * Implementation of hook_nodeapi
+ * Yuo will have a nice variable in $node available for processing tags!
+ */
+function tagadelic_nodeapi($node, $op) {
+  if ($op == 'load') {
+    $output['tags'] = tagadelic_node_get_terms($node);
+    return $output;
+  }
+}
+
+/**
+ * Implementation of hook_settings
+ */
+function tagadelic_settings() {
+  $options = array('weight,asc' => t('by weight, ascending'), 'weight,desc' => t('by weight, descending'), 'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'), 'random,none' => t('random'));
+  $form['tagadelic_sort_order'] = array(
+    '#type' => 'radios',
+    '#title' => t('Tagadelic sort order'),
+    '#options' => $options,
+    '#default_value' => variable_get('tagadelic_sort_order', 'title,asc'),
+    '#description' => t('Determines the sort order of the tags on the freetagging page.'),
+  );
+  return $form;
+}
+
+/**
+ * menu callback renders a tagadelic page
+ */
+function tagadelic_page_chunk() {
+  $vocs = arg(2);
+
+  if (is_numeric($vocs)) {
+    $vocs = array($vocs);
+  }
+  elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
+    $vocs = explode(',', $vocs);
+  }
+  elseif($vocs == NULL) { //create a chunk from all free tagging vocs
+   foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
+      $vocs[] = $vocabulary->vid;
+    }
+  }
+
+  $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs));
+
+  if (!$output) {
+    return drupal_not_found();
+  }
+
+  $output = "<div class=\"wrapper tagadelic\">$output</div>";
+
+  return $output;
+}
+
+/**
+ * menu callback renders a tagadelic page with listed items: each voc
+ */
+function tagadelic_page_list() {
+  $vocs = arg(2);
+
+  if (is_numeric($vocs)) {
+    $vocs = array($vocs);
+  }
+  elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
+    $vocs = explode(',', $vocs);
+  }
+  else {
+    return drupal_not_found();
+  }
+
+  foreach ($vocs as $vid) {
+    $vocabulary = taxonomy_get_vocabulary($vid);
+    if ($vocabulary->description) {
+      $output .= theme("box", NULL, $vocabulary->description);
+    }
+    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid))));
+  }
+
+  if (!$output) {
+    return drupal_not_found();
+  }
+
+  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+
+  $output = "<div class=\"wrapper tagadelic\">$output</div>";
+  print theme('page', $output);
+}
+
+/**
+ * API that returns a multidimensional array with tags given a node
+ *
+ */
+function tagadelic_node_get_terms($node) {
+  if ($terms = taxonomy_node_get_terms($node->nid, 'tid')) {
+    $vocs = taxonomy_get_vocabularies($node->type);
+    foreach ($terms as $tid => $term) {
+      if ($vocs[$term->vid]->tags) {
+        $tags[$term->vid][$tid] = $term;
+      }
+    }
+    return $tags;
+  }
+}
+
+
+/**
+ * API function that returns the tags of a node in fancy titled lists
+ */
+function tagadelic_tags_lists($node) {
+  if (is_array($node->tags)) {
+    foreach($node->tags as $vid => $terms) {
+      $vocabulary = taxonomy_get_vocabulary($vid);
+      $title = l($vocabulary->name, "tagadelic/chunk/$vid");
+      $items = array();
+      foreach ($terms as $term) {
+        $items[] = l($term->name, "/taxonomy/term/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+      }
+      $output .= theme('item_list', $items, $title);
+    }
+    return $output;
+  }
+}
+
+/**
+ * API that returns an array with weighted tags
+ * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
+ */
+function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
+  if (!is_array($vids) || count($vids) == 0) {
+    return array();
+  }
+
+  // Fetch tags
+  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
+
+  // Find minimum and maximum log-count.
+  $tags = array();
+  $min = 1e9;
+  $max = -1e9;
+  while ($tag = db_fetch_object($result)) {
+    $tag->count = log($tag->count);
+    $min = min($min, $tag->count);
+    $max = max($max, $tag->count);
+    $tags[$tag->tid] = $tag;
+  }
+  // Note: we need to ensure the range is slightly too large to make sure even
+  // the largest element is rounded down.
+  $range = max(.01, $max - $min) * 1.0001;
+
+  foreach ($tags as $key => $value) {
+    $tags[$key]->weight = 1 + floor($steps * ($value->count - $min) / $range);
+  }
+
+  list($sort, $order) = explode(',', variable_get('tagadelic_sort_order', 'title,asc'));
+  switch ($sort) {
+    case 'title':
+      usort($tags, "_tagadelic_sort_by_title");
+      break;
+    case 'weight':
+      usort($tags, "_tagadelic_sort_by_weight");
+      break;
+    case 'random':
+      shuffle($tags);
+      break;
+  }
+  if ($order == 'desc') {
+    $tags = array_reverse($tags);
+  }
+  return $tags;
+}
+
+/**
+ * callback for usort, sort by count
+ */
+function _tagadelic_sort_by_title($a, $b) {
+  return strnatcasecmp($a->name, $b->name);
+}
+
+/**
+ * callback for usort, sort by weight
+ */
+function _tagadelic_sort_by_weight($a, $b) {
+  return $a->weight > $b->weight;
+}
+
+/**
+ * theme function that renders the HTML for the tags
+ * @ingroup themable
+ */
+function theme_tagadelic_weighted($terms) {
+  foreach ($terms as $term) {
+    $output .= l($term->name,"taxonomy/term/$term->tid", array('class'=>"tagadelic level$term->weight")) ." \n";
+  }
+  return $output;
+}
+
+/**
+ * implementation of hook_block
+ */
+function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
+  if ($op == 'view') {
+    if ($voc = taxonomy_get_vocabulary($delta)) {
+      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name)));
+      $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12)));//return a chunk of 12 tags
+    }
+    elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+      $blocks['subject'] = t('tags for %title', array('%title' => check_plain($node->title)));
+      $blocks['content'] = tagadelic_tags_lists($node);
+    }
+  }
+  elseif ($op == 'list') {
+    foreach(taxonomy_get_vocabularies() as $voc) {
+      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in %voc', array('%voc' => $voc->name)));
+    }
+    $blocks[0]['info'] = t('tags for the current post');
+  }
+  elseif ($op == 'configure') {
+    $voc = taxonomy_get_vocabulary($delta);
+    $form['title'] = array(
+                        '#type' => 'textfield',
+                        '#title' => t('Block title'),
+                        '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
+                        '#maxlength' => 64,
+                        '#description' => t('The title of the block as shown to the user.'),
+                     );
+    $form['tags'] = array(
+                        '#type' => 'textfield',
+                        '#title' => t('Tags to show'),
+                        '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
+                        '#maxlength' => 3,
+                        '#description' => t('The number of tags to show in this block.'),
+                     );
+    return $form;
+  }
+  elseif ($op == 'save') {
+    variable_set('tagadelic_block_title_'. $delta, $edit['title']);
+    variable_set('tagadelic_block_tags_'. $delta, $edit['tags']);
+    return;
+  }
+  return $blocks;
+}
+?>
