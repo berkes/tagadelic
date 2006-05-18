@@ -18,9 +18,11 @@ function tagadelic_help($section) {
  */
 function tagadelic_menu($may_cache) {
   $items = array();
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
 
-  if ($may_cache) {
+  $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
+  theme('add_style', $stylesheet, 'all');
+    
+  if ($may_cache) {  
      $items[] = array('title' => t('tags'),
                       'path' => "tagadelic",
                       'callback' => 'tagadelic_page_chunk',
