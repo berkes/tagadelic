@@ -165,7 +165,7 @@ function tagadelic_tags_lists($node) {
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
       foreach ($terms as $term) {
-        $items[] = l($term->name, "/taxonomy/term/$term->tid", array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+        $items[] = l($term->name, taxonomy_term_path($term), array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
       }
       $output .= theme('item_list', $items, $title);
     }
@@ -183,13 +183,14 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   }
 
   // Fetch tags
-  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
+  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name ORDER BY count DESC', $vids, 0, $size);
 
   // Find minimum and maximum log-count.
   $tags = array();
   $min = 1e9;
   $max = -1e9;
   while ($tag = db_fetch_object($result)) {
+    $tag->number_of_posts = $tag->count;
     $tag->count = log($tag->count);
     $min = min($min, $tag->count);
     $max = max($max, $tag->count);
@@ -241,7 +242,7 @@ function _tagadelic_sort_by_weight($a, $b) {
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
-    $output .= l($term->name,"taxonomy/term/$term->tid", array('class'=>"tagadelic level$term->weight")) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight")) ." \n";
   }
   return $output;
 }
