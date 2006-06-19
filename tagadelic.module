@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.27 2006/06/13 19:34:43 ber Exp $
+// $Id: tagadelic.module,v 1.28 2006/06/19 14:00:24 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -20,7 +20,7 @@ function tagadelic_menu($may_cache) {
   $items = array();
 
   $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
-  theme('add_style', $stylesheet, 'all');
+  theme_add_style($stylesheet, 'all');
 
   if ($may_cache) {
      $items[] = array('title' => t('tags'),
