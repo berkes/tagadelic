@@ -20,7 +20,7 @@ function tagadelic_menu($may_cache) {
   $items = array();
 
   $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
-  theme('add_style', $stylesheet, 'all');
+  theme_add_style($stylesheet, 'all');
 
   if ($may_cache) {
      $items[] = array('title' => t('tags'),
