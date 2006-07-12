@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.28 2006/06/19 14:00:24 ber Exp $
+// $Id: tagadelic.module,v 1.29 2006/07/12 09:29:12 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -23,28 +23,32 @@ function tagadelic_menu($may_cache) {
   theme_add_style($stylesheet, 'all');
 
   if ($may_cache) {
-     $items[] = array('title' => t('tags'),
-                      'path' => "tagadelic",
-                      'callback' => 'tagadelic_page_chunk',
-                      'access' => user_access('access content'),
-                      'type' => MENU_SUGGESTED_ITEM);
-     $items[] = array('title' => t('tags'),
-                      'path' => "tagadelic/list",
-                      'callback' => 'tagadelic_page_list',
-                      'access' => user_access('access content'),
-                      'type' => MENU_CALLBACK);
-     $items[] = array('title' => t('tags'),
-                      'path' => "tagadelic/chunk",
-                      'callback' => 'tagadelic_page_chunk',
-                      'access' => user_access('access content'),
-                      'type' => MENU_CALLBACK);
-     foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
-       $items[] = array('title' => $vocabulary->name,
-                        'path' => "tagadelic/chunk/$vocabulary->vid",
-                        'callback' => 'tagadelic_page_chunk',
-                        'access' => user_access('access content'),
-                        'type' => MENU_SUGGESTED_ITEM);
-     }
+    $items[] = array(
+      'title' => t('tags'),
+      'path' => "tagadelic",
+      'callback' => 'tagadelic_page_chunk',
+      'access' => user_access('access content'),
+      'type' => MENU_SUGGESTED_ITEM);
+    $items[] = array(
+      'title' => t('tags'),
+      'path' => "tagadelic/list",
+      'callback' => 'tagadelic_page_list',
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK);
+    $items[] = array(
+      'title' => t('tags'),
+      'path' => "tagadelic/chunk",
+      'callback' => 'tagadelic_page_chunk',
+      'access' => user_access('access content'),
+      'type' => MENU_CALLBACK);
+    foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
+      $items[] = array(
+        'title' => $vocabulary->name,
+        'path' => "tagadelic/chunk/$vocabulary->vid",
+        'callback' => 'tagadelic_page_chunk',
+        'access' => user_access('access content'),
+        'type' => MENU_SUGGESTED_ITEM);
+    }
   }
   return $items;
 }
@@ -132,7 +136,8 @@ function tagadelic_page_list() {
     return drupal_not_found();
   }
 
-  drupal_set_html_head('<style type="text/css">@import url('.drupal_get_path('module','tagadelic').'/tagadelic.css);</style>');
+  $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
+  theme_add_style($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   print theme('page', $output);
@@ -270,19 +275,19 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   elseif ($op == 'configure') {
     $voc = taxonomy_get_vocabulary($delta);
     $form['title'] = array(
-                        '#type' => 'textfield',
-                        '#title' => t('Block title'),
-                        '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
-                        '#maxlength' => 64,
-                        '#description' => t('The title of the block as shown to the user.'),
-                     );
+      '#type' => 'textfield',
+      '#title' => t('Block title'),
+      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
+      '#maxlength' => 64,
+      '#description' => t('The title of the block as shown to the user.'),
+    );
     $form['tags'] = array(
-                        '#type' => 'textfield',
-                        '#title' => t('Tags to show'),
-                        '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
-                        '#maxlength' => 3,
-                        '#description' => t('The number of tags to show in this block.'),
-                     );
+      '#type' => 'textfield',
+      '#title' => t('Tags to show'),
+      '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
+      '#maxlength' => 3,
+      '#description' => t('The number of tags to show in this block.'),
+    );
     return $form;
   }
   elseif ($op == 'save') {
