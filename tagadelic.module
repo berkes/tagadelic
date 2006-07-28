@@ -76,6 +76,20 @@ function tagadelic_settings() {
     '#default_value' => variable_get('tagadelic_sort_order', 'title,asc'),
     '#description' => t('Determines the sort order of the tags on the freetagging page.'),
   );
+  $form['tagadelic_page_amount'] = array(
+    '#type' => 'textfield',
+    '#size' => 5,
+    '#title' => t('Amount of tags'),
+    '#default_value' => variable_get('tagadelic_page_amount', '60'),
+    '#description' => t('The amount of tags that will show up in a cloud.'),
+  );
+  $form['tagadelic_levels'] = array(
+    '#type' => 'textfield',
+    '#size' => 5,
+    '#title' => t('Number of levels'),
+    '#default_value' => variable_get('tagadelic_levels', 6),
+    '#description' => t('The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css'),
+  );
   return $form;
 }
 
@@ -97,7 +111,7 @@ function tagadelic_page_chunk() {
     }
   }
 
-  $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs));
+  $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60')));
 
   if (!$output) {
     return drupal_not_found();
@@ -129,7 +143,7 @@ function tagadelic_page_list() {
     if ($vocabulary->description) {
       $output .= theme("box", NULL, $vocabulary->description);
     }
-    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid))));
+    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'))));
   }
 
   if (!$output) {
