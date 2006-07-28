@@ -311,4 +311,3 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   }
   return $blocks;
 }
-?>
