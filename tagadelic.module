@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.31 2006/07/28 10:16:21 ber Exp $
+// $Id: tagadelic.module,v 1.32 2006/07/28 10:20:07 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -311,4 +311,3 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   }
   return $blocks;
 }
-?>
