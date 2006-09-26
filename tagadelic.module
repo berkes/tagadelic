@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.32 2006/07/28 10:20:07 ber Exp $
+// $Id: tagadelic.module,v 1.33 2006/09/26 19:26:50 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -111,7 +111,9 @@ function tagadelic_page_chunk() {
     }
   }
 
-  $output = theme('tagadelic_weighted',tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60')));
+  $tags = tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
+  $tags = tagadelic_sort_tags($tags);
+  $output = theme('tagadelic_weighted',$tags);
 
   if (!$output) {
     return drupal_not_found();
@@ -143,7 +145,9 @@ function tagadelic_page_list() {
     if ($vocabulary->description) {
       $output .= theme("box", NULL, $vocabulary->description);
     }
-    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'))));
+    $tags = tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
+    $tags = tagadelic_sort_tags($tags);
+    $output .= theme('box', $vocabulary->name, theme('tagadelic_weighted', $tags));
   }
 
   if (!$output) {
@@ -154,12 +158,12 @@ function tagadelic_page_list() {
   theme_add_style($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
-  print theme('page', $output);
+  return $output;
 }
 
 /**
  * API that returns a multidimensional array with tags given a node
- *
+ * @param $node. A node object.
  */
 function tagadelic_node_get_terms($node) {
   if ($terms = taxonomy_node_get_terms($node->nid, 'tid')) {
@@ -176,6 +180,7 @@ function tagadelic_node_get_terms($node) {
 
 /**
  * API function that returns the tags of a node in fancy titled lists
+ * @param $node. A node object.
  */
 function tagadelic_tags_lists($node) {
   if (is_array($node->tags)) {
@@ -193,18 +198,30 @@ function tagadelic_tags_lists($node) {
 }
 
 /**
- * API that returns an array with weighted tags
- * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
+ * Function that gets the information from the database, passes it along to the weight builder and returns these weighted tags. Note that the tags are unordered at this stage, hence they need orndering either by calling our api or by your own ordering data.
+ * @param $vids. Vocabulary IDs representing the vocabularies where you want the tags from.
+ * @param $steps. The amount of tag-sizes you will be using. If you give "12" you sill get six different "weights". Defaults to 6 and is optional.
+ * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
+  //CACHING! PLease! Send! in! your! patches! :)
   if (!is_array($vids) || count($vids) == 0) {
     return array();
   }
-
-  // Fetch tags
   $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
 
-  // Find minimum and maximum log-count.
+  return tagadelic_build_weighted_tags($result, $steps = 6, $size = 60);
+}
+
+/**
+ * API that returns an array with weighted tags
+ * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
+ * @param $result. a query result, any query result that contains an <em>object</em> with the following attributes: $tag->count, $tag->tid, $tag->name and $tag->vid. Refer to tagadelic_get_weighted_tags() for an example."
+ * @param $steps. The amount of tag-sizes you will be using. If you give "12" you sill get six different "weights". Defaults to 6 and is optional.
+ * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
+ */
+function tagadelic_build_weighted_tags($result, $steps = 6) {
+  // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka UnConeD.
   $tags = array();
   $min = 1e9;
   $max = -1e9;
@@ -222,7 +239,14 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   foreach ($tags as $key => $value) {
     $tags[$key]->weight = 1 + floor($steps * ($value->count - $min) / $range);
   }
+  return $tags;
+}
 
+/**
+ * API funtion to order a set of tags.
+ * @todo If you feel like making this more modular, please send me patches.
+ **/
+function tagadelic_sort_tags($tags) {
   list($sort, $order) = explode(',', variable_get('tagadelic_sort_order', 'title,asc'));
   switch ($sort) {
     case 'title':
@@ -273,7 +297,9 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
       $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name)));
-      $blocks['content'] = theme('tagadelic_weighted', tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12)));//return a chunk of 12 tags
+      $tags = tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12));
+      $tags = tagadelic_sort_tags($tags);
+      $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
     }
     elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('tags for %title', array('%title' => check_plain($node->title)));
