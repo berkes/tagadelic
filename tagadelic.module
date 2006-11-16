@@ -6,10 +6,8 @@
  */
 function tagadelic_help($section) {
   switch ($section) {
-    case 'admin/modules#description':
-      return t('Tagadelic makes a page with weighted folksonomy. Folksonomys with lots of articles under them get a big font-size, folksonomy without them, get a small size.');
    case 'admin/help#tagadelic':
-      return t('tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
+      return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
 
@@ -20,23 +18,30 @@ function tagadelic_menu($may_cache) {
   $items = array();
 
   $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
-  theme_add_style($stylesheet, 'all');
+  drupal_add_css($stylesheet, 'all');
 
   if ($may_cache) {
     $items[] = array(
-      'title' => t('tags'),
+      'path' => 'admin/settings/tagadelic',
+      'title' => t('Tagadelic configuration'),
+      'description' => t('Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds.'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' => 'tagadelic_settings',
+      'access' => user_access('administer site configuration'));
+    $items[] = array(
+      'title' => t('Tags'),
       'path' => "tagadelic",
       'callback' => 'tagadelic_page_chunk',
       'access' => user_access('access content'),
       'type' => MENU_SUGGESTED_ITEM);
     $items[] = array(
-      'title' => t('tags'),
+      'title' => t('Tags'),
       'path' => "tagadelic/list",
       'callback' => 'tagadelic_page_list',
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK);
     $items[] = array(
-      'title' => t('tags'),
+      'title' => t('Tags'),
       'path' => "tagadelic/chunk",
       'callback' => 'tagadelic_page_chunk',
       'access' => user_access('access content'),
@@ -65,7 +70,7 @@ function tagadelic_nodeapi($node, $op) {
 }
 
 /**
- * Implementation of hook_settings
+ * Menu callback. Admin setting page for tagadelic.
  */
 function tagadelic_settings() {
   $options = array('weight,asc' => t('by weight, ascending'), 'weight,desc' => t('by weight, descending'), 'title,asc' => t('by title, ascending'), 'title,desc' => t('by title, descending'), 'random,none' => t('random'));
@@ -90,7 +95,7 @@ function tagadelic_settings() {
     '#default_value' => variable_get('tagadelic_levels', 6),
     '#description' => t('The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css'),
   );
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
@@ -154,7 +159,7 @@ function tagadelic_page_list() {
   }
 
   $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
-  theme_add_style($stylesheet, 'all');
+  drupal_add_css($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   return $output;
@@ -188,7 +193,7 @@ function tagadelic_tags_lists($node) {
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
       foreach ($terms as $term) {
-        $items[] = l($term->name, taxonomy_term_path($term), array('title' => t('view all posts tagged with "%tag"', array('%tag' => $term->name))));
+        $items[] = l($term->name, taxonomy_term_path($term), array('title' => t('view all posts tagged with "@tag"', array('@tag' => $term->name))));
       }
       $output .= theme('item_list', $items, $title);
     }
@@ -311,19 +316,19 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
 function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
-      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name)));
+      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name)));
       $tags = tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
     }
     elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
-      $blocks['subject'] = t('tags for %title', array('%title' => check_plain($node->title)));
+      $blocks['subject'] = t('tags for @title', array('@title' => $node->title));
       $blocks['content'] = tagadelic_tags_lists($node);
     }
   }
   elseif ($op == 'list') {
     foreach(taxonomy_get_vocabularies() as $voc) {
-      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in %voc', array('%voc' => $voc->name)));
+      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in @voc', array('@voc' => $voc->name)));
     }
     $blocks[0]['info'] = t('tags for the current post');
   }
@@ -332,7 +337,7 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Block title'),
-      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in %voc', array('%voc' => $voc->name))),
+      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name))),
       '#maxlength' => 64,
       '#description' => t('The title of the block as shown to the user.'),
     );
