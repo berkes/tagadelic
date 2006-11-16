@@ -1,0 +1,5 @@
+; $Id: tagadelic.info,v 1.1 2006/11/16 16:54:17 ber Exp $
+name = Tagadelic
+description = Tagadelic makes weighted tag clouds from your taxonomy terms.
+dependencies = taxonomy
+package = "Taxonomy"
