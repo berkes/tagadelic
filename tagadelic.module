@@ -62,10 +62,9 @@ function tagadelic_menu($may_cache) {
  * Implementation of hook_nodeapi
  * Yuo will have a nice variable in $node available for processing tags!
  */
-function tagadelic_nodeapi($node, $op) {
+function tagadelic_nodeapi(&$node, $op, $teaser, $page) {
   if ($op == 'load') {
-    $output['tags'] = tagadelic_node_get_terms($node);
-    return $output;
+      $node->tags = tagadelic_node_get_terms($node);
   }
 }
 
