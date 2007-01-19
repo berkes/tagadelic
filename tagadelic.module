@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.36 2006/11/16 17:25:21 ber Exp $
+// $Id: tagadelic.module,v 1.37 2007/01/19 16:09:13 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -62,10 +62,9 @@ function tagadelic_menu($may_cache) {
  * Implementation of hook_nodeapi
  * Yuo will have a nice variable in $node available for processing tags!
  */
-function tagadelic_nodeapi($node, $op) {
+function tagadelic_nodeapi(&$node, $op, $teaser, $page) {
   if ($op == 'load') {
-    $output['tags'] = tagadelic_node_get_terms($node);
-    return $output;
+      $node->tags = tagadelic_node_get_terms($node);
   }
 }
 
