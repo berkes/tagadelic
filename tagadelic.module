@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.37 2007/01/19 16:09:13 ber Exp $
+// $Id: tagadelic.module,v 1.38 2007/09/15 09:29:12 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -207,13 +207,30 @@ function tagadelic_tags_lists($node) {
  * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
-  //CACHING! PLease! Send! in! your! patches! :)
-  if (!is_array($vids) || count($vids) == 0) {
-    return array();
+  // build the options so we can cache multiple versions
+  $options = implode($vids) .'_'. $steps .'_'. $size;
+  
+  // Check if the cache exists
+  $cache_name = 'tagadelic_cache_'. $options;
+  $cache = cache_get($cache_name);
+  
+  // make sure cache has data
+  if ($cache->data) {
+    $tags = unserialize($cache->data);
   }
-  $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
+  else {
+  
+    if (!is_array($vids) || count($vids) == 0) {
+      return array();
+    }
+    $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
+    
+    $tags = tagadelic_build_weighted_tags($result, $steps);
 
-  return tagadelic_build_weighted_tags($result, $steps);
+    cache_set($cache_name, 'cache', serialize($tags));
+  }
+  
+  return $tags;
 }
 
 /**
