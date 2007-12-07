@@ -289,7 +289,7 @@ function _tagadelic_sort_by_weight($a, $b) {
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight")) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight", 'rel'=>'tag')) ." \n";
   }
   return $output;
 }
