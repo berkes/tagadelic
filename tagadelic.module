@@ -37,12 +37,6 @@ function tagadelic_menu($may_cache) {
       'callback' => 'tagadelic_page_list',
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK);
-    $items[] = array(
-      'title' => t('Tags'),
-      'path' => "tagadelic/chunk",
-      'callback' => 'tagadelic_page_chunk',
-      'access' => user_access('access content'),
-      'type' => MENU_CALLBACK);
     foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
       $items[] = array(
         'title' => $vocabulary->name,
