@@ -78,9 +78,9 @@ function tagadelic_settings() {
   $form['tagadelic_page_amount'] = array(
     '#type' => 'textfield',
     '#size' => 5,
-    '#title' => t('Amount of tags'),
+    '#title' => t('Amount of tags on the pages'),
     '#default_value' => variable_get('tagadelic_page_amount', '60'),
-    '#description' => t('The amount of tags that will show up in a cloud.'),
+    '#description' => t('The amount of tags that will show up in a cloud on the pages. Amount of tags in blocks must be configured in the block settings of the various cloud blocks.'),
   );
   $form['tagadelic_levels'] = array(
     '#type' => 'textfield',
