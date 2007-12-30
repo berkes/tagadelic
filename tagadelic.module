@@ -320,7 +320,7 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
       $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name)));
-      $tags = tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12));
+      $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
       $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
