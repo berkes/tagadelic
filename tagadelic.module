@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.38 2007/09/15 09:29:12 ber Exp $
+// $Id: tagadelic.module,v 1.39 2008/02/10 19:38:27 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -16,9 +16,6 @@ function tagadelic_help($section) {
  */
 function tagadelic_menu($may_cache) {
   $items = array();
-
-  $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
-  drupal_add_css($stylesheet, 'all');
 
   if ($may_cache) {
     $items[] = array(
@@ -40,12 +37,6 @@ function tagadelic_menu($may_cache) {
       'callback' => 'tagadelic_page_list',
       'access' => user_access('access content'),
       'type' => MENU_CALLBACK);
-    $items[] = array(
-      'title' => t('Tags'),
-      'path' => "tagadelic/chunk",
-      'callback' => 'tagadelic_page_chunk',
-      'access' => user_access('access content'),
-      'type' => MENU_CALLBACK);
     foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
       $items[] = array(
         'title' => $vocabulary->name,
@@ -54,13 +45,17 @@ function tagadelic_menu($may_cache) {
         'access' => user_access('access content'),
         'type' => MENU_SUGGESTED_ITEM);
     }
+  }      
+  else {
+    // We put this in !$may_cache so it's only added once per request
+    drupal_add_css(drupal_get_path('module','tagadelic') .'/tagadelic.css');
   }
   return $items;
 }
 
 /**
  * Implementation of hook_nodeapi
- * Yuo will have a nice variable in $node available for processing tags!
+ * You will have a nice variable in $node available for processing tags!
  */
 function tagadelic_nodeapi(&$node, $op, $teaser, $page) {
   if ($op == 'load') {
@@ -83,9 +78,9 @@ function tagadelic_settings() {
   $form['tagadelic_page_amount'] = array(
     '#type' => 'textfield',
     '#size' => 5,
-    '#title' => t('Amount of tags'),
+    '#title' => t('Amount of tags on the pages'),
     '#default_value' => variable_get('tagadelic_page_amount', '60'),
-    '#description' => t('The amount of tags that will show up in a cloud.'),
+    '#description' => t('The amount of tags that will show up in a cloud on the pages. Amount of tags in blocks must be configured in the block settings of the various cloud blocks.'),
   );
   $form['tagadelic_levels'] = array(
     '#type' => 'textfield',
@@ -305,7 +300,7 @@ function _tagadelic_sort_by_weight($a, $b) {
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight")) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight", 'rel'=>'tag')) ." \n";
   }
   return $output;
 }
@@ -327,15 +322,25 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
 }
 
 /**
+ * theme function to provide a more link
+ * @param $vid - vocab id for which more link is wanted
+ * @ingroup themable
+ */
+function theme_tagadelic_more($vid) {
+  return "<div class='more-link'>" . l(t('more tags'), "tagadelic/chunk/$vid") . "</div>";
+}
+
+/**
  * implementation of hook_block
  */
 function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
       $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name)));
-      $tags = tagadelic_get_weighted_tags(array($voc->vid),6, variable_get('tagadelic_block_tags_'. $delta, 12));
+      $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
+      $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
     }
     elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('tags for @title', array('@title' => $node->title));
