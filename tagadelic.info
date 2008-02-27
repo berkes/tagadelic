@@ -1,6 +1,0 @@
-; $Id$
-name = Tagadelic
-description = Tagadelic makes weighted tag clouds from your taxonomy terms.
-core = 6.x
-dependencies[] = taxonomy
-package = "Taxonomy"
