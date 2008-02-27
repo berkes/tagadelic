@@ -1,55 +1,61 @@
 <?php
-// $Id: tagadelic.module,v 1.39 2008/02/10 19:38:27 ber Exp $
+// $Id: tagadelic.module,v 1.40 2008/02/27 15:32:05 robloach Exp $
 
 /**
  * Implementation of hook_help
  */
-function tagadelic_help($section) {
-  switch ($section) {
+function tagadelic_help($path, $arg) {
+  switch ($path) {
    case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
 
 /**
+ * Implementation of hook_init
+ */
+function tagadelic_init() {
+  drupal_add_css(drupal_get_path('module', 'tagadelic') .'/tagadelic.css');
+}
+
+/**
  * Implementation of hook_menu
  */
-function tagadelic_menu($may_cache) {
+function tagadelic_menu() {
   $items = array();
 
-  if ($may_cache) {
-    $items[] = array(
-      'path' => 'admin/settings/tagadelic',
-      'title' => t('Tagadelic configuration'),
-      'description' => t('Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds.'),
-      'callback' => 'drupal_get_form',
-      'callback arguments' => 'tagadelic_settings',
-      'access' => user_access('administer site configuration'));
-    $items[] = array(
-      'title' => t('Tags'),
-      'path' => "tagadelic",
-      'callback' => 'tagadelic_page_chunk',
-      'access' => user_access('access content'),
-      'type' => MENU_SUGGESTED_ITEM);
-    $items[] = array(
-      'title' => t('Tags'),
-      'path' => "tagadelic/list",
-      'callback' => 'tagadelic_page_list',
-      'access' => user_access('access content'),
-      'type' => MENU_CALLBACK);
-    foreach (taxonomy_get_vocabularies($type = NULL) as $vocabulary) {
-      $items[] = array(
-        'title' => $vocabulary->name,
-        'path' => "tagadelic/chunk/$vocabulary->vid",
-        'callback' => 'tagadelic_page_chunk',
-        'access' => user_access('access content'),
-        'type' => MENU_SUGGESTED_ITEM);
-    }
-  }      
-  else {
-    // We put this in !$may_cache so it's only added once per request
-    drupal_add_css(drupal_get_path('module','tagadelic') .'/tagadelic.css');
-  }
+  $items['admin/settings/tagadelic'] = array(
+    'title' => 'Tagadelic configuration',
+    'description' => 'Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tagadelic_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['tagadelic'] = array(
+    'title' => 'Tags',
+    'page callback' => 'tagadelic_page_chunk',
+    'page arguments' => array(NULL),
+    'access callback' => 'user_access',      
+    'access arguments' => array('access content'),
+    'type' => MENU_SUGGESTED_ITEM,
+  );
+  $items['tagadelic/list/%tagadelic_vocs'] = array(
+    'title' => 'Tags',
+    'page callback' => 'tagadelic_page_list',
+    'page arguments' => array(2),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['tagadelic/chunk/%tagadelic_vocs'] = array(
+    'title' => 'Tags',
+    'page callback' => 'tagadelic_page_chunk',
+    'page arguments' => array(2),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+    'type' => MENU_SUGGESTED_ITEM,
+  );
   return $items;
 }
 
@@ -59,7 +65,7 @@ function tagadelic_menu($may_cache) {
  */
 function tagadelic_nodeapi(&$node, $op, $teaser, $page) {
   if ($op == 'load') {
-      $node->tags = tagadelic_node_get_terms($node);
+     $node->tags = tagadelic_node_get_terms($node);
   }
 }
 
@@ -93,26 +99,32 @@ function tagadelic_settings() {
 }
 
 /**
- * menu callback renders a tagadelic page
+ * menu wildcard callback
  */
-function tagadelic_page_chunk() {
-  $vocs = arg(2);
-
+function tagadelic_vocs_load($vocs) {
   if (is_numeric($vocs)) {
     $vocs = array($vocs);
   }
   elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
     $vocs = explode(',', $vocs);
   }
-  elseif($vocs == NULL) { //create a chunk from all free tagging vocs
-   foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
+  return $vocs;
+}
+
+/**
+ * menu callback renders a tagadelic page
+ */
+function tagadelic_page_chunk($vocs) {
+
+  if ($vocs == NULL) {
+    foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
       $vocs[] = $vocabulary->vid;
     }
   }
 
   $tags = tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
   $tags = tagadelic_sort_tags($tags);
-  $output = theme('tagadelic_weighted',$tags);
+  $output = theme('tagadelic_weighted', $tags);
 
   if (!$output) {
     return drupal_not_found();
@@ -126,21 +138,14 @@ function tagadelic_page_chunk() {
 /**
  * menu callback renders a tagadelic page with listed items: each voc
  */
-function tagadelic_page_list() {
-  $vocs = arg(2);
+function tagadelic_page_list($vocs) {
 
-  if (is_numeric($vocs)) {
-    $vocs = array($vocs);
-  }
-  elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
-    $vocs = explode(',', $vocs);
-  }
-  else {
+  if ($vocs == NULL) {
     return drupal_not_found();
   }
 
   foreach ($vocs as $vid) {
-    $vocabulary = taxonomy_get_vocabulary($vid);
+    $vocabulary = taxonomy_vocabulary_load($vid);
 
     $tags = tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
     $tags = tagadelic_sort_tags($tags);
@@ -152,7 +157,7 @@ function tagadelic_page_list() {
     return drupal_not_found();
   }
 
-  $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
+  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
   drupal_add_css($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
@@ -164,7 +169,7 @@ function tagadelic_page_list() {
  * @param $node. A node object.
  */
 function tagadelic_node_get_terms($node) {
-  if ($terms = taxonomy_node_get_terms($node->nid, 'tid')) {
+  if ($terms = taxonomy_node_get_terms($node, 'tid')) {
     $vocs = taxonomy_get_vocabularies($node->type);
     foreach ($terms as $tid => $term) {
       if ($vocs[$term->vid]->tags) {
@@ -182,12 +187,13 @@ function tagadelic_node_get_terms($node) {
  */
 function tagadelic_tags_lists($node) {
   if (is_array($node->tags)) {
-    foreach($node->tags as $vid => $terms) {
-      $vocabulary = taxonomy_get_vocabulary($vid);
+    $output = '';
+    foreach ($node->tags as $vid => $terms) {
+      $vocabulary = taxonomy_vocabulary_load($vid);
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
       foreach ($terms as $term) {
-        $items[] = l($term->name, taxonomy_term_path($term), array('title' => t('view all posts tagged with "@tag"', array('@tag' => $term->name))));
+        $items[] = l($term->name, taxonomy_term_path($term), array('attributes' => array('title' => t('view all posts tagged with "@tag"', array('@tag' => $term->name)))));
       }
       $output .= theme('item_list', $items, $title);
     }
@@ -210,8 +216,8 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   $cache = cache_get($cache_name);
   
   // make sure cache has data
-  if ($cache->data) {
-    $tags = unserialize($cache->data);
+  if (isset($cache->data)) {
+    $tags = $cache->data;
   }
   else {
   
@@ -222,7 +228,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     
     $tags = tagadelic_build_weighted_tags($result, $steps);
 
-    cache_set($cache_name, 'cache', serialize($tags));
+    cache_set($cache_name, $tags);
   }
   
   return $tags;
@@ -299,8 +305,9 @@ function _tagadelic_sort_by_weight($a, $b) {
  * @ingroup themable
  */
 function theme_tagadelic_weighted($terms) {
+  $output = '';
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight", 'rel'=>'tag')) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array('attributes' => array('class' => "tagadelic level$term->weight", 'rel' => 'tag'))) ." \n";
   }
   return $output;
 }
@@ -327,41 +334,40 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
  * @ingroup themable
  */
 function theme_tagadelic_more($vid) {
-  return "<div class='more-link'>" . l(t('more tags'), "tagadelic/chunk/$vid") . "</div>";
+  return "<div class='more-link'>". l(t('more tags'), "tagadelic/chunk/$vid") ."</div>";
 }
 
 /**
  * implementation of hook_block
  */
-function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
+function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
+  $blocks = array();
   if ($op == 'view') {
-    if ($voc = taxonomy_get_vocabulary($delta)) {
-      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name)));
+    if ($voc = taxonomy_vocabulary_load($delta)) {
+      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name)));
       $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
       $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
     }
-    elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
-      $blocks['subject'] = t('tags for @title', array('@title' => $node->title));
+    elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+      $blocks['subject'] = t('Tags for @title', array('@title' => $node->title));
       $blocks['content'] = tagadelic_tags_lists($node);
     }
+    return $blocks;
   }
   elseif ($op == 'list') {
-    foreach(taxonomy_get_vocabularies() as $voc) {
-      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in @voc', array('@voc' => $voc->name)));
+    foreach (taxonomy_get_vocabularies() as $voc) {
+      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
+      $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
     }
-    $blocks[0]['info'] = t('tags for the current post');
+    $blocks[0]['info'] = t('Tags for the current post');
+    $blocks[0]['cache'] = BLOCK_CACHE_PER_PAGE;
+    return $blocks;
   }
   elseif ($op == 'configure') {
-    $voc = taxonomy_get_vocabulary($delta);
-    $form['title'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Block title'),
-      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name))),
-      '#maxlength' => 64,
-      '#description' => t('The title of the block as shown to the user.'),
-    );
+    $voc = taxonomy_vocabulary_load($delta);
+    $form = array();
     $form['tags'] = array(
       '#type' => 'textfield',
       '#title' => t('Tags to show'),
@@ -372,9 +378,18 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
     return $form;
   }
   elseif ($op == 'save') {
-    variable_set('tagadelic_block_title_'. $delta, $edit['title']);
     variable_set('tagadelic_block_tags_'. $delta, $edit['tags']);
     return;
   }
-  return $blocks;
+}
+
+/**
+ * Implementation of hook_theme
+ */
+function tagadelic_theme() {
+  return array(
+    'tagadelic_list_box' => array('arguments' => array('vocabulary' => NULL, 'tags' => NULL)),
+    'tagadelic_more' => array('arguments' => array('vid' => NULL)),
+    'tagadelic_weighted' => array('arguments' => array('terms' => NULL))
+  );
 }
