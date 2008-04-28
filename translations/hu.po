@@ -133,3 +133,6 @@ msgstr "A tagadelic súlyozott címke felhőket jelenít meg a taxonómia alapj�
 #: tagadelic.info:0
 msgid "Taxonomy"
 msgstr "Taxonómia"
+
+msgid "more tags"
+msgstr "további címkék"
