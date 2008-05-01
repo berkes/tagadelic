@@ -6,7 +6,7 @@
  */
 function tagadelic_help($section) {
   switch ($section) {
-   case 'admin/help#tagadelic':
+    case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
@@ -45,10 +45,10 @@ function tagadelic_menu($may_cache) {
         'access' => user_access('access content'),
         'type' => MENU_SUGGESTED_ITEM);
     }
-  }      
+  }
   else {
     // We put this in !$may_cache so it's only added once per request
-    drupal_add_css(drupal_get_path('module','tagadelic') .'/tagadelic.css');
+    drupal_add_css(drupal_get_path('module', 'tagadelic') .'/tagadelic.css');
   }
   return $items;
 }
@@ -104,15 +104,15 @@ function tagadelic_page_chunk() {
   elseif (preg_match('/^([0-9]+,){1,5}[0-9]+$/', $vocs)) {
     $vocs = explode(',', $vocs);
   }
-  elseif($vocs == NULL) { //create a chunk from all free tagging vocs
-   foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
+  elseif ($vocs == NULL) { //create a chunk from all free tagging vocs
+    foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
       $vocs[] = $vocabulary->vid;
     }
   }
 
   $tags = tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
   $tags = tagadelic_sort_tags($tags);
-  $output = theme('tagadelic_weighted',$tags);
+  $output = theme('tagadelic_weighted', $tags);
 
   if (!$output) {
     return drupal_not_found();
@@ -152,7 +152,7 @@ function tagadelic_page_list() {
     return drupal_not_found();
   }
 
-  $stylesheet = drupal_get_path('module','tagadelic') .'/tagadelic.css';
+  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
   drupal_add_css($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
@@ -182,7 +182,7 @@ function tagadelic_node_get_terms($node) {
  */
 function tagadelic_tags_lists($node) {
   if (is_array($node->tags)) {
-    foreach($node->tags as $vid => $terms) {
+    foreach ($node->tags as $vid => $terms) {
       $vocabulary = taxonomy_get_vocabulary($vid);
       $title = l($vocabulary->name, "tagadelic/chunk/$vid");
       $items = array();
@@ -283,7 +283,7 @@ function _tagadelic_sort_by_weight($a, $b) {
  */
 function theme_tagadelic_weighted($terms) {
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('class'=>"tagadelic level$term->weight", 'rel'=>'tag')) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array('class' => "tagadelic level$term->weight", 'rel' => 'tag')) ." \n";
   }
   return $output;
 }
@@ -310,7 +310,7 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
  * @ingroup themable
  */
 function theme_tagadelic_more($vid) {
-  return "<div class='more-link'>" . l(t('more tags'), "tagadelic/chunk/$vid") . "</div>";
+  return "<div class='more-link'>". l(t('more tags'), "tagadelic/chunk/$vid") ."</div>";
 }
 
 /**
@@ -325,13 +325,13 @@ function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
       $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
     }
-    elseif(arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
+    elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('tags for @title', array('@title' => $node->title));
       $blocks['content'] = tagadelic_tags_lists($node);
     }
   }
   elseif ($op == 'list') {
-    foreach(taxonomy_get_vocabularies() as $voc) {
+    foreach (taxonomy_get_vocabularies() as $voc) {
       $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in @voc', array('@voc' => $voc->name)));
     }
     $blocks[0]['info'] = t('tags for the current post');
