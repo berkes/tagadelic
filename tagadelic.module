@@ -157,9 +157,6 @@ function tagadelic_page_list($vocs) {
     return drupal_not_found();
   }
 
-  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
-  drupal_add_css($stylesheet, 'all');
-
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   return $output;
 }
