@@ -6,7 +6,7 @@
  */
 function tagadelic_help($path, $arg) {
   switch ($path) {
-   case 'admin/help#tagadelic':
+    case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
