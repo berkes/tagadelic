@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.43 2008/05/01 12:54:49 ber Exp $
+// $Id: tagadelic.module,v 1.44 2008/05/01 13:07:22 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -156,9 +156,6 @@ function tagadelic_page_list($vocs) {
   if (!$output) {
     return drupal_not_found();
   }
-
-  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
-  drupal_add_css($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   return $output;
