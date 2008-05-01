@@ -1,12 +1,12 @@
 <?php
-// $Id: tagadelic.module,v 1.42 2008/05/01 12:48:05 ber Exp $
+// $Id: tagadelic.module,v 1.43 2008/05/01 12:54:49 ber Exp $
 
 /**
  * Implementation of hook_help
  */
 function tagadelic_help($path, $arg) {
   switch ($path) {
-   case 'admin/help#tagadelic':
+    case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
