@@ -321,29 +321,29 @@ function theme_tagadelic_more($vid) {
 function tagadelic_block($op = 'list', $delta = O, $edit = array()) {
   if ($op == 'view') {
     if ($voc = taxonomy_get_vocabulary($delta)) {
-      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name)));
+      $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name)));
       $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
       $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
     }
     elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
-      $blocks['subject'] = t('tags for @title', array('@title' => $node->title));
+      $blocks['subject'] = t('Tags for @title', array('@title' => $node->title));
       $blocks['content'] = tagadelic_tags_lists($node);
     }
   }
   elseif ($op == 'list') {
     foreach (taxonomy_get_vocabularies() as $voc) {
-      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('tags in @voc', array('@voc' => $voc->name)));
+      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
     }
-    $blocks[0]['info'] = t('tags for the current post');
+    $blocks[0]['info'] = t('Tags for the current post');
   }
   elseif ($op == 'configure') {
     $voc = taxonomy_get_vocabulary($delta);
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Block title'),
-      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('tags in @voc', array('@voc' => $voc->name))),
+      '#default_value' => variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name))),
       '#maxlength' => 64,
       '#description' => t('The title of the block as shown to the user.'),
     );
