@@ -1,0 +1,112 @@
+# LANGUAGE translation of Drupal (tagadelic.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: tagadelic.module,v 1.36 2006/11/16 17:25:21 ber
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2006-12-26 15:37+0100\n"
+"PO-Revision-Date: 2008-08-12 10:49+0100\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: tagadelic.module:10
+msgid "Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies."
+msgstr "Le module \"Tagadelic\" permet d'avoir des url dynamiques. <br/>par exemple la page http://www.example.com/tagadelic/list/2,1,5 affichera les tags des vocabulaires 2,1 et 5 les uns en dessous des autres.<br/>la page http://www.example.com/tagadelic/chunk/2,1,5 vous renverra un grand nuage de tags contenant les termes des vocabulaires 2,1 et 5.<br/> Cette liste est limitée à 5 vocabulaires."
+
+#: tagadelic.module:26
+msgid "Tagadelic configuration"
+msgstr "Configuration de \"Tagadelic\""
+
+#: tagadelic.module:27
+msgid "Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds."
+msgstr "Configurer le nuage de tags. Définissez l'ordre, le nombre de tags et le nombre de niveaux dans le nuage de tags."
+
+#: tagadelic.module:32;38;44
+msgid "Tags"
+msgstr "Tags"
+
+#: tagadelic.module:76
+msgid "by weight, ascending"
+msgstr "par poids croissant"
+
+#: tagadelic.module:76
+msgid "by weight, descending"
+msgstr "par poids décroissant"
+
+#: tagadelic.module:76
+msgid "by title, ascending"
+msgstr "par titre croissant"
+
+#: tagadelic.module:76
+msgid "by title, descending"
+msgstr "par titre décroissant"
+
+#: tagadelic.module:76
+msgid "random"
+msgstr "aléatoire"
+
+#: tagadelic.module:79
+msgid "Tagadelic sort order"
+msgstr "Ordre d'affichage des tags"
+
+#: tagadelic.module:82
+msgid "Determines the sort order of the tags on the freetagging page."
+msgstr "Détermine l'ordre des tags dans la page de taggage libre"
+
+#: tagadelic.module:87
+msgid "Amount of tags"
+msgstr "Nombre total de tags"
+
+#: tagadelic.module:89
+msgid "The amount of tags that will show up in a cloud."
+msgstr "Nombre total de tags qui doivent etre montrés dans un nuage"
+
+#: tagadelic.module:94
+msgid "Number of levels"
+msgstr "Nombre de niveaux"
+
+#: tagadelic.module:96
+msgid "The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css"
+msgstr "Le nombre de niveaux entre le plus populaire et le moins populaire. Chaque niveau ont un style différent qui peut etre défini dans tagadelic.css."
+
+#: tagadelic.module:196
+msgid "view all posts tagged with \"@tag\""
+msgstr "Voir tout les articles taggués avec \"@tag\""
+
+#: tagadelic.module:319;331;340
+msgid "tags in @voc"
+msgstr "Tags dans @voc"
+
+#: tagadelic.module:325
+msgid "tags for @title"
+msgstr "Tags pour @title"
+
+#: tagadelic.module:333
+msgid "tags for the current post"
+msgstr "Tags de la page courrante"
+
+#: tagadelic.module:339
+msgid "Block title"
+msgstr "Titre du bloc"
+
+#: tagadelic.module:342
+msgid "The title of the block as shown to the user."
+msgstr "Titre du bloc pour les tutilisateurs"
+
+#: tagadelic.module:346
+msgid "Tags to show"
+msgstr "Tags à montrer"
+
+#: tagadelic.module:349
+msgid "The number of tags to show in this block."
+msgstr "Nombre de tags dans ce bloc"
+
+#: tagadelic.module:0
+msgid "tagadelic"
+msgstr "tagadelic"
+
