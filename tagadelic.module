@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.45 2008/05/01 13:24:47 ber Exp $
+// $Id: tagadelic.module,v 1.46 2008/08/14 18:47:19 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -167,6 +167,7 @@ function tagadelic_page_list($vocs) {
  */
 function tagadelic_node_get_terms($node) {
   if ($terms = taxonomy_node_get_terms($node, 'tid')) {
+    $tags = array();
     $vocs = taxonomy_get_vocabularies($node->type);
     foreach ($terms as $tid => $term) {
       if ($vocs[$term->vid]->tags) {
