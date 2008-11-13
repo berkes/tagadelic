@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.46 2008/08/14 18:47:19 ber Exp $
+// $Id: tagadelic.module,v 1.47 2008/11/13 11:44:20 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -346,7 +346,10 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
       $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
-      $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
+      if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
+        $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
+      }
+
     }
     elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('Tags for @title', array('@title' => $node->title));
