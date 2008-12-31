@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.40.2.3 2008/11/13 11:36:32 ber Exp $
+// $Id: tagadelic.module,v 1.40.2.4 2008/12/31 11:35:44 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -229,7 +229,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     
     $tags = tagadelic_build_weighted_tags($result, $steps);
 
-    cache_set($cache_name, $tags);
+    cache_set($cache_name, $tags, 'cache', CACHE_TEMPORARY);
   }
   
   return $tags;
