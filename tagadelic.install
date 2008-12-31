@@ -1,0 +1,21 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation/updates for tagadelic.
+ */
+
+/**
+ * Clear cache.
+ */
+function tagadelic_update_6100() {
+  $ret = array();
+
+  // We want to remove cache entries that were added as CACHE_PERMANENT. The
+  // cid's depend on the taxonomies involved but we can just remove anything
+  // with a cid prefixed tagadelic_cache_
+  $ret[] = update_sql("DELETE FROM {cache} WHERE cid LIKE 'tagadelic_cache_%'");
+
+  return $ret;
+}
