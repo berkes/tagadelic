@@ -1,5 +1,5 @@
 <?php
-// $Id: tagadelic.module,v 1.40.2.5 2009/05/13 16:47:00 ber Exp $
+// $Id: tagadelic.module,v 1.40.2.6 2009/05/13 16:56:12 ber Exp $
 
 /**
  * Implementation of hook_help
@@ -225,7 +225,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     if (!is_array($vids) || count($vids) == 0) {
       return array();
     }
-    $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
+    $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid, d.description FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
     
     $tags = tagadelic_build_weighted_tags($result, $steps);
 
@@ -308,7 +308,14 @@ function _tagadelic_sort_by_weight($a, $b) {
 function theme_tagadelic_weighted($terms) {
   $output = '';
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('attributes' => array('class' => "tagadelic level$term->weight", 'rel' => 'tag'))) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array(
+      'attributes' => array(
+        'class' => "tagadelic level$term->weight",
+        'rel' => 'tag',
+        'title'  => $term->description,
+        )
+      )
+    ) ." \n";
   }
   return $output;
 }
