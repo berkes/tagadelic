@@ -214,7 +214,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   
   // Check if the cache exists
   $cache_name = 'tagadelic_cache_'. $options;
-  $cache = cache_get($cache_name);
+  $cache = cache_get($cache_name, 'cache_page');
   
   // make sure cache has data
   if (isset($cache->data)) {
@@ -229,7 +229,7 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     
     $tags = tagadelic_build_weighted_tags($result, $steps);
 
-    cache_set($cache_name, $tags, 'cache', CACHE_TEMPORARY);
+    cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
   
   return $tags;
