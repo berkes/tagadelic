@@ -1,13 +1,17 @@
-# PL translation of Drupal (tagadelic.module)
+# $Id: pl.po,v 1.1.2.2 2008/12/28 21:32:11 kuling Exp $
+#
+# Polski / Polish translation of Drupal (tagadelic.module)
 # Copyright 2008 Bartlomiej Opajdowski<bopajdowski@gmail.com>
-# Generated from file: tagadelic.module,v 1.36 2008/08/29 17:25:21 ber
+# Generated from files:
+#  tagadelic.module,v 1.40.2.3 2008/11/13 11:36:32 ber
+#  tagadelic.info,v 1.2 2008/02/27 15:32:05 robloach
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.36\n"
+"Project-Id-Version: Tagadelic 6.x-1.x-dev\n"
 "POT-Creation-Date: 2006-12-26 15:37+0100\n"
-"PO-Revision-Date: 2008-09-02 11:53+0100\n"
-"Last-Translator: Bartlomiej Opajdowski <bopajdowski@gmail.com>\n"
+"PO-Revision-Date: 2008-12-28 20:51+0100\n"
+"Last-Translator: Tomasz Kulig <tomasz.kulig _a_ kuling.pl>\n"
 "Language-Team: Polski <bopajdowski@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -18,7 +22,11 @@ msgstr ""
 
 #: tagadelic.module:10
 msgid "Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies."
-msgstr "Tagadelic oferuje dynamiczne link URL.<br/>Odwiedź !site/tagadelic/list/2,1,5 aby wyświetlić słowniki 2,1 i 5 w postaci listy grup.<br/>Odwiedź !site/chunk/2,1,5 aby otrzymać \"chmurę tagów\" złożoną z terminów w słownikach 1,2 i 5.<br/> Uwaga, działa tylko do 5 słowników."
+msgstr ""
+"Tagadelic oferuje dynamiczne link URL.\n"
+"Odwiedź !site/tagadelic/list/2,1,5 aby wyświetlić słowniki 2,1 i 5 w postaci listy grup.\n"
+"Odwiedź !site/chunk/2,1,5 aby otrzymać \"chmurę tagów\" złożoną z terminów w słownikach 1,2 i 5.\n"
+"Uwaga, działa tylko do 5 słowników."
 
 #: tagadelic.module:26
 msgid "Tagadelic configuration"
@@ -61,12 +69,12 @@ msgid "Determines the sort order of the tags on the freetagging page."
 msgstr "Określa porządek sortowania tagów na stronach z dowolnym tagowaniem."
 
 #: tagadelic.module:87
-msgid "Amount of tags"
-msgstr "Liczba tagów"
+msgid "Amount of tags on the pages"
+msgstr "Liczba tagów na stronie"
 
 #: tagadelic.module:89
-msgid "The amount of tags that will show up in a cloud."
-msgstr "Liczba tagów które mają się pokazywać w \"chmurze\""
+msgid "The amount of tags that will show up in a cloud on the pages. Amount of tags in blocks must be configured in the block settings of the various cloud blocks."
+msgstr "Liczba tagów, które mają się pokazywać w \"chmurze\" na stronie. Liczba tagów w blokach musi być skonfigurowana w ustawieniach każdego bloku z osobna."
 
 #: tagadelic.module:94
 msgid "Number of levels"
@@ -74,41 +82,46 @@ msgstr "Liczba poziomów"
 
 #: tagadelic.module:96
 msgid "The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css"
-msgstr "Liczba poziomów pomiędzy najmniej i najbardziej popularnymi tagami. Różnym poziomą będą przypisane różne klasy z szablonu stylów tagadelic.css"
+msgstr "Liczba poziomów pomiędzy najmniej i najbardziej popularnymi tagami. Różnym poziomom będą przypisane różne klasy z szablonu stylów tagadelic.css"
 
-#: tagadelic.module:196
+#: tagadelic.module:197
 msgid "view all posts tagged with \"@tag\""
 msgstr "Wyświetlaj wszystkie wiadomości oznaczone \"@tag\""
 
-#: tagadelic.module:319;331;340
-msgid "tags in @voc"
-msgstr "tagi w @voc"
+#: tagadelic.module:338
+msgid "more tags"
+msgstr "więcej tagów"
 
-#: tagadelic.module:325
-msgid "tags for @title"
-msgstr "tagi dla @title"
+#: tagadelic.module:348;365
+msgid "Tags in @voc"
+msgstr "Tagi w @voc"
 
-#: tagadelic.module:333
-msgid "tags for the current post"
-msgstr "tagi dla bieżącej wpisu"
+#: tagadelic.module:358
+msgid "Tags for @title"
+msgstr "Tagi dla @title"
 
-#: tagadelic.module:339
-msgid "Block title"
-msgstr "Tytuł bloku"
+#: tagadelic.module:368
+msgid "Tags for the current post"
+msgstr "Tagi dla bieżącego wpisu"
 
-#: tagadelic.module:342
-msgid "The title of the block as shown to the user."
-msgstr "Tytuł bloku jaki ma być wyświetlony użytkownikowi."
-
-#: tagadelic.module:346
+#: tagadelic.module:377
 msgid "Tags to show"
 msgstr "Tagi do wyświetlenia"
 
-#: tagadelic.module:349
+#: tagadelic.module:380
 msgid "The number of tags to show in this block."
 msgstr "Liczba tagów do wyświetlenia przez ten blok."
 
-#: tagadelic.module:0
-msgid "tagadelic"
-msgstr "tagadelic"
+#: tagadelic.info:0
+msgid "Tagadelic"
+msgstr "Tagadelic"
+
+#: tagadelic.info:0
+msgid "Tagadelic makes weighted tag clouds from your taxonomy terms."
+msgstr "Tagadelic tworzy \"chmurę tagów\" z twoich terminów taksonomii."
+
+#: tagadelic.info:0
+msgid "Taxonomy"
+msgstr "Kategorie"
+
 

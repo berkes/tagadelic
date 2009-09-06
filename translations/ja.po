@@ -1,4 +1,5 @@
-# $Id: ja.po,v 1.2 2008/05/01 12:48:05 ber Exp $
+# $Id: ja.po,v 1.1.2.1 2008/04/28 22:16:22 goba Exp $
+
 # -----------------------------------------------------------------------------
 # Japanese translation of Drupal (tagadelic.module)
 #
