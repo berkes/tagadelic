@@ -211,7 +211,7 @@ function tagadelic_tags_lists($node) {
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   // build the options so we can cache multiple versions
   global $language;
-  $options = implode('_',$vids) .'_'. $language->language .'_'. $steps .'_'. $size;
+  $options = implode('_', $vids) .'_'. $language->language .'_'. $steps .'_'. $size;
   // Check if the cache exists
   $cache_name = 'tagadelic_cache_'. $options;
   $cache = cache_get($cache_name, 'cache_page');
