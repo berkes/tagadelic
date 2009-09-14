@@ -169,11 +169,14 @@ function tagadelic_page_list($vocs) {
  * @param $node. A node object.
  */
 function tagadelic_node_get_terms($node) {
+  static $vocs;
   if ($terms = taxonomy_node_get_terms($node, 'tid')) {
+    if (!isset($vocs[$node->type])) {
+      $vocs[$node->type] = taxonomy_get_vocabularies($node->type);
+    }
     $tags = array();
-    $vocs = taxonomy_get_vocabularies($node->type);
     foreach ($terms as $tid => $term) {
-      if ($vocs[$term->vid]->tags) {
+      if ($vocs[$node->type][$term->vid]->tags) {
         $tags[$term->vid][$tid] = $term;
       }
     }
