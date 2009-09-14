@@ -298,6 +298,10 @@ function _tagadelic_sort_by_title($a, $b) {
  * callback for usort, sort by weight
  */
 function _tagadelic_sort_by_weight($a, $b) {
+  if ($a->weight == $b->weight) {
+    // Ensure correct order when same weight
+    return $a->count > $b->count;
+  }
   return $a->weight > $b->weight;
 }
 
