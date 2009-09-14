@@ -6,7 +6,7 @@
  */
 function tagadelic_help($path, $arg) {
   switch ($path) {
-    case 'admin/help#tagadelic':
+   case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
@@ -157,6 +157,9 @@ function tagadelic_page_list($vocs) {
     return drupal_not_found();
   }
 
+  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
+  drupal_add_css($stylesheet, 'all');
+
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   return $output;
 }
@@ -166,11 +169,14 @@ function tagadelic_page_list($vocs) {
  * @param $node. A node object.
  */
 function tagadelic_node_get_terms($node) {
+  static $vocs;
   if ($terms = taxonomy_node_get_terms($node, 'tid')) {
+    if (!isset($vocs[$node->type])) {
+      $vocs[$node->type] = taxonomy_get_vocabularies($node->type);
+    }
     $tags = array();
-    $vocs = taxonomy_get_vocabularies($node->type);
     foreach ($terms as $tid => $term) {
-      if ($vocs[$term->vid]->tags) {
+      if ($vocs[$node->type][$term->vid]->tags) {
         $tags[$term->vid][$tid] = $term;
       }
     }
@@ -207,11 +213,11 @@ function tagadelic_tags_lists($node) {
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   // build the options so we can cache multiple versions
-  $options = implode($vids) .'_'. $steps .'_'. $size;
-  
+  global $language;
+  $options = implode('_', $vids) .'_'. $language->language .'_'. $steps .'_'. $size;
   // Check if the cache exists
   $cache_name = 'tagadelic_cache_'. $options;
-  $cache = cache_get($cache_name);
+  $cache = cache_get($cache_name, 'cache_page');
   
   // make sure cache has data
   if (isset($cache->data)) {
@@ -222,11 +228,11 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     if (!is_array($vids) || count($vids) == 0) {
       return array();
     }
-    $result = db_query_range('SELECT COUNT(*) AS count, d.tid, d.name, d.vid FROM {term_data} d INNER JOIN {term_node} n ON d.tid = n.tid WHERE d.vid IN ('. substr(str_repeat('%d,', count($vids)), 0, -1) .') GROUP BY d.tid, d.name, d.vid ORDER BY count DESC', $vids, 0, $size);
+    $result = db_query_range(db_rewrite_sql('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.vid = n.vid WHERE td.vid IN ('. db_placeholders($vids) .') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC'), $vids, 0, $size);
     
     $tags = tagadelic_build_weighted_tags($result, $steps);
 
-    cache_set($cache_name, $tags, 'cache', CACHE_TEMPORARY);
+    cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
   
   return $tags;
@@ -295,6 +301,10 @@ function _tagadelic_sort_by_title($a, $b) {
  * callback for usort, sort by weight
  */
 function _tagadelic_sort_by_weight($a, $b) {
+  if ($a->weight == $b->weight) {
+    // Ensure correct order when same weight
+    return $a->count > $b->count;
+  }
   return $a->weight > $b->weight;
 }
 
@@ -305,7 +315,14 @@ function _tagadelic_sort_by_weight($a, $b) {
 function theme_tagadelic_weighted($terms) {
   $output = '';
   foreach ($terms as $term) {
-    $output .= l($term->name, taxonomy_term_path($term), array('attributes' => array('class' => "tagadelic level$term->weight", 'rel' => 'tag'))) ." \n";
+    $output .= l($term->name, taxonomy_term_path($term), array(
+      'attributes' => array(
+        'class' => "tagadelic level$term->weight",
+        'rel' => 'tag',
+        'title'  => $term->description,
+        )
+      )
+    ) ." \n";
   }
   return $output;
 }
@@ -394,3 +411,4 @@ function tagadelic_theme() {
     'tagadelic_weighted' => array('arguments' => array('terms' => NULL))
   );
 }
+
