@@ -315,9 +315,10 @@ function _tagadelic_sort_by_weight($a, $b) {
 function theme_tagadelic_weighted($terms) {
   $output = '';
   foreach ($terms as $term) {
+    $weight = $term->weight;
     $output .= l($term->name, taxonomy_term_path($term), array(
       'attributes' => array(
-        'class' => "tagadelic level$term->weight",
+        'class' => "tagadelic level$weight",
         'rel' => 'tag',
         'title'  => $term->description,
         )
