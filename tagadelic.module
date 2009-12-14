@@ -345,15 +345,6 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
 }
 
 /**
- * theme function to provide a more link
- * @param $vid - vocab id for which more link is wanted
- * @ingroup themable
- */
-function theme_tagadelic_more($vid) {
-  return "<div class='more-link'>". l(t('more tags'), "tagadelic/chunk/$vid") ."</div>";
-}
-
-/**
  * implementation of hook_block
  */
 function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
@@ -365,7 +356,7 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
       $tags = tagadelic_sort_tags($tags);
       $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
       if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
-        $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
+        $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$voc->vid}"));
       }
 
     }
@@ -408,7 +399,6 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
 function tagadelic_theme() {
   return array(
     'tagadelic_list_box' => array('arguments' => array('vocabulary' => NULL, 'tags' => NULL)),
-    'tagadelic_more' => array('arguments' => array('vid' => NULL)),
     'tagadelic_weighted' => array('arguments' => array('terms' => NULL))
   );
 }

@@ -1,6 +1,16 @@
         $Id$
+        
+        TODO: marks a TODO for you. 
 
+        -------------------------------------------------------------------------------
+        [tagadelic] 7.x-1.0, 14-12-2009
+        -------------------------------------------------------------------------------
 
+        Removed theme_tagadelic_more and replaced that with the general theme_more_link.
+        Refer to the documentation on theme_more_link for its usage: http://api.drupal.org/api/function/theme_more_link/7
+        TODO: People with a theme that overrides theme_tagadelic_more, should remove
+              that part from their theme and replace it with theme_more_link. 
+        
         -------------------------------------------------------------------------------
         [tagadelic] 7.x-1.0, 14-12-2009
         -------------------------------------------------------------------------------
