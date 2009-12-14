@@ -230,7 +230,11 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     }
     $result = db_query_range(db_rewrite_sql('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.vid = n.vid WHERE td.vid IN ('. db_placeholders($vids) .') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC'), $vids, 0, $size);
     
-    $tags = tagadelic_build_weighted_tags($result, $steps);
+    while ($tag = db_fetch_object($result)) {
+      $tags[$tag->tid] = $tag;
+    }
+    
+    $tags = tagadelic_build_weighted_tags($tags, $steps);
 
     cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
@@ -241,21 +245,21 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
 /**
  * API that returns an array with weighted tags
  * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
- * @param $result. a query result, any query result that contains an <em>object</em> with the following attributes: $tag->count, $tag->tid, $tag->name and $tag->vid. Refer to tagadelic_get_weighted_tags() for an example."
+ * @param $tags. a list of <em>objects</em> with the following attributes: $tag->count, $tag->tid, $tag->name and $tag->vid. Each Tag will be calculated and turned into a tag. Refer to tagadelic_get_weighted_tags() for an example."
  * @param $steps. The amount of tag-sizes you will be using. If you give "12" you sill get six different "weights". Defaults to 6 and is optional.
  * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
  */
-function tagadelic_build_weighted_tags($result, $steps = 6) {
+function tagadelic_build_weighted_tags($tags, $steps = 6) {
   // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka UnConeD.
   $tags = array();
   $min = 1e9;
   $max = -1e9;
-  while ($tag = db_fetch_object($result)) {
+  foreach ($tags as $id => $tag) {
     $tag->number_of_posts = $tag->count;
     $tag->count = log($tag->count);
     $min = min($min, $tag->count);
     $max = max($max, $tag->count);
-    $tags[$tag->tid] = $tag;
+    $tags[$id] = $tag;
   }
   // Note: we need to ensure the range is slightly too large to make sure even
   // the largest element is rounded down.

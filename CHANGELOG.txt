@@ -10,6 +10,13 @@
         Refer to the documentation on theme_more_link for its usage: http://api.drupal.org/api/function/theme_more_link/7
         TODO: People with a theme that overrides theme_tagadelic_more, should remove
               that part from their theme and replace it with theme_more_link. 
+              
+        tagadelic_build_weighted_tags() first argument now is an array of tags. 
+        And no longer a Query result. Reason for change is better use of the new 
+        database layer in Drupal.
+        TODO: People who use the function tagadelic_build_weighted_tags() should change
+              their code so that it has a list of tags (array) and pass that trough the
+              tagadelic_build_weighted_tags() builder. 
         
         -------------------------------------------------------------------------------
         [tagadelic] 7.x-1.0, 14-12-2009
