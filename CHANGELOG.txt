@@ -16,7 +16,21 @@
         database layer in Drupal.
         TODO: People who use the function tagadelic_build_weighted_tags() should change
               their code so that it has a list of tags (array) and pass that trough the
-              tagadelic_build_weighted_tags() builder. 
+              tagadelic_build_weighted_tags() builder.
+              
+        removed $node->tags on node_load.
+        This addition was used by a block, but caused trouble and (quite some) overhead.
+        TODO: Themes, modules and content that relied on $node->tags should rewrite 
+              their code to use $node->taxonomy from (core) taxonomy module!
+              
+        removed "tags for current node" block. 
+        This block was not a cloud and therefore does not belong to the functions of this
+        module. It should be implemented with either views, or an extremely simple module.
+        TODO: if you relied on the "tags in current node" block, re-implement that with a 
+              simple module (suggestions and/or links and/or references to such a module 
+              are welcome). Or re-implement it with a view (links to a manual and/or howtos
+              are welcome). 
+        
         
         -------------------------------------------------------------------------------
         [tagadelic] 7.x-1.0, 14-12-2009

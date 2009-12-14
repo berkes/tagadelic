@@ -60,16 +60,6 @@ function tagadelic_menu() {
 }
 
 /**
- * Implementation of hook_nodeapi
- * You will have a nice variable in $node available for processing tags!
- */
-function tagadelic_nodeapi(&$node, $op, $teaser, $page) {
-  if ($op == 'load') {
-     $node->tags = tagadelic_node_get_terms($node);
-  }
-}
-
-/**
  * Menu callback. Admin setting page for tagadelic.
  */
 function tagadelic_settings() {
@@ -181,27 +171,6 @@ function tagadelic_node_get_terms($node) {
       }
     }
     return $tags;
-  }
-}
-
-
-/**
- * API function that returns the tags of a node in fancy titled lists
- * @param $node. A node object.
- */
-function tagadelic_tags_lists($node) {
-  if (is_array($node->tags)) {
-    $output = '';
-    foreach ($node->tags as $vid => $terms) {
-      $vocabulary = taxonomy_vocabulary_load($vid);
-      $title = l($vocabulary->name, "tagadelic/chunk/$vid");
-      $items = array();
-      foreach ($terms as $term) {
-        $items[] = l($term->name, taxonomy_term_path($term), array('attributes' => array('title' => t('view all posts tagged with "@tag"', array('@tag' => $term->name)))));
-      }
-      $output .= theme('item_list', $items, $title);
-    }
-    return $output;
   }
 }
 
@@ -364,10 +333,6 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
       }
 
     }
-    elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
-      $blocks['subject'] = t('Tags for @title', array('@title' => $node->title));
-      $blocks['content'] = tagadelic_tags_lists($node);
-    }
     return $blocks;
   }
   elseif ($op == 'list') {
@@ -375,8 +340,6 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
       $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
       $blocks[$voc->vid]['cache'] = BLOCK_CACHE_GLOBAL;
     }
-    $blocks[0]['info'] = t('Tags for the current post');
-    $blocks[0]['cache'] = BLOCK_CACHE_PER_PAGE;
     return $blocks;
   }
   elseif ($op == 'configure') {
