@@ -24,7 +24,7 @@ function tagadelic_init() {
 function tagadelic_menu() {
   $items = array();
 
-  $items['admin/settings/tagadelic'] = array(
+  $items['admin/config/content/tagadelic'] = array(
     'title' => 'Tagadelic configuration',
     'description' => 'Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds.',
     'page callback' => 'drupal_get_form',
