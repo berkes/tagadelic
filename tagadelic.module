@@ -133,7 +133,8 @@ function tagadelic_page_list($vocs) {
   if ($vocs == NULL) {
     return drupal_not_found();
   }
-
+  
+  $output = '';
   foreach ($vocs as $vid) {
     $vocabulary = taxonomy_vocabulary_load($vid);
 
@@ -146,9 +147,6 @@ function tagadelic_page_list($vocs) {
   if (!$output) {
     return drupal_not_found();
   }
-
-  $stylesheet = drupal_get_path('module', 'tagadelic') .'/tagadelic.css';
-  drupal_add_css($stylesheet, 'all');
 
   $output = "<div class=\"wrapper tagadelic\">$output</div>";
   return $output;
@@ -287,8 +285,10 @@ function _tagadelic_sort_by_weight($a, $b) {
  * theme function that renders the HTML for the tags
  * @ingroup themable
  */
-function theme_tagadelic_weighted($terms) {
+function theme_tagadelic_weighted(array $vars) {
+  $terms = $vars['terms'];
   $output = '';
+  
   foreach ($terms as $term) {
     $weight = $term->weight;
     $output .= l($term->name, drupal_get_path_alias('taxonomy/term/'.$term->tid), array(
@@ -309,8 +309,12 @@ function theme_tagadelic_weighted($terms) {
  * @param $tags, an array with weigthed tag objects
  * @ingroup themable
  */
-function theme_tagadelic_list_box($vocabulary, $tags) {
+function theme_tagadelic_list_box(array $vars) {
+  $vocabulary = $vars['vocabulary'];
+  $tags = $vars['tags'];
+  
   $content = theme('tagadelic_weighted', array('terms' => $tags));
+  $output = '';
   if ($vocabulary->description) {
     $content = '<h2></h2><div>' . $vocabulary->description . '</div>' . $content;
   }
@@ -341,7 +345,7 @@ function tagadelic_block_view($delta = '') {
     $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name)));
     $tags = tagadelic_get_weighted_tags(array($delta), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
     $tags = tagadelic_sort_tags($tags);
-    $blocks['content'] = theme('tagadelic_weighted', $tags); //return a chunk of 12 tags
+    $blocks['content'] = theme('tagadelic_weighted', array('terms' => $tags)); //return a chunk of 12 tags
     if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
       $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$voc->vid}"));
     }
@@ -378,7 +382,7 @@ function tagadelic_block_save($delta = '', $edit = array()) {
 function tagadelic_theme() {
   return array(
     'tagadelic_list_box' => array('arguments' => array('vocabulary' => NULL, 'tags' => NULL)),
-    'tagadelic_weighted' => array('arguments' => array('terms' => NULL))
+    'tagadelic_weighted' => array('arguments' => array('terms' => array()))
   );
 }
 
