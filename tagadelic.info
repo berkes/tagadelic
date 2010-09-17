@@ -7,3 +7,5 @@ package = "Taxonomy"
 
 files[] = tagadelic.module
 files[] = tagadelic.install
+
+configure = admin/config/content/tagadelic
