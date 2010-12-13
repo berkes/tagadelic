@@ -2,24 +2,24 @@
 // $Id: tagadelic.module,v 1.40.2.6 2009/05/13 16:56:12 ber Exp $
 
 /**
- * Implementation of hook_help
+ * Implements hook_help().
  */
 function tagadelic_help($path, $arg) {
   switch ($path) {
-   case 'admin/help#tagadelic':
+    case 'admin/help#tagadelic':
       return t('Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies.');
   }
 }
 
 /**
- * Implementation of hook_init
+ * Implements hook_init().
  */
 function tagadelic_init() {
   drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
 }
 
 /**
- * Implementation of hook_menu
+ * Implements hook_menu().
  */
 function tagadelic_menu() {
   $items = array();
@@ -89,7 +89,7 @@ function tagadelic_settings() {
 }
 
 /**
- * menu wildcard callback
+ * Menu wildcard loader.
  */
 function tagadelic_vocs_load($vocs) {
   if (is_numeric($vocs)) {
@@ -154,7 +154,12 @@ function tagadelic_page_list($vocs) {
 
 /**
  * API that returns a multidimensional array with tags given a node
- * @param $node. A node object.
+ *
+ * @param $node
+ *   A node object.
+ * @return
+ *   Multi-dimensional array keyed by vocabulary id then term id with term
+ *   objects as values.
  */
 function tagadelic_node_get_terms($node) {
   static $vocs;
@@ -173,10 +178,19 @@ function tagadelic_node_get_terms($node) {
 }
 
 /**
- * Function that gets the information from the database, passes it along to the weight builder and returns these weighted tags. Note that the tags are unordered at this stage, hence they need orndering either by calling our api or by your own ordering data.
- * @param $vids. Vocabulary IDs representing the vocabularies where you want the tags from.
- * @param $steps. The amount of tag-sizes you will be using. If you give "12" you sill get six different "weights". Defaults to 6 and is optional.
- * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
+ * Function that gets the information from the database, passes it along to the
+ * weight builder and returns these weighted tags. Note that the tags are
+ * unordered at this stage, hence they need orndering either by calling our
+ * api or by your own ordering data.
+ *
+ * @param $vids
+ *   Vocabulary IDs representing the vocabularies where you want the tags from.
+ * @param $steps
+ *   The amount of tag-sizes you will be using. If you give "12" you sill get
+ *   six different "weights". Defaults to 6 and is optional.
+ * @return
+ *   An <em>unordered</em> array with tags-objects, containing the attribute
+ *   $tag->weight;
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   // build the options so we can cache multiple versions
@@ -213,10 +227,20 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
 
 /**
  * API that returns an array with weighted tags
- * This is the hard part. People with better ideas are very very welcome to send these to ber@webschuur.com. Distribution is one thing that needs attention.
- * @param $tags. a list of <em>objects</em> with the following attributes: $tag->count, $tag->tid, $tag->name and $tag->vid. Each Tag will be calculated and turned into a tag. Refer to tagadelic_get_weighted_tags() for an example."
- * @param $steps. The amount of tag-sizes you will be using. If you give "12" you sill get six different "weights". Defaults to 6 and is optional.
- * @return An <em>unordered</em> array with tags-objects, containing the attribute $tag->weight;
+ * This is the hard part. People with better ideas are very very welcome to
+ * send these to ber@webschuur.com. Distribution is one thing that needs
+ * attention.
+ *
+ * @param $tags
+ *   Alist of <em>objects</em> with the following attributes: $tag->count,
+ *   $tag->tid, $tag->name and $tag->vid. Each Tag will be calculated and
+ *   turned into a tag. Refer to tagadelic_get_weighted_tags() for an example.
+ * @param $steps
+ *   The amount of tag-sizes you will be using. If you give "12" you sill get
+ *   six different "weights". Defaults to 6 and is optional.
+ * @return
+ *   An <em>unordered</em> array with tags-objects, containing the attribute
+ *   $tag->weight;
  */
 function tagadelic_build_weighted_tags($tags, $steps = 6) {
   // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka UnConeD.
@@ -242,8 +266,9 @@ function tagadelic_build_weighted_tags($tags, $steps = 6) {
 
 /**
  * API funtion to order a set of tags.
+ *
  * @todo If you feel like making this more modular, please send me patches.
- **/
+ */
 function tagadelic_sort_tags($tags) {
   list($sort, $order) = explode(',', variable_get('tagadelic_sort_order', 'title,asc'));
   switch ($sort) {
@@ -305,8 +330,11 @@ function theme_tagadelic_weighted(array $vars) {
 
 /**
  * theme function that renders an entry in tagadelic/list/ views
- * @param $vocabulary, a full vocabulary object
- * @param $tags, an array with weigthed tag objects
+ *
+ * @param $vocabulary
+ *   A full vocabulary object.
+ * @param $tags
+ *   An array with weigthed tag objects.
  * @ingroup themable
  */
 function theme_tagadelic_list_box(array $vars) {
@@ -324,7 +352,7 @@ function theme_tagadelic_list_box(array $vars) {
 }
 
 /**
- * implementation of hook_block_info
+ * Implements hook_block_info().
  */
 function tagadelic_block_info() {
   $blocks = array();
@@ -337,7 +365,7 @@ function tagadelic_block_info() {
 }
 
 /**
- * implementation of hook_block_view
+ * Implements hook_block_view().
  */
 function tagadelic_block_view($delta = '') {
   $block = array();
@@ -354,7 +382,7 @@ function tagadelic_block_view($delta = '') {
 }
 
 /**
- * implementation of hook_block_configure
+ * Implements hook_block_configure().
  */
 function tagadelic_block_configure($delta = '') {
   $voc = taxonomy_vocabulary_load($delta);
@@ -370,14 +398,14 @@ function tagadelic_block_configure($delta = '') {
 }
 
 /**
- * implementation of hook_block_save
+ * Implements hook_block_save().
  */
 function tagadelic_block_save($delta = '', $edit = array()) {
   variable_set('tagadelic_block_tags_' . $delta, $edit['tags']);
 }
 
 /**
- * Implementation of hook_theme
+ * Implements hook_theme().
  */
 function tagadelic_theme() {
   return array(
