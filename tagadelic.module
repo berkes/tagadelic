@@ -36,7 +36,7 @@ function tagadelic_menu() {
     'title' => 'Tags',
     'page callback' => 'tagadelic_page_chunk',
     'page arguments' => array(NULL),
-    'access callback' => 'user_access',      
+    'access callback' => 'user_access',
     'access arguments' => array('access content'),
     'type' => MENU_SUGGESTED_ITEM,
   );
@@ -133,7 +133,7 @@ function tagadelic_page_list($vocs) {
   if ($vocs == NULL) {
     return drupal_not_found();
   }
-  
+
   $output = '';
   foreach ($vocs as $vid) {
     $vocabulary = taxonomy_vocabulary_load($vid);
@@ -185,29 +185,29 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   // Check if the cache exists
   $cache_name = 'tagadelic_cache_'. $options;
   $cache = cache_get($cache_name, 'cache_page');
-  
+
   $tags = array();
   // make sure cache has data
   if (isset($cache->data)) {
     $tags = $cache->data;
   }
   else {
-  
+
     if (!is_array($vids) || count($vids) == 0) {
       return array();
     }
-    
+
     $result = db_query_range('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid WHERE td.vid IN ('. implode(',', array_fill(0, count($vids), '?')) .') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC', 0, $size, $vids);
-    
+
     foreach($result as $tag) {
       $tags[$tag->tid] = $tag;
     }
-    
+
     $tags = tagadelic_build_weighted_tags($tags, $steps);
 
     cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
-  
+
   return $tags;
 }
 
@@ -233,7 +233,7 @@ function tagadelic_build_weighted_tags($tags, $steps = 6) {
   // Note: we need to ensure the range is slightly too large to make sure even
   // the largest element is rounded down.
   $range = max(.01, $max - $min) * 1.0001;
-  
+
   foreach ($tags_tmp as $key => $value) {
     $tags[$key]->weight = 1 + floor($steps * ($value->count - $min) / $range);
   }
@@ -288,7 +288,7 @@ function _tagadelic_sort_by_weight($a, $b) {
 function theme_tagadelic_weighted(array $vars) {
   $terms = $vars['terms'];
   $output = '';
-  
+
   foreach ($terms as $term) {
     $weight = $term->weight;
     $output .= l($term->name, drupal_get_path_alias('taxonomy/term/'.$term->tid), array(
@@ -312,7 +312,7 @@ function theme_tagadelic_weighted(array $vars) {
 function theme_tagadelic_list_box(array $vars) {
   $vocabulary = $vars['vocabulary'];
   $tags = $vars['tags'];
-  
+
   $content = theme('tagadelic_weighted', array('terms' => $tags));
   $output = '';
   if ($vocabulary->description) {
@@ -385,4 +385,3 @@ function tagadelic_theme() {
     'tagadelic_weighted' => array('arguments' => array('terms' => array()))
   );
 }
-
