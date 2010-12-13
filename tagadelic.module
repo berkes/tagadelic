@@ -15,7 +15,7 @@ function tagadelic_help($path, $arg) {
  * Implementation of hook_init
  */
 function tagadelic_init() {
-  drupal_add_css(drupal_get_path('module', 'tagadelic') .'/tagadelic.css');
+  drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
 }
 
 /**
@@ -181,9 +181,9 @@ function tagadelic_node_get_terms($node) {
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
   // build the options so we can cache multiple versions
   global $language;
-  $options = implode('_', $vids) .'_'. $language->language .'_'. $steps .'_'. $size;
+  $options = implode('_', $vids) . '_' . $language->language . '_' . $steps . '_' . $size;
   // Check if the cache exists
-  $cache_name = 'tagadelic_cache_'. $options;
+  $cache_name = 'tagadelic_cache_' . $options;
   $cache = cache_get($cache_name, 'cache_page');
 
   $tags = array();
@@ -197,9 +197,9 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
       return array();
     }
 
-    $result = db_query_range('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid WHERE td.vid IN ('. implode(',', array_fill(0, count($vids), '?')) .') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC', 0, $size, $vids);
+    $result = db_query_range('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid WHERE td.vid IN (' . implode(',', array_fill(0, count($vids), '?')) . ') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC', 0, $size, $vids);
 
-    foreach($result as $tag) {
+    foreach ($result as $tag) {
       $tags[$tag->tid] = $tag;
     }
 
@@ -291,14 +291,14 @@ function theme_tagadelic_weighted(array $vars) {
 
   foreach ($terms as $term) {
     $weight = $term->weight;
-    $output .= l($term->name, drupal_get_path_alias('taxonomy/term/'.$term->tid), array(
+    $output .= l($term->name, drupal_get_path_alias('taxonomy/term/' . $term->tid), array(
       'attributes' => array(
         'class' => "tagadelic level$weight",
         'rel' => 'tag',
         'title'  => $term->description,
         )
       )
-    ) ." \n";
+    ) . " \n";
   }
   return $output;
 }
@@ -330,7 +330,7 @@ function tagadelic_block_info() {
   $blocks = array();
   foreach (taxonomy_get_vocabularies() as $voc) {
     $blocks[$voc->vid] = array();
-    $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
+    $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_' . $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
     $blocks[$voc->vid]['cache'] = DRUPAL_CACHE_GLOBAL;
   }
   return $blocks;
@@ -342,11 +342,11 @@ function tagadelic_block_info() {
 function tagadelic_block_view($delta = '') {
   $block = array();
   if ($voc = taxonomy_vocabulary_load($delta)) {
-    $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name)));
-    $tags = tagadelic_get_weighted_tags(array($delta), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
+    $blocks['subject'] = variable_get('tagadelic_block_title_' . $delta, t('Tags in @voc', array('@voc' => $voc->name)));
+    $tags = tagadelic_get_weighted_tags(array($delta), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_' . $delta, 12));
     $tags = tagadelic_sort_tags($tags);
     $blocks['content'] = theme('tagadelic_weighted', array('terms' => $tags)); //return a chunk of 12 tags
-    if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
+    if (count($tags) >= variable_get('tagadelic_block_tags_' . $delta, 12)) {
       $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$voc->vid}"));
     }
   }
@@ -362,7 +362,7 @@ function tagadelic_block_configure($delta = '') {
   $form['tags'] = array(
     '#type' => 'textfield',
     '#title' => t('Tags to show'),
-    '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
+    '#default_value' => variable_get('tagadelic_block_tags_' . $delta, 12),
     '#maxlength' => 3,
     '#description' => t('The number of tags to show in this block.'),
   );
@@ -373,7 +373,7 @@ function tagadelic_block_configure($delta = '') {
  * implementation of hook_block_save
  */
 function tagadelic_block_save($delta = '', $edit = array()) {
-  variable_set('tagadelic_block_tags_'. $delta, $edit['tags']);
+  variable_set('tagadelic_block_tags_' . $delta, $edit['tags']);
 }
 
 /**
