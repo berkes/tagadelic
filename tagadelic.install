@@ -16,6 +16,6 @@ function tagadelic_update_6100() {
   // cid's depend on the taxonomies involved but we can just remove anything
   // with a cid prefixed tagadelic_cache_
   $ret[] = update_sql("DELETE FROM {cache} WHERE cid LIKE 'tagadelic_cache_%'");
- 
+
   return $ret;
 }
