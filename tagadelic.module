@@ -318,7 +318,7 @@ function theme_tagadelic_weighted(array $vars) {
     $weight = $term->weight;
     $output .= l($term->name, drupal_get_path_alias('taxonomy/term/' . $term->tid), array(
       'attributes' => array(
-        'class' => "tagadelic level$weight",
+        'class' => array("tagadelic", "level$weight"),
         'rel' => 'tag',
         'title'  => $term->description,
         )
