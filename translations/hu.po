@@ -1,4 +1,3 @@
-# $Id$
 #
 # Hungarian translation of Drupal (tagadelic.module)
 # Copyright Drupal.hu Fordítói Csapat <forditas [at] drupal.hu>

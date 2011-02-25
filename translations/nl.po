@@ -1,4 +1,3 @@
-# $Id$
 #
 # DUTCH translation of Drupal (tagadelic.module)
 # Generated from file: tagadelic.module,v 1.36 2006/11/16 17:25:21 ber
