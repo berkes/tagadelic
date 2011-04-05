@@ -393,7 +393,7 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
   }
   elseif ($op == 'list') {
     foreach (taxonomy_get_vocabularies() as $voc) {
-      $blocks[$voc->vid]['info'] = variable_get('tagadelic_block_title_'. $voc->vid, t('Tags in @voc', array('@voc' => $voc->name)));
+      $blocks[$voc->vid]['info'] = t('Tags in @voc', array('@voc' => $voc->name));
       $blocks[$voc->vid]['cache'] = BLOCK_CACHE_GLOBAL;
     }
     $blocks[0]['info'] = t('Tags for the current post');
