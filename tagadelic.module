@@ -344,11 +344,13 @@ function theme_tagadelic_list_box($vocabulary, $tags) {
 
 /**
  * theme function to provide a more link
- * @param $vid - vocab id for which more link is wanted
+ * @param $vid - vocab id for which more link is wanted. Optional, 
+ *        if left empty, no vocabulary is expected, and the more-link 
+ *        will point to the main tagadelic page at /tagadelic instead.
  * @ingroup themable
  */
-function theme_tagadelic_more($vid) {
-  return "<div class='more-link'>". l(t('more tags'), "tagadelic/chunk/$vid") ."</div>";
+function theme_tagadelic_more($vid = NULL) {
+  return "<div class='more-link'>". l(t('more tags'), $vid ? "tagadelic/chunk/$vid" : "tagadelic") ."</div>";
 }
 
 /**
@@ -361,16 +363,28 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
       $blocks['subject'] = variable_get('tagadelic_block_title_'. $delta, t('Tags in @voc', array('@voc' => $voc->name)));
       $tags = tagadelic_get_weighted_tags(array($voc->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
       $tags = tagadelic_sort_tags($tags);
-      $blocks['content'] = theme('tagadelic_weighted', $tags);//return a chunk of 12 tags
+      // Return a chunk of 12 tags
+      $blocks['content'] = theme('tagadelic_weighted', $tags);
       if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
-        $blocks['content'] .= theme('tagadelic_more', $voc->vid);//add more link
+        // Add more link
+        $blocks['content'] .= theme('tagadelic_more', $voc->vid);
       }
-
+    }
+    elseif ($delta == 'all') {
+      $blocks['subject'] = t('Tags');
+      $tags = tagadelic_get_weighted_tags(array_keys(taxonomy_get_vocabularies()), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_'. $delta, 12));
+      $tags = tagadelic_sort_tags($tags);
+      $blocks['content'] = theme('tagadelic_weighted', $tags);
+      if (count($tags) >= variable_get('tagadelic_block_tags_'. $delta, 12)) {
+        // Add more link
+        $blocks['content'] .= theme('tagadelic_more');
+      }
     }
     elseif (arg(0) == 'node' && is_numeric(arg(1)) && $node = node_load(arg(1))) {
       $blocks['subject'] = t('Tags for @title', array('@title' => $node->title));
       $blocks['content'] = tagadelic_tags_lists($node);
     }
+
     return $blocks;
   }
   elseif ($op == 'list') {
@@ -380,6 +394,9 @@ function tagadelic_block($op = 'list', $delta = 0, $edit = array()) {
     }
     $blocks[0]['info'] = t('Tags for the current post');
     $blocks[0]['cache'] = BLOCK_CACHE_PER_PAGE;
+    $blocks['all']['info'] = t('Tags for all vocabularies');
+    $blocks['all']['cache'] = BLOCK_CACHE_GLOBAL;
+    
     return $blocks;
   }
   elseif ($op == 'configure') {
