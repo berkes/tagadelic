@@ -1,6 +1,4 @@
 <?php
-// $Id: tagadelic.install,v 1.1.2.2 2008/12/31 11:43:29 ber Exp $
-
 /**
  * @file
  * Installation/updates for tagadelic.
