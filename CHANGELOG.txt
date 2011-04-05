@@ -1,4 +1,4 @@
-
+2011-04-05: Filter out unpublished posts in tag-fetching query.
 2011-04-05: Blog-admin shows default titles, not the configured ones.
 2011-04-05: Introduced a new block that shows tags from all volcabularies. 
             See http://drupal.org/node/297714 for the issue and discussion.
