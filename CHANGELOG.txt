@@ -1,0 +1,4 @@
+2011-04-05: Introduced a new block that shows tags from all volcabularies. 
+            See http://drupal.org/node/297714 for the issue and discussion.
+
+2011-04-05: Introduce Chhangelog (this)
