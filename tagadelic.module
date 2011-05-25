@@ -40,7 +40,8 @@ function tagadelic_menu() {
     'type' => MENU_SUGGESTED_ITEM,
   );
   $items['tagadelic/list/%tagadelic_vocs'] = array(
-    'title' => 'Tags',
+    'title callback' => 'tagadelic_page_title_callback',
+    'title arguments' => array(2),    
     'page callback' => 'tagadelic_page_list',
     'page arguments' => array(2),
     'access callback' => 'user_access',
@@ -48,7 +49,8 @@ function tagadelic_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['tagadelic/chunk/%tagadelic_vocs'] = array(
-    'title' => 'Tags',
+    'title callback' => 'tagadelic_page_title_callback',
+    'title arguments' => array(2),
     'page callback' => 'tagadelic_page_chunk',
     'page arguments' => array(2),
     'access callback' => 'user_access',
@@ -109,6 +111,36 @@ function tagadelic_vocs_load($vocs) {
   }
   return $vocs;
 }
+
+/**
+* menu callback to render the tagadelic title
+* @param $vocs. an array of taxonomy vocabulary IDs
+*/
+function tagadelic_page_title_callback($vocs) {
+  $title = '';
+
+  if (empty($vocs)) {
+    $title = t('Tags');
+  }
+  else {
+    $title = t('Tags in @vocabularies', array('@vocabularies' => theme('tagadelic_list_vocs', $vocs)));
+  }
+
+  return $title;
+}
+
+/**
+ * theme function that creates a comma separted list of vocubulary terms
+ * @params $vocs. an array of taxonomy vocabulary ids
+ * @ingroup themable
+ */
+function theme_tagadelic_list_vocs($vocs) {
+  foreach ($vocs as $vid) {
+    $vocabulary = taxonomy_vocabulary_load($vid);
+    $voc_names[] = $vocabulary->name;
+  }
+  return join(', ', $voc_names);
+} 
 
 /**
  * menu callback renders a tagadelic page
@@ -428,6 +460,7 @@ function tagadelic_theme() {
   return array(
     'tagadelic_list_box' => array('arguments' => array('vocabulary' => NULL, 'tags' => NULL)),
     'tagadelic_more' => array('arguments' => array('vid' => NULL)),
-    'tagadelic_weighted' => array('arguments' => array('terms' => NULL))
+    'tagadelic_weighted' => array('arguments' => array('terms' => NULL)),
+    'tagadelic_list_vocs' => array('arguments' => array('vid' => NULL))
   );
 }
