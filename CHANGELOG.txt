@@ -1,0 +1,39 @@
+        $Id$
+        
+        TODO: marks a TODO for you. 
+
+        -------------------------------------------------------------------------------
+        [tagadelic] 7.x-1.0, 14-12-2009
+        -------------------------------------------------------------------------------
+
+        Removed theme_tagadelic_more and replaced that with the general theme_more_link.
+        Refer to the documentation on theme_more_link for its usage: http://api.drupal.org/api/function/theme_more_link/7
+        TODO: People with a theme that overrides theme_tagadelic_more, should remove
+              that part from their theme and replace it with theme_more_link. 
+              
+        tagadelic_build_weighted_tags() first argument now is an array of tags. 
+        And no longer a Query result. Reason for change is better use of the new 
+        database layer in Drupal.
+        TODO: People who use the function tagadelic_build_weighted_tags() should change
+              their code so that it has a list of tags (array) and pass that trough the
+              tagadelic_build_weighted_tags() builder.
+              
+        removed $node->tags on node_load.
+        This addition was used by a block, but caused trouble and (quite some) overhead.
+        TODO: Themes, modules and content that relied on $node->tags should rewrite 
+              their code to use $node->taxonomy from (core) taxonomy module!
+              
+        removed "tags for current node" block. 
+        This block was not a cloud and therefore does not belong to the functions of this
+        module. It should be implemented with either views, or an extremely simple module.
+        TODO: if you relied on the "tags in current node" block, re-implement that with a 
+              simple module (suggestions and/or links and/or references to such a module 
+              are welcome). Or re-implement it with a view (links to a manual and/or howtos
+              are welcome). 
+        
+        
+        -------------------------------------------------------------------------------
+        [tagadelic] 7.x-1.0, 14-12-2009
+        -------------------------------------------------------------------------------
+
+        Introducing CHANGELOG to trace upgrades to Drupal 7.

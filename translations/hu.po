@@ -1,0 +1,155 @@
+# Hungarian translation of tagadelic (6.x-1.2)
+# Copyright (c) 2009 by the Hungarian translation team
+# Generated from files:
+#  tagadelic.module,v 1.40.2.4 2008/12/31 11:35:44 ber
+#  tagadelic.info,v 1.2 2008/02/27 15:32:05 robloach
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tagadelic (6.x-1.2)\n"
+"POT-Creation-Date: 2009-05-30 22:33+0200\n"
+"PO-Revision-Date: 2009-05-29 14:45+0200\n"
+"Last-Translator: Balogh Zoltán\n"
+"Language-Team: Hungarian http://forditas.mindworks.hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: tagadelic.module:36,44,52
+msgid "Tags"
+msgstr "Jelölők"
+
+#: tagadelic.info:0
+msgid "Taxonomy"
+msgstr "Taxonómia"
+
+#: tagadelic.module:10
+msgid ""
+"Tagadelic offers dynamic urls. <br/>Visit "
+"example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 "
+"listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to "
+"get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note "
+"that we limit to five vocabularies."
+msgstr ""
+"A <em>Tagadelic</em> dinamikus webcímek használatát teszi "
+"lehetővé.<br />Az example.com/tagadelic/list/2,1,5 "
+"meglátogatásával a 2, 1 és 5 számú szótárak jelölőit "
+"jeleníti meg különálló csoportokban.<br />Az "
+"example.com/tagadelic/chunk/2,1,5 címen egy összevont címkefelhő "
+"jelenik meg a 2, 1 és 5 számú szótárakból.<br />Legfeljebb öt "
+"szótár listázható így egyszerre."
+
+#: tagadelic.module:76
+msgid "by weight, ascending"
+msgstr "súly szerint, növekvő"
+
+#: tagadelic.module:76
+msgid "by weight, descending"
+msgstr "súly szerint, csökkenő"
+
+#: tagadelic.module:76
+msgid "by title, ascending"
+msgstr "cím szerint, növekvő"
+
+#: tagadelic.module:76
+msgid "by title, descending"
+msgstr "cím szerint, csökkenő"
+
+#: tagadelic.module:76
+msgid "random"
+msgstr "véletlenszerű"
+
+#: tagadelic.module:79
+msgid "Tagadelic sort order"
+msgstr "<em>Tagadelic</em> sorrendezés"
+
+#: tagadelic.module:82
+msgid "Determines the sort order of the tags on the freetagging page."
+msgstr ""
+"A jelölők megjelenítési sorrendjét határozza meg a "
+"szabadcímkézésű oldalon."
+
+#: tagadelic.module:87
+msgid "Amount of tags on the pages"
+msgstr "Jelölők száma az oldalakon"
+
+#: tagadelic.module:89
+msgid ""
+"The amount of tags that will show up in a cloud on the pages. Amount "
+"of tags in blocks must be configured in the block settings of the "
+"various cloud blocks."
+msgstr ""
+"A címkefelhőben megjelenítendő jelölők mennyisége az oldalakon. "
+"A blokkok címkefelhőiben megjelenítendő jelölők mennyiségét a "
+"blokkok szerkesztésénél lehet beállítani blokkonként."
+
+#: tagadelic.module:94
+msgid "Number of levels"
+msgstr "Szintek száma"
+
+#: tagadelic.module:96
+msgid ""
+"The number of levels between the least popular tags and the most "
+"popular ones. Different levels will be assigned a different class to "
+"be themed in tagadelic.css"
+msgstr ""
+"A legnépszerűbb és legkevésbé népszerűbb címkék között "
+"kialakítandó szintek száma. Az eltérő szinteken lévő címkék "
+"más CSS stílust kapnak."
+
+#: tagadelic.module:197
+msgid "view all posts tagged with \"@tag\""
+msgstr "@tag címkével jelölt tartalmak megtekintése"
+
+#: tagadelic.module:338
+msgid "more tags"
+msgstr "további jelölők"
+
+#: tagadelic.module:348,365
+msgid "Tags in @voc"
+msgstr "@voc jelölői"
+
+#: tagadelic.module:358
+msgid "Tags for @title"
+msgstr "@title jelölői"
+
+#: tagadelic.module:368
+msgid "Tags for the current post"
+msgstr "Az aktuális tartalom jelölői"
+
+#: tagadelic.module:377
+msgid "Tags to show"
+msgstr "Megjelenítendő jelölők"
+
+#: tagadelic.module:380
+msgid "The number of tags to show in this block."
+msgstr "A blokkban megjelenítendő jelölők száma."
+
+#: tagadelic.module:28
+msgid "Tagadelic configuration"
+msgstr "Tagadelic beállítások"
+
+#: tagadelic.module:29
+msgid ""
+"Configure the tag clouds. Set the order, the number of tags, and the "
+"depth of the clouds."
+msgstr ""
+"A címkefelhők adatainak beállítása. (Sorrend, jelölők száma "
+"és a felhők mélysége.)"
+
+#: tagadelic.module:0
+msgid "tagadelic"
+msgstr "tagadelic"
+
+#: tagadelic.info:0
+msgid "Tagadelic"
+msgstr "Tagadelic"
+
+#: tagadelic.info:0
+msgid "Tagadelic makes weighted tag clouds from your taxonomy terms."
+msgstr ""
+"A <em>Tagadelic</em> súlyozott címkefelhőket jelenít meg a "
+"taxonómia alapján."
+
+

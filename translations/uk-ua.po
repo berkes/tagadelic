@@ -1,0 +1,127 @@
+# $Id: uk-ua.po,v 1.1 2009/05/21 12:34:41 podarok Exp $
+#
+# Ukrainian translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tagadelic.module,v 1.40.2.4 2008/12/31 11:35:44 ber
+#  tagadelic.info,v 1.2 2008/02/27 15:32:05 robloach
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tagadelic uk Ukrainian Translation\n"
+"POT-Creation-Date: 2009-05-21 15:32+0300\n"
+"PO-Revision-Date: 2009-05-21 15:33+0300\n"
+"Last-Translator: Andriy Podanenko <podarok@ua.fm>\n"
+"Language-Team: uk <podarok@ua.fm>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: Ukrainian\n"
+"X-Poedit-Country: UKRAINE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: tagadelic.module:10
+msgid "Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies."
+msgstr ""
+
+#: tagadelic.module:76
+msgid "by weight, ascending"
+msgstr ""
+
+#: tagadelic.module:76
+msgid "by weight, descending"
+msgstr ""
+
+#: tagadelic.module:76
+msgid "by title, ascending"
+msgstr ""
+
+#: tagadelic.module:76
+msgid "by title, descending"
+msgstr ""
+
+#: tagadelic.module:76
+msgid "random"
+msgstr ""
+
+#: tagadelic.module:79
+msgid "Tagadelic sort order"
+msgstr ""
+
+#: tagadelic.module:82
+msgid "Determines the sort order of the tags on the freetagging page."
+msgstr ""
+
+#: tagadelic.module:87
+msgid "Amount of tags on the pages"
+msgstr ""
+
+#: tagadelic.module:89
+msgid "The amount of tags that will show up in a cloud on the pages. Amount of tags in blocks must be configured in the block settings of the various cloud blocks."
+msgstr ""
+
+#: tagadelic.module:94
+msgid "Number of levels"
+msgstr ""
+
+#: tagadelic.module:96
+msgid "The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css"
+msgstr ""
+
+#: tagadelic.module:197
+msgid "view all posts tagged with \"@tag\""
+msgstr ""
+
+#: tagadelic.module:338
+msgid "more tags"
+msgstr "ще теги"
+
+#: tagadelic.module:348;365
+msgid "Tags in @voc"
+msgstr ""
+
+#: tagadelic.module:358
+msgid "Tags for @title"
+msgstr ""
+
+#: tagadelic.module:368
+msgid "Tags for the current post"
+msgstr ""
+
+#: tagadelic.module:377
+msgid "Tags to show"
+msgstr ""
+
+#: tagadelic.module:380
+msgid "The number of tags to show in this block."
+msgstr ""
+
+#: tagadelic.module:28
+msgid "Tagadelic configuration"
+msgstr "Налагодження Tagadelic"
+
+#: tagadelic.module:29
+msgid "Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds."
+msgstr "Параметри хмарок тегів. Встановлення порядку, кількості тагів та глибину хмарок."
+
+#: tagadelic.module:36;44;52
+msgid "Tags"
+msgstr "Теги"
+
+#: tagadelic.module:0
+msgid "tagadelic"
+msgstr ""
+
+#: tagadelic.info:0
+msgid "Tagadelic"
+msgstr ""
+
+#: tagadelic.info:0
+msgid "Tagadelic makes weighted tag clouds from your taxonomy terms."
+msgstr ""
+
+#: tagadelic.info:0
+msgid "Taxonomy"
+msgstr "Таксономія"
+

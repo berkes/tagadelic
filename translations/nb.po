@@ -1,0 +1,124 @@
+# $Id$
+#
+# Norwegian Bokmål translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  tagadelic.module,v 1.40.2.4 2008/12/31 11:35:44 ber
+#  tagadelic.info,v 1.2 2008/02/27 15:32:05 robloach
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-07-24 11:50+0200\n"
+"PO-Revision-Date: 2009-07-24 11:59+0100\n"
+"Last-Translator: \n"
+"Language-Team: Norwegian Bokmål <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: tagadelic.module:10
+msgid "Tagadelic offers dynamic urls. <br/>Visit example.com/tagadelic/list/2,1,5 to get the vocabularies 2,1 and 5 listed as tag groups. <br/>Visit example.com/tagadelic/chunk/2,1,5 to get a tag cloud of the terms in the vocabularies 2,1 and 5.<br/> Note that we limit to five vocabularies."
+msgstr "Tagedlic tilbyr dynamiske url'er. <br/>Se på example.com/tagadelic/list/2,1,5 for vokabularene 2, 1 og 5 listet som merke grupper. <br/>Besøk example.com/tagadelic/chunck/2,1,5 for å se en merkesky for termene i vokabularene 2, 1 og 5. <br/>Merk at det er begrenset til fem vokabularer."
+
+#: tagadelic.module:76
+msgid "by weight, ascending"
+msgstr "etter vekt, stigende"
+
+#: tagadelic.module:76
+msgid "by weight, descending"
+msgstr "etter vekt, synkende"
+
+#: tagadelic.module:76
+msgid "by title, ascending"
+msgstr "etter tittel, stigende"
+
+#: tagadelic.module:76
+msgid "by title, descending"
+msgstr "etter tittel, synkende"
+
+#: tagadelic.module:76
+msgid "random"
+msgstr "tilfeldig"
+
+#: tagadelic.module:79
+msgid "Tagadelic sort order"
+msgstr "Tagadelic sorteringsorden"
+
+#: tagadelic.module:82
+msgid "Determines the sort order of the tags on the freetagging page."
+msgstr "Angir hvordan merkene på frimerkingssiden sorteres."
+
+#: tagadelic.module:87
+msgid "Amount of tags on the pages"
+msgstr "Antall merker på sidene"
+
+#: tagadelic.module:89
+msgid "The amount of tags that will show up in a cloud on the pages. Amount of tags in blocks must be configured in the block settings of the various cloud blocks."
+msgstr "Antall merker som vil vises i en sky på sidene. Antall merker i blokker må konfigureres i innstillingene for hver enkelt skyblokk."
+
+#: tagadelic.module:94
+msgid "Number of levels"
+msgstr "Antall nivåer"
+
+#: tagadelic.module:96
+msgid "The number of levels between the least popular tags and the most popular ones. Different levels will be assigned a different class to be themed in tagadelic.css"
+msgstr "Antall nivåer mellom minst populære merke og de mest populære. Forskjellige nivåer vil bli lagt til forskjellige css klasser som formateres i tagadelic.css"
+
+#: tagadelic.module:197
+msgid "view all posts tagged with \"@tag\""
+msgstr "vis alle postene som er merket med \"@tag\""
+
+#: tagadelic.module:338
+msgid "more tags"
+msgstr "flere merkelapper"
+
+#: tagadelic.module:348;365
+msgid "Tags in @voc"
+msgstr "Merker i @voc"
+
+#: tagadelic.module:358
+msgid "Tags for @title"
+msgstr "Merker for @title"
+
+#: tagadelic.module:368
+msgid "Tags for the current post"
+msgstr "Merker for gjeldende side"
+
+#: tagadelic.module:377
+msgid "Tags to show"
+msgstr "Antall merker som vises"
+
+#: tagadelic.module:380
+msgid "The number of tags to show in this block."
+msgstr "Antall merker som skal vises i denne blokken."
+
+#: tagadelic.module:28
+msgid "Tagadelic configuration"
+msgstr "Tagadelic innstillinger"
+
+#: tagadelic.module:29
+msgid "Configure the tag clouds. Set the order, the number of tags, and the depth of the clouds."
+msgstr "Konfigurer merkeskyene. Sett rekkefølge, antall merker og dybden av skyene."
+
+#: tagadelic.module:36;44;52
+msgid "Tags"
+msgstr "Merker"
+
+#: tagadelic.module:0
+msgid "tagadelic"
+msgstr "tagadelic"
+
+#: tagadelic.info:0
+msgid "Tagadelic"
+msgstr "Tagadelic"
+
+#: tagadelic.info:0
+msgid "Tagadelic makes weighted tag clouds from your taxonomy terms."
+msgstr "Tagadelic lager vektede merkeskyer fra dine taksonomitermer."
+
+#: tagadelic.info:0
+msgid "Taxonomy"
+msgstr "Taksonomi"
+
