@@ -39,7 +39,8 @@ function tagadelic_menu() {
     'type' => MENU_SUGGESTED_ITEM,
   );
   $items['tagadelic/list/%tagadelic_vocs'] = array(
-    'title' => 'Tags',
+    'title callback' => 'tagadelic_page_title_callback',
+    'title arguments' => array(2),
     'page callback' => 'tagadelic_page_list',
     'page arguments' => array(2),
     'access callback' => 'user_access',
@@ -47,7 +48,8 @@ function tagadelic_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['tagadelic/chunk/%tagadelic_vocs'] = array(
-    'title' => 'Tags',
+    'title callback' => 'tagadelic_page_title_callback',
+    'title arguments' => array(2),
     'page callback' => 'tagadelic_page_chunk',
     'page arguments' => array(2),
     'access callback' => 'user_access',
@@ -87,7 +89,7 @@ function tagadelic_settings() {
 }
 
 /**
- * Menu wildcard loader.
+ * Menu wildcard callback.
  */
 function tagadelic_vocs_load($vocs) {
   if (is_numeric($vocs)) {
@@ -100,7 +102,43 @@ function tagadelic_vocs_load($vocs) {
 }
 
 /**
- * menu callback renders a tagadelic page
+ * Menu callback to render the tagadelic title.
+ *
+ * @param $vocs
+ *   An array of taxonomy vocabulary ids.
+ */
+function tagadelic_page_title_callback($vocs) {
+  $title = '';
+
+  if (empty($vocs)) {
+    $title = t('Tags');
+  }
+  else {
+    $title = t('Tags in @vocabularies', array('@vocabularies' => theme('tagadelic_list_vocs', $vocs)));
+  }
+
+  return $title;
+}
+
+/**
+ * Theme function that creates a comma separated list of vocabulary terms.
+ *
+ * @params $vocs
+ *   An array of taxonomy vocabulary ids.
+ *
+ * @ingroup themable
+ */
+function theme_tagadelic_list_vocs($vocs) {
+  foreach ($vocs as $vid) {
+    $vocabulary = taxonomy_vocabulary_load($vid);
+    $voc_names[] = $vocabulary->name;
+  }
+  return join(', ', $voc_names);
+}
+
+/**
+ * Menu callback renders a tagadelic page.
+>>>>>>> 3316b95... Issue #1210654 by pfrenssen - Cleanup Documentation
  */
 function tagadelic_page_chunk($vocs) {
 
@@ -124,7 +162,7 @@ function tagadelic_page_chunk($vocs) {
 }
 
 /**
- * menu callback renders a tagadelic page with listed items: each voc
+ * Menu callback renders a tagadelic page with listed items: each vocabulary.
  */
 function tagadelic_page_list($vocs) {
 
@@ -135,6 +173,11 @@ function tagadelic_page_list($vocs) {
   $output = '';
   foreach ($vocs as $vid) {
     $vocabulary = taxonomy_vocabulary_load($vid);
+
+    // Clean out vocabulary, so that we don't have to leave security to our
+    // theme layer.
+    $vocabulary->description = filter_xss_admin($vocabulary->description);
+    $vocabulary->name = filter_xss_admin($vocabulary->name);
 
     $tags = tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
     $tags = tagadelic_sort_tags($tags);
@@ -151,13 +194,10 @@ function tagadelic_page_list($vocs) {
 }
 
 /**
- * API that returns a multidimensional array with tags given a node
+ * API that returns a multidimensional array with tags given a node.
  *
  * @param $node
  *   A node object.
- * @return
- *   Multi-dimensional array keyed by vocabulary id then term id with term
- *   objects as values.
  */
 function tagadelic_node_get_terms($node) {
   static $vocs;
@@ -175,24 +215,52 @@ function tagadelic_node_get_terms($node) {
   }
 }
 
+
+/**
+ * API function that returns the tags of a node in fancy titled lists.
+ *
+ * @param $node
+ *   A node object.
+ */
+function tagadelic_tags_lists($node) {
+  if (is_array($node->tags)) {
+    $output = '';
+    foreach ($node->tags as $vid => $terms) {
+      $vocabulary = taxonomy_vocabulary_load($vid);
+      $title = l($vocabulary->name, "tagadelic/chunk/$vid");
+      $items = array();
+      foreach ($terms as $term) {
+        $items[] = l($term->name, taxonomy_term_path($term), array('attributes' => array('title' => t('view all posts tagged with "@tag"', array('@tag' => $term->name)))));
+      }
+      $output .= theme('item_list', $items, $title);
+    }
+    return $output;
+  }
+}
+
 /**
  * Function that gets the information from the database, passes it along to the
  * weight builder and returns these weighted tags. Note that the tags are
- * unordered at this stage, hence they need orndering either by calling our
- * api or by your own ordering data.
+ * unordered at this stage, hence they need ordering either by calling our api
+ * or by your own ordering data.
  *
  * @param $vids
- *   Vocabulary IDs representing the vocabularies where you want the tags from.
+ *   Vocabulary ids representing the vocabularies where you want the tags from.
  * @param $steps
  *   The amount of tag-sizes you will be using. If you give "12" you sill get
  *   six different "weights". Defaults to 6 and is optional.
  * @return
  *   An <em>unordered</em> array with tags-objects, containing the attribute
+<<<<<<< HEAD
  *   $tag->weight;
+=======
+ *   $tag->weight.
+>>>>>>> 3316b95... Issue #1210654 by pfrenssen - Cleanup Documentation
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
-  // build the options so we can cache multiple versions
+  // Build the options so we can cache multiple versions.
   global $language;
+<<<<<<< HEAD
   $options = implode('_', $vids) . '_' . $language->language . '_' . $steps . '_' . $size;
   // Check if the cache exists
   $cache_name = 'tagadelic_cache_' . $options;
@@ -200,10 +268,19 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
 
   $tags = array();
   // make sure cache has data
+=======
+  $options = implode('_',$vids) .'_'. $language->language .'_'. $steps .'_'. $size;
+  // Check if the cache exists.
+  $cache_name = 'tagadelic_cache_'. $options;
+  $cache = cache_get($cache_name, 'cache_page');
+
+  // Make sure cache has data.
+>>>>>>> 3316b95... Issue #1210654 by pfrenssen - Cleanup Documentation
   if (isset($cache->data)) {
     $tags = $cache->data;
   }
   else {
+<<<<<<< HEAD
 
     if (!is_array($vids) || count($vids) == 0) {
       return array();
@@ -216,6 +293,14 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     }
 
     $tags = tagadelic_build_weighted_tags($tags, $steps);
+=======
+    if (!is_array($vids) || count($vids) == 0) {
+      return array();
+    }
+    $result = db_query_range(db_rewrite_sql('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.vid = n.vid WHERE td.vid IN ('. db_placeholders($vids) .') AND n.status = 1 GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC'), $vids, 0, $size);
+
+    $tags = tagadelic_build_weighted_tags($result, $steps);
+>>>>>>> 3316b95... Issue #1210654 by pfrenssen - Cleanup Documentation
 
     cache_set($cache_name, $tags, 'cache_page', CACHE_TEMPORARY);
   }
@@ -224,25 +309,27 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
 }
 
 /**
- * API that returns an array with weighted tags
- * This is the hard part. People with better ideas are very very welcome to
- * send these to ber@webschuur.com. Distribution is one thing that needs
- * attention.
+ * API that returns an array with weighted tags.
  *
- * @param $tags
- *   Alist of <em>objects</em> with the following attributes: $tag->count,
- *   $tag->tid, $tag->name and $tag->vid. Each Tag will be calculated and
- *   turned into a tag. Refer to tagadelic_get_weighted_tags() for an example.
+ * This is the hard part. People with better ideas are very very welcome to send
+ * these to ber@webschuur.com. Distribution is one thing that needs attention.
+ *
+ * @param $result
+ *   A query result, any query result that contains an <em>object</em> with the
+ *   following attributes: $tag->count, $tag->tid, $tag->name and $tag->vid.
+ *   Refer to tagadelic_get_weighted_tags() for an example.
  * @param $steps
  *   The amount of tag-sizes you will be using. If you give "12" you sill get
  *   six different "weights". Defaults to 6 and is optional.
+ *
  * @return
  *   An <em>unordered</em> array with tags-objects, containing the attribute
- *   $tag->weight;
+ *   $tag->weight.
  */
-function tagadelic_build_weighted_tags($tags, $steps = 6) {
-  // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka UnConeD.
-  $tags_tmp = array();
+function tagadelic_build_weighted_tags($result, $steps = 6) {
+  // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka
+  // UnConeD.
+  $tags = array();
   $min = 1e9;
   $max = -1e9;
   foreach ($tags as $id => $tag) {
@@ -263,10 +350,11 @@ function tagadelic_build_weighted_tags($tags, $steps = 6) {
 }
 
 /**
- * API funtion to order a set of tags.
+ * API function to order a set of tags.
  *
- * @todo If you feel like making this more modular, please send me patches.
- */
+ * @todo
+ *   If you feel like making this more modular, please send me patches.
+ **/
 function tagadelic_sort_tags($tags) {
   list($sort, $order) = explode(',', variable_get('tagadelic_sort_order', 'title,asc'));
   switch ($sort) {
@@ -287,14 +375,14 @@ function tagadelic_sort_tags($tags) {
 }
 
 /**
- * callback for usort, sort by count
+ * Callback for usort, sort by count.
  */
 function _tagadelic_sort_by_title($a, $b) {
   return strnatcasecmp($a->name, $b->name);
 }
 
 /**
- * callback for usort, sort by weight
+ * Callback for usort, sort by weight.
  */
 function _tagadelic_sort_by_weight($a, $b) {
   if ($a->weight == $b->weight) {
@@ -305,7 +393,8 @@ function _tagadelic_sort_by_weight($a, $b) {
 }
 
 /**
- * theme function that renders the HTML for the tags
+ * Theme function that renders the HTML for the tags.
+ *
  * @ingroup themable
  */
 function theme_tagadelic_weighted(array $vars) {
@@ -327,12 +416,13 @@ function theme_tagadelic_weighted(array $vars) {
 }
 
 /**
- * theme function that renders an entry in tagadelic/list/ views
+ * Theme function that renders an entry in tagadelic/list/ views.
  *
  * @param $vocabulary
  *   A full vocabulary object.
  * @param $tags
  *   An array with weigthed tag objects.
+ *
  * @ingroup themable
  */
 function theme_tagadelic_list_box(array $vars) {
@@ -350,7 +440,14 @@ function theme_tagadelic_list_box(array $vars) {
 }
 
 /**
- * Implements hook_block_info().
+ * Theme function to provide a more link.
+ *
+ * @param $vid
+ *   Vocabulary id for which more link is wanted. Optional, if left empty, no
+ *   vocabulary is expected, and the more-link will point to the main tagadelic
+ *   page at /tagadelic instead.
+ *
+ * @ingroup themable
  */
 function tagadelic_block_info() {
   $blocks = array();
@@ -363,7 +460,7 @@ function tagadelic_block_info() {
 }
 
 /**
- * Implements hook_block_view().
+ * Implements hook_block().
  */
 function tagadelic_block_view($delta = '') {
   $block = array();
@@ -375,6 +472,31 @@ function tagadelic_block_view($delta = '') {
     if (count($tags) >= variable_get('tagadelic_block_tags_' . $delta, 12)) {
       $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$voc->vid}"));
     }
+<<<<<<< HEAD
+=======
+    $blocks[0]['info'] = t('Tags for the current post');
+    $blocks[0]['cache'] = BLOCK_CACHE_PER_PAGE;
+    $blocks['all']['info'] = t('Tags for all vocabularies');
+    $blocks['all']['cache'] = BLOCK_CACHE_GLOBAL;
+
+    return $blocks;
+  }
+  elseif ($op == 'configure') {
+    $voc = taxonomy_vocabulary_load($delta);
+    $form = array();
+    $form['tags'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Tags to show'),
+      '#default_value' => variable_get('tagadelic_block_tags_'. $delta, 12),
+      '#maxlength' => 3,
+      '#description' => t('The number of tags to show in this block.'),
+    );
+    return $form;
+  }
+  elseif ($op == 'save') {
+    variable_set('tagadelic_block_tags_'. $delta, $edit['tags']);
+    return;
+>>>>>>> 3316b95... Issue #1210654 by pfrenssen - Cleanup Documentation
   }
   return $blocks;
 }
