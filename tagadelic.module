@@ -29,7 +29,7 @@ function tagadelic_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tagadelic_settings'),
     'access callback' => 'user_access',
-    'access arguments' => array('administer site configuration'),
+    'access arguments' => array('administer taxonomy'),
   );
   $items['tagadelic'] = array(
     'title' => 'Tags',
