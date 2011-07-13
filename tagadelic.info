@@ -1,4 +1,3 @@
-; $Id: tagadelic.info,v 1.4 2008/05/01 12:48:05 ber Exp $
 name = Tagadelic
 description = Tagadelic makes weighted tag clouds from your taxonomy terms.
 core = 7.x
@@ -8,3 +7,5 @@ configure = admin/config/content/tagadelic
 
 files[] = tagadelic.module
 files[] = tagadelic.install
+
+configure = admin/config/content/tagadelic
