@@ -100,7 +100,7 @@ function tagadelic_vocs_load($vocs) {
 }
 
 /**
- * menu callback renders a tagadelic page
+ * Menu callback renders a tagadelic page.
  */
 function tagadelic_page_chunk($vocs) {
 
@@ -124,7 +124,7 @@ function tagadelic_page_chunk($vocs) {
 }
 
 /**
- * menu callback renders a tagadelic page with listed items: each voc
+ * Menu callback renders a tagadelic page with listed items: each vocabulary.
  */
 function tagadelic_page_list($vocs) {
 
@@ -135,11 +135,12 @@ function tagadelic_page_list($vocs) {
   $output = '';
   foreach ($vocs as $vid) {
     $vocabulary = taxonomy_vocabulary_load($vid);
-    
-    //Clean out vocabulary, so that we don't have to leave security to our theme layer.
+
+    // Clean out vocabulary, so that we don't have to leave security to our
+    // theme layer.
     $vocabulary->description = filter_xss_admin($vocabulary->description);
     $vocabulary->name = filter_xss_admin($vocabulary->name);
-    
+
     $tags = tagadelic_get_weighted_tags(array($vocabulary->vid), variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
     $tags = tagadelic_sort_tags($tags);
 
@@ -155,7 +156,7 @@ function tagadelic_page_list($vocs) {
 }
 
 /**
- * API that returns a multidimensional array with tags given a node
+ * API that returns a multidimensional array with tags given a node.
  *
  * @param $node
  *   A node object.
@@ -182,28 +183,30 @@ function tagadelic_node_get_terms($node) {
 /**
  * Function that gets the information from the database, passes it along to the
  * weight builder and returns these weighted tags. Note that the tags are
- * unordered at this stage, hence they need orndering either by calling our
- * api or by your own ordering data.
+ * unordered at this stage, hence they need ordering either by calling our api
+ * or by your own ordering data.
  *
  * @param $vids
- *   Vocabulary IDs representing the vocabularies where you want the tags from.
+ *   Vocabulary ids representing the vocabularies where you want the tags from.
  * @param $steps
- *   The amount of tag-sizes you will be using. If you give "12" you sill get
+ *   The amount of tag-sizes you will be using. If you give "12" you still get
  *   six different "weights". Defaults to 6 and is optional.
+ * @param $size
+ *   The number of tags that will be returned.
  * @return
  *   An <em>unordered</em> array with tags-objects, containing the attribute
- *   $tag->weight;
+ *   $tag->weight.
  */
 function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
-  // build the options so we can cache multiple versions
+  // Build the options so we can cache multiple versions.
   global $language;
   $options = implode('_', $vids) . '_' . $language->language . '_' . $steps . '_' . $size;
-  // Check if the cache exists
+  // Check if the cache exists.
   $cache_name = 'tagadelic_cache_' . $options;
   $cache = cache_get($cache_name, 'cache_page');
 
   $tags = array();
-  // make sure cache has data
+  // Make sure cache has data.
   if (isset($cache->data)) {
     $tags = $cache->data;
   }
@@ -228,24 +231,25 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
 }
 
 /**
- * API that returns an array with weighted tags
- * This is the hard part. People with better ideas are very very welcome to
- * send these to ber@webschuur.com. Distribution is one thing that needs
- * attention.
+ * API that returns an array with weighted tags.
+ *
+ * This is the hard part. People with better ideas are very very welcome to send
+ * these to ber@webschuur.com. Distribution is one thing that needs attention.
  *
  * @param $tags
- *   Alist of <em>objects</em> with the following attributes: $tag->count,
+ *   A list of <em>objects</em> with the following attributes: $tag->count,
  *   $tag->tid, $tag->name and $tag->vid. Each Tag will be calculated and
  *   turned into a tag. Refer to tagadelic_get_weighted_tags() for an example.
  * @param $steps
- *   The amount of tag-sizes you will be using. If you give "12" you sill get
+ *   The amount of tag-sizes you will be using. If you give "12" you still get
  *   six different "weights". Defaults to 6 and is optional.
  * @return
  *   An <em>unordered</em> array with tags-objects, containing the attribute
- *   $tag->weight;
+ *   $tag->weight.
  */
 function tagadelic_build_weighted_tags($tags, $steps = 6) {
-  // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka UnConeD.
+  // Find minimum and maximum log-count. By our MatheMagician Steven Wittens aka
+  // UnConeD.
   $tags_tmp = array();
   $min = 1e9;
   $max = -1e9;
@@ -267,7 +271,7 @@ function tagadelic_build_weighted_tags($tags, $steps = 6) {
 }
 
 /**
- * API funtion to order a set of tags.
+ * API function to order a set of tags.
  *
  * @todo If you feel like making this more modular, please send me patches.
  */
@@ -291,14 +295,14 @@ function tagadelic_sort_tags($tags) {
 }
 
 /**
- * callback for usort, sort by count
+ * Callback for usort, sort by count.
  */
 function _tagadelic_sort_by_title($a, $b) {
   return strnatcasecmp($a->name, $b->name);
 }
 
 /**
- * callback for usort, sort by weight
+ * Callback for usort, sort by weight.
  */
 function _tagadelic_sort_by_weight($a, $b) {
   if ($a->weight == $b->weight) {
@@ -309,7 +313,8 @@ function _tagadelic_sort_by_weight($a, $b) {
 }
 
 /**
- * theme function that renders the HTML for the tags
+ * Theme function that renders the HTML for the tags.
+ *
  * @ingroup themable
  */
 function theme_tagadelic_weighted(array $vars) {
@@ -331,12 +336,12 @@ function theme_tagadelic_weighted(array $vars) {
 }
 
 /**
- * theme function that renders an entry in tagadelic/list/ views
+ * Theme function that renders an entry in tagadelic/list/ views.
  *
  * @param $vocabulary
  *   A full vocabulary object.
  * @param $tags
- *   An array with weigthed tag objects.
+ *   An array with weighted tag objects.
  * @ingroup themable
  */
 function theme_tagadelic_list_box(array $vars) {
