@@ -331,6 +331,9 @@ function theme_tagadelic_weighted(array $vars) {
       )
     ) . " \n";
   }
+  if (count($terms) >= variable_get('tagadelic_block_tags_' . $vars['voc']->vid, 12)) {
+    $output .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$vars['voc']->vid}"));
+  }
   return $output;
 }
 
@@ -379,10 +382,7 @@ function tagadelic_block_view($delta = '') {
     $blocks['subject'] = variable_get('tagadelic_block_title_' . $delta, t('Tags in @voc', array('@voc' => $voc->name)));
     $tags = tagadelic_get_weighted_tags(array($delta), variable_get('tagadelic_levels', 6), variable_get('tagadelic_block_tags_' . $delta, 12));
     $tags = tagadelic_sort_tags($tags);
-    $blocks['content'] = theme('tagadelic_weighted', array('terms' => $tags)); //return a chunk of 12 tags
-    if (count($tags) >= variable_get('tagadelic_block_tags_' . $delta, 12)) {
-      $blocks['content'] .= theme('more_link', array('title' => t('more tags'), 'url' => "tagadelic/chunk/{$voc->vid}"));
-    }
+    $blocks['content'] = theme('tagadelic_weighted', array('terms' => $tags, 'voc' => $voc)); //return a chunk of 12 tags
   }
   return $blocks;
 }
