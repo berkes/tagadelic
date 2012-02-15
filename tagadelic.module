@@ -370,7 +370,7 @@ function tagadelic_sort_tags($tags) {
  * Callback for usort, sort by count.
  */
 function _tagadelic_sort_by_title($a, $b) {
-  return strnatcasecmp($a->name, $b->name);
+  return strnatcmp(drupal_strtolower($a->name, 'UTF-8'), drupal_strtolower($b->name, 'UTF-8'));
 }
 
 /**
