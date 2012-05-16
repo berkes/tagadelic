@@ -16,19 +16,19 @@ class TagadelicCloud {
   private $needs_recalc = true;
 
   function __construct($id, $terms = array()) {
-  }
-
-  //Setters
-  public function set_id($id) {
-    $this->id = $id;
-    return $this;
+    if(is_int($id)) {
+      $this->id = $id;
+    }
+    else {
+      throw new InvalidArgumentException();
+    }
   }
   //Getters 
   public function get_id() {
-    return $this->$id;
+    return $this->id;
   }
   public function get_tags() {
-    return $this->$tags;
+    return $this->tags;
   }
   /**
    * Add a new tag to the cloud
