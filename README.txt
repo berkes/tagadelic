@@ -1,10 +1,21 @@
 Readme
 ------
-Tagadelic is a small module, without any databases, or configuration, that generates pages with weighted tags.
-Tagadelic is bothe an out of the box, ready to use module, if you want simple weighted tag clouds. With, or without some small CSS moderations this will probably suit most cases. 
-But tagadelic is an API system too. You can pass your queries to the APIs and get weighted clouds of virtually anything: clouds by amout of views, clouds for a certain user, etceteras. The module does not do all this, but you can make it do that, with quite little coding.
+
+Tagadelic provides an API which allows developers to easily create
+tagclouds, weighted lists, search-clouds and such.
+
+With this API, two very simple modules are shipped that implement this, for your
+ease and reference. Since the project is mostly a library, it is  mostly aimed
+at developers who should use it as a library. 
+
+But end-users can install and use the shipped modules right out of the box too.
+
+* Create a tagcloud from taxonomy terms: terms used more often become
+  larger, terms used less frequent are smaller.
+* Create a weighted list of article-titles, based on the amount of
+  "hits" they got.
 
 More on http://www.webschuur.com/modules/tagadelic
-
 Carpentered in the webschuur.com by Bèr Kessels
-
+If you need custom work for this module, please contact me at <ber at
+webschuur dot com>.
