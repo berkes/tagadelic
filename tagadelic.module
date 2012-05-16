@@ -10,8 +10,9 @@
  * TagadelicCloud, contains a list of tags
  */
 class TagadelicCloud {
-  private $id = "";
-  private $tags = "";
+  private $id = ""; # An identifier for this cloud. Must be unique.
+  private $tags = array(); # List of the tags in this cloud.
+  private $steps        = 6;  #Amount of steps to weight the cloud in. Defaults to 6. Means: 6 different sized tags.
   private $needs_recalc = true;
 
   function __construct($id, $terms = array()) {
@@ -80,16 +81,16 @@ class TagadelicCloud {
 class TagadelicTag {
   //available trough getters and setters only.
   private $id   = 0;
-  private $name = "";
-  private $description = "";
+  private $name = "";# A human readable name for this tag.
+  private $description = "";# A human readable piece of HTML-formatted text.
 
   //available trough setters only.
-  private $link = "";
-  private $count = 0;
+  private $link = ""; # Where this tag will point to. If left empty, tag will not be linked. Can be a full url too.
+  private $count = 0; # Absolute count for the weight. Weight, i.e. tag-size will be extracted from this.
   private $dirty = true;
 
   //available trough getters only.
-  private $weight = 0;
+  private $weight = 0.0;
 
   function __construct($id, $name, $count, $description = "", $link = NULL) {
   }
@@ -143,6 +144,13 @@ class TagadelicTag {
    */
   public function set_dirty($dirty) {
     $this->dirty = $dirty;
+  }
+
+  /**
+   * Calculates a more evenly distributed value.
+   */
+  public function distributed() {
+    return log($this->count);
   }
 
   /**
