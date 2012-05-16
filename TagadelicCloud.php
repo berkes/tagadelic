@@ -10,13 +10,15 @@ class TagadelicCloud {
   private $steps        = 6;  #Amount of steps to weight the cloud in. Defaults to 6. Means: 6 different sized tags.
   private $needs_recalc = true;
 
-  function __construct($id, $terms = array()) {
+  function __construct($id, $tags = array()) {
     if(is_int($id)) {
       $this->id = $id;
     }
     else {
       throw new InvalidArgumentException();
     }
+
+    $this->tags = $tags;
   }
   //Getters 
   public function get_id() {

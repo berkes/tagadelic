@@ -17,6 +17,8 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    */
   protected function setUp() {
     $this->object = new TagadelicCloud(1337);
+    $this->blackbeard = $this->getMock("TagadelicTag", array(), array(13, "blackbeard", 37));
+    $this->mock_tags = array("blackbeard", "jane");
   }
 
   /**
@@ -30,8 +32,14 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * constructor should set the ID to the variable passed.
    */
   public function test__construct() {
+    // First param should be assigned to the id.
     $this->assertAttributeSame(1337, "id", $this->object);
+
+    // Optional second argument pre-sets the tags.
+    $this->object = new TagadelicCloud(1337, $this->mock_tags);
+    $this->assertAttributeSame($this->mock_tags, "tags", $this->object);
   }
+
   /**
    * @expectedException InvalidArgumentException
    */
@@ -48,38 +56,43 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @covers TagadelicCloud::get_tags
-   * @todo   Implement testGet_tags().
+   * Tests if get_Tags returns an array only.
    */
-  public function testGet_tags()
-  {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-      'This test has not been implemented yet.'
-    );
+  public function testGet_tags() {
+    $this->object = new TagadelicCloud(1337, $this->mock_tags);
+    $this->assertSame($this->mock_tags, $this->object->get_tags());
   }
 
   /**
    * @covers TagadelicCloud::add_tag
-   * @todo   Implement testAdd_tag().
    */
-  public function testAdd_tag()
-  {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-      'This test has not been implemented yet.'
-    );
+  public function testAdd_tag() {
+    $this->object->add_tag($this->blackbeard);
+    $this->assertAttributeContains($this->blackbeard, "tags", $this->object);
+  }
+
+  /**
+   * TagadelicCloud::add_tag() is chainable
+   */
+  public function testAdd_tagIsChainable() {
+    $this->assertEquals($this->object->add_tag($this->blackbeard), $this->object);
   }
 
   /**
    * @covers TagadelicCloud::create_and_add_tag
-   * @todo   Implement testCreate_and_add_tag().
    */
-  public function testCreate_and_add_tag()
-  {
-    // Remove the following lines when you implement this test.
-    $this->markTestIncomplete(
-      'This test has not been implemented yet.'
-    );
+  public function testCreate_and_add_tag() {
+    $tag = new TagadelicTag(13, "blackbeard", 37); //Cannot use mock, 'cause we create a TagadalicTag, not a mock_tagalicTag.
+    $this->object->create_and_add_tag(13, "blackbeard", 37);
+    $test_tag = array_pop($this->object->get_tags());
+    $this->assertEquals($tag, $test_tag);
+  }
+
+  /**
+   * TagadelicCloud::create_and_add_tag() is chainable
+   */
+  public function testCreate_and_add_tagIsChainable() {
+    $this->assertEquals($this->object->create_and_add_tag(13, "blackbeard", 37), $this->object);
   }
 
   /**
