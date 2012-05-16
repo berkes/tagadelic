@@ -16,6 +16,14 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   public function test_construct_false_id() {
     $cloud = new TagadelicCloud("woot");
   }
+
+  /**
+   * Find the id with a getter
+   */
+  public function test_get_id() {
+    $cloud = new TagadelicCloud(1337);
+    $this->assertEquals(1337, $cloud->get_id());
+  }
 }
 
 /* class TagadelicTestCase extends DrupalWebTestCase {*/
