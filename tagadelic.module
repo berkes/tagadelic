@@ -57,6 +57,28 @@ class TagadelicCloud {
   }
 
   /**
+   * (Re)calculates the weights on the tags.
+   * @param $recalculate. Optional flag to enfore recalculation of the weights for the tags in this cloud.
+   *        defaults to FALSE, meaning the value will be calculated once per cloud.
+   */
+  private function recalculate() {
+    $tags = array();
+    // Find minimum and maximum log-count.
+    $min = 1e9;
+    $max = -1e9;
+    foreach ($this->tags as $id => $tag) {
+      $min = min($min, $tag->distributed());
+      $max = max($max, $tag->distributed());
+      $tags[$id] = $tag;
+    }
+    // Note: we need to ensure the range is slightly too large to make sure even
+    // the largest element is rounded down.
+    $range = max(.01, $max - $min) * 1.0001;
+    foreach ($tags as $id => $tag) {
+      $this->tags[$id]->set_weight(1 + floor($this->steps * ($tag->distributed() - $min) / $range));
+    }
+  }
+  /**
    * Fetches a cloud from cache; using Drupals own cache.
    * @param $cache_id, the ID used to build the cloud.
    */
@@ -138,13 +160,21 @@ class TagadelicTag {
     $this->count = $count;
   }
   /**
+   * Flag $name and $description as dirty; none-cleaned.
+   *  BEWARE! This will probably lead to double escaping, unless you know what you are doing.
+   */
+  public function force_dirty() {
+    $this->dirty = true;
+  }
+  /**
    * Flag $name and $description as safe. 
    *  XSS-escaping and sanitizing is left to implementer. 
    *  BEWARE! Only enforce when you know what you are doing. Seriously!
    */
-  public function set_dirty($dirty) {
-    $this->dirty = $dirty;
+  public function force_clean() {
+    $this->dirty = false;
   }
+
 
   /**
    * Calculates a more evenly distributed value.
