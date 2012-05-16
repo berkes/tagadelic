@@ -1,7 +1,4 @@
 <?php
-
-require("tagadelic.module");
-
 class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   /**
    * contrstructor should set the ID to the variable passed.
@@ -27,28 +24,9 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
 }
 
 /* class TagadelicTestCase extends DrupalWebTestCase {*/
-/*   public static function getInfo() {*/
-/*     return array(*/
-/*       'name' => 'Tagadelic unit tests',*/
-/*       'description' => 'Tests for the Tagadelic library',*/
-/*       'group' => 'Tagadelic',*/
-/*     );*/
-/*   }*/
-  
-/*   public function setUp() {*/
-/*     parent::setUp('tagadelic');*/
-        
-/*     //-- Can't use 'file_public_path' because simpletest overrides it.*/
-/*     $logfile = conf_path() . '/files/test.log';*/
-/*     ini_set('log_errors', 1);*/
-/*     ini_set('error_log', $logfile);*/
-/*   }*/
-  
+
 /*   function testTagadelicCloud() {*/
-/*     $cloud = $this->cloud();*/
-/*     $message = t('Constructor should require and return the ID');*/
-/*     $this->assertIdentical('test', $cloud->get_id(), $message);*/
-    
+
 /*     $message = t('Public properties $name $description $path and $steps should be accessible.');*/
 /*     $this->assertTrue(isset($cloud->name), $message);*/
 /*     $this->assertTrue(isset($cloud->description), $message);*/
