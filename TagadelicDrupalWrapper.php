@@ -14,5 +14,24 @@
  *   And we can test properly. Stubbing becomes a tad easier this way, making our tests truly isolated.
  */
 class TagadelicDrupalWrapper {
+  /*
+   * http://api.drupal.org/api/drupal/includes!cache.inc/function/cache_get/7
+   */
+  public function cache_get($cid, $bin = 'cache') {
+    return cache_get($cid, $bin);
+  }
 
+  /*
+   * http://api.drupal.org/api/drupal/includes!cache.inc/function/cache_set/7
+   * Default $expire is different from original, NULL, since we don't have the 
+   *  globals defined here.
+   */
+  public function cache_set($cid, $data, $bin = 'cache', $expire = NULL) {
+    if ($expire === NULL) {
+      return cache_set($cid, $data, $bin);
+    }
+    else {
+      return cache_set($cid, $data, $bin, $expire);
+    }
+  }
 }
