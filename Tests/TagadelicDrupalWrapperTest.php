@@ -1,7 +1,6 @@
 <?php
 
 require_once 'TagadelicDrupalWrapper.php';
-// require_once 'Tests/TagadelicFakeDrupal.php';
 
 class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
   /**
@@ -37,5 +36,13 @@ class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
    */
   public function testCache_set() {
     $this->assertTrue(method_exists($this->object, "cache_set"));
+  }
+
+  /**
+   * @covers TagadelicDrupalWrapper::check_plain
+   * @todo: implement "asserts calls method" after http://stackoverflow.com/questions/10634925/assert-that-a-function-gets-called/10635477#10635477
+   */
+  public function testCheck_plain() {
+    $this->assertTrue(method_exists($this->object, "check_plain"));
   }
 }

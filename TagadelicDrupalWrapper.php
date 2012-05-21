@@ -18,7 +18,7 @@ class TagadelicDrupalWrapper {
    * http://api.drupal.org/api/drupal/includes!cache.inc/function/cache_get/7
    */
   public function cache_get($cid, $bin = 'cache') {
-    return __cache_get($cid, $bin);
+    return cache_get($cid, $bin);
   }
 
   /*
@@ -33,5 +33,12 @@ class TagadelicDrupalWrapper {
     else {
       return cache_set($cid, $data, $bin, $expire);
     }
+  }
+
+  /**
+   * http://api.drupal.org/api/drupal/includes!bootstrap.inc/function/check_plain/7
+   */
+  public function check_plain($text) {
+    return check_plain($text);
   }
 }
