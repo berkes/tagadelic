@@ -49,7 +49,7 @@ class TagadelicCloud {
    *
    * returns $this, for chaining.
    */
-  function create_and_add_tag($id, $name, $count, $description = "", $link = NULL) {
+  public function create_and_add_tag($id, $name, $count, $description = "", $link = NULL) {
     return $this->add_tag(new TagadelicTag($id, $name, $count, $description, $link));
   }
 
