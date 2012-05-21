@@ -1,6 +1,7 @@
 <?php
 
 require_once 'TagadelicDrupalWrapper.php';
+// require_once 'Tests/TagadelicFakeDrupal.php';
 
 class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
   /**

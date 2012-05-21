@@ -53,6 +53,14 @@ class TagadelicCloud {
     return $this->add_tag(new TagadelicTag($id, $name, $count, $description, $link));
   }
 
+  public function from_cache($id, $drupal = NULL) {
+    if ($drupal === NULL) {
+      $drupal = new TagadelicDrupalWrapper();
+    }
+    $cache_id = "tagadelic_cloud_{$id}";
+    return $drupal->cache_get($cache_id);
+  }
+
   /**
    * (Re)calculates the weights on the tags.
    * @param $recalculate. Optional flag to enfore recalculation of the weights for the tags in this cloud.
@@ -75,19 +83,11 @@ class TagadelicCloud {
       $this->tags[$id]->set_weight(1 + floor($this->steps * ($tag->distributed() - $min) / $range));
     }
   }
-  /**
-   * Fetches a cloud from cache; using Drupals own cache.
-   * @param $cache_id, the ID used to build the cloud.
-   */
-  function cache_get($id) {
-    $cache_id = "tagadedelic_$id";
-    return unserialize(cache_get($cache_id));
-  }
 
   /**
    * Writes the cloud to cache. Will recalculate if needed.
    */
-  function cache_set() {
+  private function cache_set() {
     $cache_id = "tagadedelic_{$this->id}";
     cache_set($cache_id, $this);
     return $this;

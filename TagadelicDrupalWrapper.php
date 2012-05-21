@@ -18,7 +18,7 @@ class TagadelicDrupalWrapper {
    * http://api.drupal.org/api/drupal/includes!cache.inc/function/cache_get/7
    */
   public function cache_get($cid, $bin = 'cache') {
-    return cache_get($cid, $bin);
+    return __cache_get($cid, $bin);
   }
 
   /*
