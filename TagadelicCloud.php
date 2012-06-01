@@ -25,6 +25,7 @@ class TagadelicCloud {
     return $this->id;
   }
   public function get_tags() {
+    $this->recalculate();
     return $this->tags;
   }
   /**
