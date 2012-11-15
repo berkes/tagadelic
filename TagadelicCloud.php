@@ -21,13 +21,7 @@ class TagadelicCloud {
    * @return TagadelicCloud.
    */
   function __construct($id, $tags = array()) {
-    if(is_int($id)) {
-      $this->id = $id;
-    }
-    else {
-      throw new InvalidArgumentException();
-    }
-
+    $this->id = $id;
     $this->tags = $tags;
   }
 

@@ -44,13 +44,6 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @expectedException InvalidArgumentException
-   */
-  public function test__construct_false_id() {
-    $cloud = new TagadelicCloud("woot");
-  }
-
-  /**
    * @covers TagadelicCloud::get_id
    */
   public function testGet_id() {
@@ -96,11 +89,12 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * Get Tags should calculate the weights
    */
   public function testGetCalculatedTags() {
-    //Implement weighting first.
-    $this->markTestIncomplete(
-      'This test has not been implemented yet.'
-    );
-    $this->object = new TagadelicCloud(1337, $this->mock_tags);
+    $mocks = array();
+    foreach ($this->mock_tags as $mock_tag) {
+      $mock_tag->set_weight((float)$i++);
+      $mocks = $mock_tag;
+    }
+    $this->object = new TagadelicCloud(1337, $mocks);
     foreach($this->object->get_tags() as $tag) {
       $weights[] = $tag->get_weight();
     }
