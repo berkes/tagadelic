@@ -18,12 +18,8 @@ class TagadelicTag {
    * Initalize this tag
    * @param id Integer the identifier of this tag
    * @param name String a human readable name describing this tag
-   * @param describtion String Optional a human readable describtion for this tag
-   * @param link String Optional a link to a resource that represents 
-   *        the tag. e.g. a listing with all things tagged with Tag, or 
-   *        the article that represents the tag.
    */
-  function __construct($id, $name, $count, $description = "", $link = NULL) {
+  function __construct($id, $name, $count) {
   }
 
   /**
@@ -76,22 +72,32 @@ class TagadelicTag {
   }
 
   /**
-   * Setters
-   **/
-  public function set_id($id) {
-    $this->id = $id;
-  }
-  public function set_name($name) {
-    $this->name = $name;
-  }
+   * Sets the optional description.
+   * A tag may have a description
+   * @param $description String a description
+   */
   public function set_description($description) {
     $this->description = $description;
   }
+
+  /**
+   * Link to a resource.
+   * @param link String Optional a link to a resource that represents 
+   *        the tag. e.g. a listing with all things tagged with Tag, or 
+   *        the article that represents the tag.
+   */
   public function set_link($link) {
     $this->link = $link;
   }
-  public function set_count($count) {
-    $this->count = $count;
+
+  /**
+   * setter for weight
+   * Operates on $this
+   * Returns $this
+   */
+  public function set_weight($weight) {
+    $this->weight = $weight;
+    return $this;
   }
 
   /**
