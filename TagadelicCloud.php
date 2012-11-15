@@ -63,20 +63,6 @@ class TagadelicCloud {
   }
 
   /**
-   * Instantiate and add a new tag to the cloud.
-   * Wraps around "new TagadelicTag()" and adds to tags array.
-   * @param id See TagadelicTag();
-   * @param $name See TagadelicTag();
-   * @param $description See TagadelicTag();
-   * @param $link See TagadelicTag();
-   *
-   * returns $this, for chaining.
-   */
-  public function create_and_add_tag($id, $name, $count, $description = "", $link = NULL) {
-    return $this->add_tag(new TagadelicTag($id, $name, $count, $description, $link));
-  }
-
-  /**
    * Instantiate $this from cache
    * Returns this 
    */

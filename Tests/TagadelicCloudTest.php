@@ -82,25 +82,6 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @covers TagadelicCloud::create_and_add_tag
-   */
-  public function testCreate_and_add_tag() {
-    $tag = new TagadelicTag(13, "blackbeard", 37); //Cannot use mock, 'cause we create a TagadalicTag, not a mock_tagalicTag.
-    $tag->set_weight(1.0);
-    $this->object->create_and_add_tag(13, "blackbeard", 37);
-
-    $test_tag = array_pop($this->object->get_tags());
-    $this->assertEquals($tag, $test_tag);
-  }
-
-  /**
-   * TagadelicCloud::create_and_add_tag() is chainable
-   */
-  public function testCreate_and_add_tagIsChainable() {
-    $this->assertEquals($this->object->create_and_add_tag(13, "blackbeard", 37), $this->object);
-  }
-
-  /**
    * @covers TagadelicCloud::from_cache
    */
   public function testFrom_cache() {
