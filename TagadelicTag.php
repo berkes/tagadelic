@@ -14,12 +14,17 @@ class TagadelicTag {
 
   private $weight = 0.0;
 
+  private $drupal = NULL;    # Contains the DrupalWrapper, mostly for testablity
+
   /**
    * Initalize this tag
    * @param id Integer the identifier of this tag
    * @param name String a human readable name describing this tag
    */
   function __construct($id, $name, $count) {
+    $this->id    = $id;
+    $this->name  = $name;
+    $this->count = $count;
   }
 
   /**
@@ -28,7 +33,7 @@ class TagadelicTag {
    */
   public function __ToString() {
     $this->clean();
-    return l($this->name, $this->link, array("title" => $this->description));
+    return $this->drupal()->l($this->name, $this->link, array("title" => $this->description));
   }
 
   /**
@@ -67,7 +72,6 @@ class TagadelicTag {
    * return Float the weight of this tag.
    **/
   public function get_weight() {
-    $this->recalculate();
     return $this->weight;
   }
 
@@ -101,6 +105,26 @@ class TagadelicTag {
   }
 
   /**
+   * setter for drupal(Wrapper)
+   * Operates on $this
+   * Returns $this
+   */
+  public function set_drupal($drupal) {
+    $this->drupal = $drupal;
+    return $this;
+  }
+  /**
+   * Getter for drupal, if not found, will instantiate a default TagaDelicDrupalWrapper
+   * @return type value in $this::$drupal.
+   */
+  public function drupal() {
+    if (empty($this->drupal)) {
+      $this->drupal = new TagaDelicDrupalWrapper();
+    }
+    return $this->drupal;
+  }
+
+  /**
    * Flag $name and $description as dirty; none-cleaned.
    *  BEWARE! This will probably lead to double escaping, unless you know what you are doing.
    */
@@ -130,8 +154,8 @@ class TagadelicTag {
     **/
   private function clean() {
     if ($this->dirty) {
-      $this->name = check_plain($name);
-      $this->description = check_plain($this->description);
+      $this->name = $this->drupal()->check_plain($this->name);
+      $this->description = $this->drupal()->check_plain($this->description);
     }
   }
 }
