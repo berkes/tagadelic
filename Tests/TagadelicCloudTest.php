@@ -19,8 +19,24 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    */
   protected function setUp() {
     $this->object = new TagadelicCloud(1337);
-    $this->blackbeard = $this->getMock("TagadelicTag", array(), array(13, "blackbeard", 100));
-    $this->jane = $this->getMock("TagadelicTag", array(), array(14, "jane", 200));
+
+    $this->blackbeard = $this->getMock("TagadelicTag", array("name", "count", "set_weight"), array(14, "blackbeard", 100));
+
+    $this->blackbeard->expects($this->any())
+      ->method("name")
+      ->will($this->returnValue("blackbeard"));
+    $this->blackbeard->expects($this->any())
+      ->method("count")
+      ->will($this->returnValue(100));
+
+    $this->jane = $this->getMock("TagadelicTag", array("name", "count", "set_weight"), array(14, "jane", 200));
+    $this->jane->expects($this->any())
+      ->method("name")
+      ->will($this->returnValue("jane"));
+    $this->jane->expects($this->any())
+      ->method("count")
+      ->will($this->returnValue(200));
+
     $this->mock_tags = array($this->blackbeard, $this->jane);
   }
 
@@ -89,15 +105,13 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * Get Tags should calculate the weights
    */
   public function testGetCalculatedTags() {
-    $mocks = array();
     foreach ($this->mock_tags as $mock_tag) {
-      $mock_tag->set_weight((float)$i++);
-      $mocks = $mock_tag;
+      $mock_tag->expects($this->once())
+        ->method('set_weight')
+        ->will($this->returnSelf());
+      $mocks[] = $mock_tag;
     }
     $this->object = new TagadelicCloud(1337, $mocks);
-    foreach($this->object->get_tags() as $tag) {
-      $weights[] = $tag->get_weight();
-    }
-    $this->assertEquals($weights, array(1,2));
+    $this->object->get_tags();
   }
 }
