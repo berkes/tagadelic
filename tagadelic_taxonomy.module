@@ -1,0 +1,37 @@
+<?php
+/**
+ * @file tagadelic.module
+ * Library to build tagclouds.
+ * @author Bèr Kessels <ber@webschuur.com>
+ * @link http://berk.es
+ */
+
+/**
+ * Implements hook_menu().
+ * @see hook_menu()
+ */
+function tagadelic_taxonomy_menu() {
+  $items['tagadelic_taxonomy'] = array(
+    'title' => 'Tag Cloud',
+    'page callback' => 'tagadelic_taxonomy_cloud',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+  return $items;
+}
+
+/**
+ * Constructs a simple page.
+ *
+ * The simple page callback, mapped to the path 'examples/page_example/simple'.
+ *
+ * Page callbacks return a renderable array with the content area of the page.
+ * The theme system will later render and surround the content in the
+ * appropriate blocks, navigation, and styling.
+ *
+ * If you do not want to use the theme system (for example for outputting an
+ * image or XML), you should print the content yourself and not return anything.
+ */
+function tagadelic_taxonomy_cloud() {
+  return "cloud";
+}

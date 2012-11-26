@@ -1,0 +1,29 @@
+<?php
+class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
+  /**
+   * getInfo sets information about this test
+   *
+   * @scope public static
+   * @returns Array  Descriptive array for this test
+   */
+  public static function getInfo() {
+    return array(
+      "name" => "Tagadelic Taxonomy Test",
+      "description" => "Tests tagclouds from Tagadelic Taxonomy",
+      "group" => "Tagadelic",
+    );
+  }
+
+  /**
+   * @scope public
+   * @returns Type  Description of return value
+   */
+  public function setUp() {
+    parent::setUp(array('tagadelic_taxonomy'));
+  }
+
+  public function testHasTagcloudPage() {
+    $this->drupalGet("tagadelic_taxonomy");
+    $this->assertText(t("Tag Cloud"));
+  }
+}
