@@ -36,21 +36,25 @@ configure.
 
 
 ### Testing ###
-The library uses PHPUnit for testing; not Drupals testing framework. The
-reason is simple: Drupals testing is aimed at integration testing and is
-extremely slow and cumbersome to use; It is very usefull for testing
-your implementation and set-up of Drupal, but not so for testing
-low-level libaries and classes.
+The library uses PHPUnit for testing the classes (the library) and
+Drupals internal test-framework for testing the integration.
 
-Please make sure all tests are green before making a pull-request.
+Please make sure all tests are green before making a pull-request; that
+means testing with both phpunit and Drupals testing. For example:
 
-When introducting new features, make sure to add unit-tests for this.
+    $ phpunit sites/all/modules/contrib/tagadelic/tests/*.php
+    $ drush test-run
+
+When introducting new features, make sure to add unit-tests for this;
+The phpunit tests must have at least 100% coverage of all public
+interfaces; There is no need to test protected and private methods and
+attributes. But all public interaction must be covered.
 
 When removing code or features, make sure to update the unit-tests.
 
+# Contact #
+More on http://github.com/berkes/tagadelic
 
-
-More on http://www.webschuur.com/modules/tagadelic
 Carpentered in the webschuur.com by Bèr Kessels
 If you need custom work for this module, please contact me at <ber at
 webschuur dot com>.
