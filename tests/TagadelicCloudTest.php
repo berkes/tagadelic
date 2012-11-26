@@ -95,10 +95,12 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    */
   public function testFrom_cache() {
     $drupal = $this->getMock("TagadelicDrupalWrapper");
-    $drupal->expects($this->any())
+    $drupal->expects($this->once())
       ->method("cache_get")
-      ->with("tagadelic_cloud_1337");
-    TagadelicCloud::from_cache(1337, $drupal);
+      ->with("tagadelic_cloud_1337")
+      ->will($this->returnValue($this->object));
+    $cloud = TagadelicCloud::from_cache(1337, $drupal);
+    $this->assertInstanceOf("TagadelicCloud", $cloud);
   }
 
   /**

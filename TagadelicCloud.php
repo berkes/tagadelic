@@ -57,13 +57,33 @@ class TagadelicCloud {
   }
 
   /**
+   * setter for drupal(wrapper). Mostly for testability
+   * Operates on $this
+   * Returns $this
+   */
+  public function set_drupal($drupal) {
+    $this->drupal = $drupal;
+    return $this;
+  }
+
+  /**
+   * Getter for drupal
+   * @return DrupalWrapper value in $this::$drupal.
+   */
+  public function drupal() {
+    if (empty($this->drupal)) {
+      $this->drupal = new TagadelicDrupalWrapper();
+    }
+    return $this->drupal;
+  }
+
+  /**
    * Instantiate $this from cache
-   * Returns this 
+   * Optionally pass $drupal, a Drupalwrapper along, mostly for testing.
+   * Returns this
    */
   public function from_cache($id, $drupal = NULL) {
-    // For testing purposes
-    // @TODO move to stub in tests.
-    if ($drupal === NULL) {
+    if (empty($drupal)) {
       $drupal = new TagadelicDrupalWrapper();
     }
     $cache_id = "tagadelic_cloud_{$id}";
@@ -101,7 +121,7 @@ class TagadelicCloud {
    */
   private function cache_set() {
     $cache_id = "tagadedelic_{$this->id}";
-    cache_set($cache_id, $this);
+    $this->drupal()->cache_set($cache_id, $this);
     return $this;
   }
 }
