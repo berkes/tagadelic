@@ -37,7 +37,10 @@ configure.
 
 ### Testing ###
 The library uses PHPUnit for testing the classes (the library) and
-Drupals internal test-framework for testing the integration.
+Drupals internal test-framework for testing the integration. 
+
+Using a third party tool was nessecary, because DrupalUnitTestis basically
+[unusable for actual unit testing of classes](http://stackoverflow.com/a/6046100/73673).
 
 Please make sure all tests are green before making a pull-request; that
 means testing with both phpunit and Drupals testing. For example:

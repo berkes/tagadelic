@@ -1,5 +1,5 @@
 name = Tagadelic
-description = Tagadelic makes weighted tag clouds from your taxonomy terms.
+description = "Tagadelic makes weighted tag clouds from any-ol' weighted list."
 core = 7.x
 dependencies[] = taxonomy
 package = "Taxonomy"
@@ -11,5 +11,3 @@ files[] = tagadelic.install
 files[] = TagadelicCloud.php
 files[] = TagadelicTag.php
 files[] = TagadelicDrupalWrapper.php
-
-configure = admin/config/content/tagadelic
