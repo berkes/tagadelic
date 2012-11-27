@@ -219,6 +219,9 @@ function tagadelic_get_weighted_tags($vids, $steps = 6, $size = 60) {
     $result = db_query_range('SELECT COUNT(*) AS count, td.tid, td.vid, td.name, td.description FROM {taxonomy_term_data} td INNER JOIN {taxonomy_index} tn ON td.tid = tn.tid INNER JOIN {node} n ON tn.nid = n.nid WHERE td.vid IN (' . implode(',', array_fill(0, count($vids), '?')) . ') GROUP BY td.tid, td.vid, td.name, td.description HAVING COUNT(*) > 0 ORDER BY count DESC', 0, $size, $vids);
 
     foreach ($result as $tag) {
+      if(function_exists('i18n_taxonomy_localize_terms')) {
+        $tag = i18n_taxonomy_localize_terms($tag);
+      }
       $tags[$tag->tid] = $tag;
     }
 
