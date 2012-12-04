@@ -45,4 +45,8 @@ class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
   public function testCheck_plain() {
     $this->assertTrue(method_exists($this->object, "check_plain"));
   }
+
+  public function testL() {
+    $this->assertTrue(method_exists($this->object, "l"));
+  }
 }

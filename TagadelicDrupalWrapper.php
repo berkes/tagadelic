@@ -41,4 +41,11 @@ class TagadelicDrupalWrapper {
   public function check_plain($text) {
     return check_plain($text);
   }
+
+  /**
+   * http://api.drupal.org/api/drupal/includes!common.inc/function/l/7
+   */
+  public function l($text, $path, $options = array()) {
+    return l($text, $path, $options);
+  }
 }
