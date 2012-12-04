@@ -24,7 +24,23 @@ function tagadelic_taxonomy_menu() {
  * Constructs a simple page.
  */
 function tagadelic_taxonomy_cloud() {
-  return join(", ", tagadelic_taxonomy_get_tags());
+  $tags = tagadelic_taxonomy_get_tags();
+  $out = theme("tagadelic_taxonomy_cloud", array("tags" => $tags));
+  return $out;
+}
+
+function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
+  return array(
+    "tagadelic_taxonomy_cloud" => array(
+      "variables" => array(
+        "tags" => array(),
+        "name" => "",
+      ),
+      "path" => "{$path}/templates",
+      "template" => "tagadelic_taxonomy_cloud"
+    ), // tagadelic_taxonomy_cloud
+
+  );
 }
 
 function tagadelic_taxonomy_get_tags() {
@@ -35,7 +51,10 @@ function tagadelic_taxonomy_get_tags() {
     ->execute();
 
   foreach ($result as $term) {
-    $terms[$term->tid] = $term->name;
+    $tag = new TagadelicTag($term->tid, $term->name, 1);
+    $tag->set_link("taxonomy/term/{$term->tid}");
+
+    $terms[] = $tag;
   }
 
   return $terms;
