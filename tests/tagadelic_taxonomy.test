@@ -1,5 +1,9 @@
 <?php
 class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
+  protected $vocabulary;
+  protected $tags  = array();
+  protected $nodes = array();
+
   /**
    * getInfo sets information about this test
    *
@@ -24,6 +28,25 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
 
   public function testHasTagcloudPage() {
     $this->drupalGet("tagadelic_taxonomy");
-    $this->assertText(t("Tag Cloud"));
+    $this->assertResponse(200, "Can Access Page");
+    $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
+  }
+
+  public function testHasTagsOnPage() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("tagadelic_taxonomy");
+    $tag = $this->tags[0];
+    $this->assertText($tag->name);
+  }
+
+  private function createVocAndTags($amount_of_tags) {
+    $tx_test = new TaxonomyWebTestCase();
+    $this->vocabulary = $tx_test->createVocabulary();
+    for ($i = 0; $i < $amount_of_tags; $i++) {
+      $this->tags[] = $tx_test->createTerm($this->vocabulary);
+    }
+  }
+
+  private function createNodesWithTags() {
   }
 }

@@ -22,16 +22,22 @@ function tagadelic_taxonomy_menu() {
 
 /**
  * Constructs a simple page.
- *
- * The simple page callback, mapped to the path 'examples/page_example/simple'.
- *
- * Page callbacks return a renderable array with the content area of the page.
- * The theme system will later render and surround the content in the
- * appropriate blocks, navigation, and styling.
- *
- * If you do not want to use the theme system (for example for outputting an
- * image or XML), you should print the content yourself and not return anything.
  */
 function tagadelic_taxonomy_cloud() {
-  return "cloud";
+  return join(", ", tagadelic_taxonomy_get_tags());
 }
+
+function tagadelic_taxonomy_get_tags() {
+  $terms = array();
+  $query = db_select('taxonomy_term_data', 't');
+  $result = $query
+    ->fields('t')
+    ->execute();
+
+  foreach ($result as $term) {
+    $terms[$term->tid] = $term->name;
+  }
+
+  return $terms;
+}
+
