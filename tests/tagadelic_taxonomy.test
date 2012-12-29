@@ -42,12 +42,25 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   public function testHasClickableLink() {
     $this->createVocAndTags(1);
     $this->drupalGet("tagadelic_taxonomy");
-    $this->assertHasXpath("//ul[@class='tag-cloud']/li/a", "Link with class tag in UL/LI");
 
     $link = $this->xpath("//ul[@class='tag-cloud']/li/a[1]");
     $links_to = (string) $link[0]->attributes()["href"];
     $tag = $this->tags[0];
     $this->assertEqual("/taxonomy/term/{$tag->tid}", $links_to);
+  }
+
+  public function testHasFiveTags() {
+    $this->createVocAndTags(5);
+    $this->drupalGet("tagadelic_taxonomy");
+    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
+    $this->assertEqual(5, $amount);
+  }
+
+  public function testHasMaxsixtyTags() {
+    $this->createVocAndTags(100);
+    $this->drupalGet("tagadelic_taxonomy");
+    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
+    $this->assertEqual(60, $amount);
   }
 
   private function createVocAndTags($amount_of_tags) {
@@ -56,6 +69,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     for ($i = 0; $i < $amount_of_tags; $i++) {
       $this->tags[] = $tx_test->createTerm($this->vocabulary);
     }
+    return $this;
   }
 
   private function createNodesWithTags() {
@@ -71,5 +85,10 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $xpath = $this->xpath($xpath);
     $truthiness = count($xpath) > 0;
     return $this->assertTrue($truthiness, $message, $group);
+  }
+
+  private function assertHasTag($name, $message = '', $group = 'Other') {
+    $xpath = "//ul[@class='tag-cloud']/li/a";
+    return $this->assertHasXpath($xpath, $message, $group);
   }
 }

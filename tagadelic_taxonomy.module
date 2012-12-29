@@ -48,6 +48,7 @@ function tagadelic_taxonomy_get_tags() {
   $query = db_select('taxonomy_term_data', 't');
   $result = $query
     ->fields('t')
+    ->range(0, 60)
     ->execute();
 
   foreach ($result as $term) {
