@@ -107,9 +107,16 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * Get Tags should calculate the weights
    */
   public function testGetCalculatedTags() {
+    $index = 0;
+    $expected_weights = array(1.0, 6.0);
+
     foreach ($this->mock_tags as $mock_tag) {
+      $weight = $expected_weights[$index];
+      $index++;
+
       $mock_tag->expects($this->once())
         ->method('set_weight')
+        ->with($this->equalTo($weight))
         ->will($this->returnSelf());
       $mocks[] = $mock_tag;
     }
