@@ -77,6 +77,7 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
 
     $this->object->__tostring();
   }
+
   /**
    * @covers tagadelictag::__tostring
    */
@@ -95,5 +96,21 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
     $this->object->__tostring();
   }
 
+  /**
+   * @covers tagadelictag::__tostring
+   */
+  public function test__ToStringHasNoWeight() {
+    $this->object->set_weight(0);
+
+    $this->drupal->expects($this->any())
+        ->method('l')
+        ->with(
+          $this->anything(),
+          $this->anything(),
+          $this->equalto(array()))
+        ->will($this->returnvalue(""));
+
+    $this->object->__tostring();
+  }
 }
 

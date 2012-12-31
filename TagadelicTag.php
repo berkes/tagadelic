@@ -37,7 +37,7 @@ class TagadelicTag {
     $attributes = array();
 
     if (!empty($this->description)) $attributes["title"] = $this->description;
-    if ($this->weight > 0)          $attributes["class"] = "weight-3";
+    if ($this->weight > 0)          $attributes["class"] = "weight-{$this->weight}";
 
     return $this->drupal()->l($this->name, $this->link, $attributes);
   }
