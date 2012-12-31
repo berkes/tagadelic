@@ -63,8 +63,21 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertEqual(60, $amount);
   }
 
+  public function testHasWeightedTags() {
+    $this->createVocAndTags(6);
+    $this->createNodesWithTags(10);
+    $this->drupalGet("tagadelic_taxonomy");
+    $weight = 1;
+    foreach($this->tags as $tag) {
+      /*$this->assertTagHasWeight($tag->name, $weight++);*/
+      $this->assertTagHasWeight($tag->name, 1);
+    }
+  }
+
   private function createVocAndTags($amount_of_tags) {
     $tx_test = new TaxonomyWebTestCase();
+
+    $this->tags       = array();
     $this->vocabulary = $tx_test->createVocabulary();
     for ($i = 0; $i < $amount_of_tags; $i++) {
       $this->tags[] = $tx_test->createTerm($this->vocabulary);
@@ -72,7 +85,41 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     return $this;
   }
 
-  private function createNodesWithTags() {
+  /**
+   * Creates $amount nodes with terms attached.
+   *
+   *
+   * Fuck it, I am poking around in the database directly instead of testing
+   * and preparing all this field, entity, admin-user and whatnot. I am not 
+   * interested in whether or not we can store nodes with tags, only that they
+   * are there. By adding them to the database, we achieve that.
+   */
+  private function createNodesWithTags($amount) {
+    $this->nodes = array();
+    $attachable = $this->tags;
+    for ($i = 0; $i < $amount; $i++) {
+      // Post an article.
+      $node = new StdClass();
+      $node->title = $this->randomName();
+      $node->type  = "story";
+      node_save($node);
+      $this->nodes[] = $node;
+
+      // Attach the terms
+      $query = db_insert('taxonomy_index')->fields(array('nid', 'tid', 'sticky', 'created'));
+      foreach($attachable as $tag) {
+        $query->values(array(
+          'nid' => $node->nid,
+          'tid' => $tag->tid,
+          'sticky' => TRUE,
+          'created' => $node->created,
+        ));
+      }
+      $query->execute();
+
+      //remove one tag, so the next node gets one less tag attached.
+      array_shift($attachable);
+    }
   }
 
   /**
@@ -90,5 +137,13 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   private function assertHasTag($name, $message = '', $group = 'Other') {
     $xpath = "//ul[@class='tag-cloud']/li/a";
     return $this->assertHasXpath($xpath, $message, $group);
+  }
+
+  private function assertTagHasWeight($name, $weight, $message = '', $group = 'Other') {
+    if (empty($message)) {
+      $message = "Tag with name '{$name}' and class 'weight-{$weight}' found";
+    }
+    $xpath = "//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')][@class='weight-{$weight}']";
+    return $this->assertHasXpath($xpath, $message, $group = 'Other');
   }
 }

@@ -44,20 +44,40 @@ function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
 }
 
 function tagadelic_taxonomy_get_tags() {
-  $terms = array();
+  $tags = array();
+
+  /**
+  see http://drupal.stackexchange.com/q/54483/787
   $query = db_select('taxonomy_term_data', 't');
-  $result = $query
-    ->fields('t')
-    ->range(0, 60)
-    ->execute();
 
-  foreach ($result as $term) {
-    $tag = new TagadelicTag($term->tid, $term->name, 1);
+  $query->addField('t', 'tid');
+  $query->addField('t', 'name');
+  $query->addField('t', 'description');
+  $query->addField('COUNT(i.nid)', 'count');
+
+  $query->leftjoin('taxonomy_index', 'i', 'i.nid = t.nid');
+  $query->range(0, 60)
+    ->groupBy('i.nid');
+
+  print($query);
+
+  result = $query->execute();*/
+
+  $result = db_query("SELECT t.tid, t.name, t.description, COUNT(i.nid) AS count
+  FROM taxonomy_index AS i 
+  LEFT JOIN taxonomy_term_data AS t ON i.tid = t.tid
+  GROUP BY i.tid 
+  LIMIT 60");
+
+  /*foreach ($result as $term) {*/
+  while($term = $result->fetchObject()) {
+    $tag = new TagadelicTag($term->tid, $term->name, $term->count);
     $tag->set_link("taxonomy/term/{$term->tid}");
+    $tag->set_weight(1);
 
-    $terms[] = $tag;
+    $tags[] = $tag;
   }
 
-  return $terms;
+  return $tags;
 }
 
