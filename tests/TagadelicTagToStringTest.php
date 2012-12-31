@@ -8,19 +8,21 @@ require_once "TagadelicTagTest.php";
  * Test-group for testing the output-method __ToString from TagadelicTagTest.
  *   This is a functional group, with lots of duplication, hence it is extracted
  *   to its own Test.
+ *
+ *  @TODO: find a way to stub a basic implementation and then 
+ *   override that http://stackoverflow.com/q/14100185/73673
  */
 class TagadelicTagToStringTest extends TagadelicTagTest {
   protected function setUp() {
     parent::setUp();
-  }
-  /**
-   * @covers TagadelicTag::__ToString
-   * @todo   Implement test__ToString().
-   */
-  public function test__ToString() {
     $this->drupal->expects($this->once())
          ->method('l')
          ->will($this->returnValue("<a>blackbeard</a>"));
+  }
+  /**
+   * @covers TagadelicTag::__ToString
+   */
+  public function test__ToString() {
     $this->assertTag(array("tag" => "a", "content" => "blackbeard"), $this->object->__ToString());
   }
 
@@ -32,11 +34,28 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
     $this->object->set_link($link);
 
     $this->drupal->expects($this->any())
+         ->method('l')
+         ->with(
+          $this->anything(),
+          $this->equalto($link),
+          $this->anything());
+
+    $this->object->__tostring();
+  }
+
+  /**
+   * @covers tagadelictag::__tostring
+   */
+  public function test__ToStringHasTitle() {
+    $this->object->set_description("Foo Bar");
+    $expected_attrs = array("title" => "Foo Bar");
+
+    $this->drupal->expects($this->any())
         ->method('l')
         ->with(
           $this->anything(),
-          $this->equalto($link),
-          $this->anything())
+          $this->anything(),
+          $this->equalto($expected_attrs))
         ->will($this->returnvalue(""));
 
     $this->object->__tostring();
@@ -59,5 +78,6 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
 
     $this->object->__tostring();
   }
+
 }
 
