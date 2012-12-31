@@ -32,7 +32,7 @@ class TagadelicTagTest extends PHPUnit_Framework_TestCase {
   protected function tearDown() {
   }
 
-  /**
+ /**
    * @covers TagadelicTag::__ToString
    * @todo   Implement test__ToString().
    */
@@ -41,6 +41,44 @@ class TagadelicTagTest extends PHPUnit_Framework_TestCase {
          ->method('l')
          ->will($this->returnValue("<a>blackbeard</a>"));
     $this->assertTag(array("tag" => "a", "content" => "blackbeard"), $this->object->__ToString());
+  }
+
+ /**
+   * @covers TagadelicTag::__ToString
+   */
+  public function test__ToStringHasTitle() {
+    $title = "Foo Bar";
+    $this->object->set_description($title);
+
+    $expected_attrs = array("title" => $title);
+
+    $this->drupal->expects($this->any())
+        ->method('l')
+        ->with(
+          $this->anything(),
+          $this->anything(),
+          $this->equalTo($expected_attrs))
+        ->will($this->returnValue(""));
+
+    $this->object->__ToString();
+  }
+
+ /**
+   * @covers tagadelictag::__tostring
+   */
+  public function test__ToStringHasLink() {
+    $link = '/foo/bar';
+    $this->object->set_link($link);
+
+    $this->drupal->expects($this->any())
+        ->method('l')
+        ->with(
+          $this->anything(),
+          $this->equalto($link),
+          $this->anything())
+        ->will($this->returnvalue(""));
+
+    $this->object->__tostring();
   }
 
   /**
