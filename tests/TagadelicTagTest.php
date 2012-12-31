@@ -81,6 +81,24 @@ class TagadelicTagTest extends PHPUnit_Framework_TestCase {
     $this->object->__tostring();
   }
 
+ /**
+   * @covers tagadelictag::__tostring
+   */
+  public function test__ToStringHasWeight() {
+    $this->object->set_weight(3);
+    $expected_attrs = array("title" => "", "class" => "weight-3");
+
+    $this->drupal->expects($this->any())
+        ->method('l')
+        ->with(
+          $this->anything(),
+          $this->anything(),
+          $this->equalto($expected_attrs))
+        ->will($this->returnvalue(""));
+
+    $this->object->__tostring();
+  }
+
   /**
    * @covers TagadelicTag::get_id
    * @todo   Implement testGet_id().

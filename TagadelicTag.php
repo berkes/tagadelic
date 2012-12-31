@@ -33,7 +33,11 @@ class TagadelicTag {
    */
   public function __ToString() {
     $this->clean();
-    return $this->drupal()->l($this->name, $this->link, array("title" => $this->description));
+
+    $attributes = array("title" => $this->description);
+    if ($this->weight > 0) $attributes["class"] = "weight-3";
+
+    return $this->drupal()->l($this->name, $this->link, $attributes);
   }
 
   /**
