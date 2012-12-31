@@ -64,9 +64,25 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
   /**
    * @covers tagadelictag::__tostring
    */
+  public function test__ToStringHasNoTitle() {
+    $this->object->set_description("");
+
+    $this->drupal->expects($this->any())
+        ->method('l')
+        ->with(
+          $this->anything(),
+          $this->anything(),
+          $this->equalto(array()))
+        ->will($this->returnvalue(""));
+
+    $this->object->__tostring();
+  }
+  /**
+   * @covers tagadelictag::__tostring
+   */
   public function test__ToStringHasWeight() {
     $this->object->set_weight(3);
-    $expected_attrs = array("title" => "", "class" => "weight-3");
+    $expected_attrs = array("class" => "weight-3");
 
     $this->drupal->expects($this->any())
         ->method('l')
