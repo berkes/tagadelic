@@ -55,7 +55,7 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
         ->with(
           $this->anything(),
           $this->anything(),
-          $this->equalto($expected_attrs))
+          $this->equalto(array("attributes" => $expected_attrs)))
         ->will($this->returnvalue(""));
 
     $this->object->__tostring();
@@ -90,7 +90,7 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
         ->with(
           $this->anything(),
           $this->anything(),
-          $this->equalto($expected_attrs))
+          $this->equalto(array("attributes" => $expected_attrs)))
         ->will($this->returnvalue(""));
 
     $this->object->__tostring();
