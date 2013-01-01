@@ -82,12 +82,19 @@ class TagadelicCloud {
    * Optionally pass $drupal, a Drupalwrapper along, mostly for testing.
    * Returns this
    */
-  public function from_cache($id, $drupal = NULL) {
-    if (empty($drupal)) {
-      $drupal = new TagadelicDrupalWrapper();
-    }
+  public function from_cache($id, $drupal) {
     $cache_id = "tagadelic_cloud_{$id}";
     return $drupal->cache_get($cache_id);
+  }
+
+  /**
+   * Writes the cloud to cache. Will recalculate if needed.
+   * @return $this; for chaining.
+   */
+  public function to_cache() {
+    $cache_id = "tagadelic_cloud_{$this->id}";
+    $this->drupal()->cache_set($cache_id, $this);
+    return $this;
   }
 
   /**
@@ -112,16 +119,6 @@ class TagadelicCloud {
     foreach ($tags as $id => $tag) {
       $this->tags[$id]->set_weight(1 + floor($this->steps * ($tag->distributed() - $min) / $range));
     }
-    return $this;
-  }
-
-  /**
-   * Writes the cloud to cache. Will recalculate if needed.
-   * @return $this; for chaining.
-   */
-  private function cache_set() {
-    $cache_id = "tagadedelic_{$this->id}";
-    $this->drupal()->cache_set($cache_id, $this);
     return $this;
   }
 }

@@ -84,23 +84,63 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * TagadelicCloud::add_tag() is chainable
+   * @covers TagadelicCloud::add_tag()
    */
   public function testAdd_tagIsChainable() {
     $this->assertEquals($this->object->add_tag($this->blackbeard), $this->object);
   }
 
   /**
-   * @covers TagadelicCloud::from_cache
+   * @covers TagadelicCloud::set_drupal()
    */
-  public function testFrom_cache() {
+  public function testSet_drupal() {
+    $drupal = new StdClass();
+    $this->object->set_drupal($drupal);
+    $this->assertAttributeSame($drupal, "drupal", $this->object);
+  }
+
+  /**
+   * @covers TagadelicCloud::drupal()
+   */
+  public function testDrupalReturnsSetValue() {
+    $drupal = "ThisIsDrupal";
+    $this->object->set_drupal($drupal);
+    $this->assertSame($this->object->drupal(), $drupal);
+  }
+
+  /**
+   * @covers TagadelicCloud::drupal()
+   */
+  public function testDrupalInstantiatesNewWrapper() {
+    $this->object->set_drupal(NULL);
     $drupal = $this->getMock("TagadelicDrupalWrapper");
+    $this->assertInstanceOf("TagadelicDrupalWrapper", $this->object->drupal());
+  }
+
+  /**
+   * @covers tagadeliccloud::from_cache
+   */
+  public function testfrom_cache() {
+    $drupal = $this->getmock("TagadelicDrupalWrapper");
     $drupal->expects($this->once())
       ->method("cache_get")
       ->with("tagadelic_cloud_1337")
-      ->will($this->returnValue($this->object));
-    $cloud = TagadelicCloud::from_cache(1337, $drupal);
-    $this->assertInstanceOf("TagadelicCloud", $cloud);
+      ->will($this->returnvalue($this->object));
+    $cloud = tagadeliccloud::from_cache(1337, $drupal);
+    $this->assertinstanceof("TagadelicCloud", $cloud);
+  }
+
+  /**
+   * @covers tagadeliccloud::to_cache
+   */
+  public function testTo_cache() {
+    $drupal = $this->getmock("TagadelicDrupalWrapper");
+    $drupal->expects($this->once())
+      ->method("cache_set")
+      ->with("tagadelic_cloud_1337", $this->object);
+    $this->object->set_drupal($drupal);
+
+    $this->object->to_cache();
   }
 
   /**
