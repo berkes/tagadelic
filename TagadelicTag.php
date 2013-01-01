@@ -164,6 +164,7 @@ class TagadelicTag {
     if ($this->dirty) {
       $this->name = $this->drupal()->check_plain($this->name);
       $this->description = $this->drupal()->check_plain($this->description);
+      $this->force_clean();
     }
   }
 }
