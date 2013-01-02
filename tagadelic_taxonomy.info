@@ -7,4 +7,6 @@ package = "Taxonomy"
 files[] = tests/tagadelic_taxonomy.test
 files[] = tagadelic_taxonomy.module
 
+stylesheets[all][] = tagadelic.css
+
 configure = admin/config/content/tagadelic_taxonomy

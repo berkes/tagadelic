@@ -37,7 +37,7 @@ class TagadelicTag {
     $attributes = $options = array();
 
     if (!empty($this->description)) $attributes["title"] = $this->description;
-    if ($this->weight > 0)          $attributes["class"] = "weight-{$this->weight}";
+    if ($this->weight > 0)          $attributes["class"] = "level{$this->weight}";
 
     if (!empty($attributes)) $options["attributes"] = $attributes;
 

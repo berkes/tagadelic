@@ -80,6 +80,12 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     }
   }
 
+  public function testAttachesCssToPage() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("tagadelic_taxonomy");
+    $this->assertRaw('/tagadelic.css', "Tagadelic CSS added to styles");
+  }
+
   private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
     $tx_test = new TaxonomyWebTestCase();
 
@@ -153,9 +159,9 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
 
   private function assertTagHasWeight($name, $weight, $message = '', $group = 'Other') {
     if (empty($message)) {
-      $message = "Tag with name '{$name}' and class 'weight-{$weight}' found";
+      $message = "Tag with name '{$name}' and class 'level{$weight}' found";
     }
-    $xpath = "//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')][@class='weight-{$weight}']";
+    $xpath = "//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')][@class='level{$weight}']";
     return $this->assertHasXpath($xpath, $message, $group = 'Other');
   }
 }

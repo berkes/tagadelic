@@ -83,7 +83,7 @@ class TagadelicTagToStringTest extends TagadelicTagTest {
    */
   public function test__ToStringHasWeight() {
     $this->object->set_weight(3);
-    $expected_attrs = array("class" => "weight-3");
+    $expected_attrs = array("class" => "level3");
 
     $this->drupal->expects($this->any())
         ->method('l')
