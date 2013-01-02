@@ -26,7 +26,6 @@ function tagadelic_taxonomy_menu() {
 function tagadelic_taxonomy_cloud() {
   $cloud = new TagadelicCloud("tagadalic_taxonomy", tagadelic_taxonomy_get_tags());
   $tags = $cloud->get_tags();
-  var_dump($tags);
 
   $out = theme("tagadelic_taxonomy_cloud", array("tags" => $tags));
   return $out;
