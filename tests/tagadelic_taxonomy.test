@@ -32,6 +32,14 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
   }
 
+  public function testTagsWithoutNodesNotOnPage() {
+    $this->createVocAndTags(3, FALSE);
+    $this->drupalGet("tagadelic_taxonomy");
+    foreach($this->tags as $tag) {
+      $this->assertNoText($tag->name);
+    }
+  }
+
   public function testHasTagsOnPage() {
     $this->createVocAndTags(1);
     $this->drupalGet("tagadelic_taxonomy");
@@ -43,10 +51,8 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->createVocAndTags(1);
     $this->drupalGet("tagadelic_taxonomy");
 
-    $link = $this->xpath("//ul[@class='tag-cloud']/li/a[1]");
-    $links_to = (string) $link[0]->attributes()["href"];
-    $tag = $this->tags[0];
-    $this->assertEqual("/taxonomy/term/{$tag->tid}", $links_to);
+    $link = "/taxonomy/term/{$this->tags[0]->tid}";
+    $this->assertHasXpath("//*/ul[@class='tag-cloud']/li/a[@href='{$link}']");
   }
 
   public function testHasFiveTags() {
@@ -74,7 +80,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     }
   }
 
-  private function createVocAndTags($amount_of_tags) {
+  private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
     $tx_test = new TaxonomyWebTestCase();
 
     $this->tags       = array();
@@ -82,6 +88,8 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     for ($i = 0; $i < $amount_of_tags; $i++) {
       $this->tags[] = $tx_test->createTerm($this->vocabulary);
     }
+
+    if ($create_node) $this->createNodesWithTags(1);
     return $this;
   }
 
@@ -120,6 +128,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
       //remove one tag, so the next node gets one less tag attached.
       array_shift($attachable);
     }
+    return $this;
   }
 
   /**
@@ -129,6 +138,9 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
    * @returns Boolean Boolean Assertion-result
    */
   private function assertHasXpath($xpath, $message = '', $group = 'Other') {
+    if (empty($message)) {
+      $message = "xpath '{$xpath}' not found.";
+    }
     $xpath = $this->xpath($xpath);
     $truthiness = count($xpath) > 0;
     return $this->assertTrue($truthiness, $message, $group);
