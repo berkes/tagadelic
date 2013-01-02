@@ -84,6 +84,15 @@ class TagadelicTag {
   }
 
   /**
+   * Returns the count, getter only.
+   * @ingroup getters
+   * return Int the count as provided when Initializing the Object.
+   **/
+  public function get_count() {
+    return $this->count;
+  }
+
+  /**
    * Sets the optional description.
    * A tag may have a description
    * @param $description String a description

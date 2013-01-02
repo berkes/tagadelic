@@ -42,6 +42,13 @@ class TagadelicTagMethodsTest extends TagadelicTagTest {
   }
 
   /**
+   * @covers TagadelicTag::get_weight
+   */
+  public function testGet_count() {
+    $this->assertSame(2, $this->object->get_count());
+  }
+
+  /**
    * @covers TagadelicTag::set_weight
    */
   public function testSet_weight() {
