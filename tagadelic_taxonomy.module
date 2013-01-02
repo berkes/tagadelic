@@ -24,11 +24,16 @@ function tagadelic_taxonomy_menu() {
  * Constructs a simple page.
  */
 function tagadelic_taxonomy_cloud() {
-  $cloud = new TagadelicCloud("tagadalic_taxonomy", tagadelic_taxonomy_get_tags());
-  $tags = $cloud->get_tags();
+  $cloud = new TagadelicCloud("tagadalic_taxonomy");
 
-  $out = theme("tagadelic_taxonomy_cloud", array("tags" => $tags));
-  return $out;
+  foreach (tagadelic_taxonomy_get_tags(60) as $term) {
+    $tag = new TagadelicTag($term->tid, $term->name, $term->count);
+    $tag->set_link("taxonomy/term/{$term->tid}");
+
+    $cloud->add_tag($tag);
+  }
+
+  return theme("tagadelic_taxonomy_cloud", array("tags" => $cloud->get_tags()));
 }
 
 function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
@@ -45,7 +50,7 @@ function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
   );
 }
 
-function tagadelic_taxonomy_get_tags() {
+function tagadelic_taxonomy_get_tags($max_amount) {
   $tags = array();
 
   $query = db_select('taxonomy_index', 'i');
@@ -57,18 +62,8 @@ function tagadelic_taxonomy_get_tags() {
   $query->addField($alias, 'name');
   $query->addField($alias, 'description');
 
-  $query->range(0, 60)
+  $query->range(0, $max_amount)
     ->groupBy("i.tid");
 
-  $result = $query->execute();
-
-  foreach ($result as $term) {
-    $tag = new TagadelicTag($term->tid, $term->name, $term->count);
-    $tag->set_link("taxonomy/term/{$term->tid}");
-
-    $tags[] = $tag;
-  }
-
-  return $tags;
+  return $query->execute();
 }
-
