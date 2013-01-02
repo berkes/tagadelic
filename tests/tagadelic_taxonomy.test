@@ -70,13 +70,15 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   }
 
   public function testHasWeightedTags() {
-    $this->createVocAndTags(6);
-    $this->createNodesWithTags(10);
+    $this->createVocAndTags(10);
+    $this->createNodesWithTags(100);
     $this->drupalGet("tagadelic_taxonomy");
-    $weight = 1;
+
+    $weights = array(1,2,3,4,4,5,5,6,6,6);
+    $i = 0;
     foreach($this->tags as $tag) {
-      /*$this->assertTagHasWeight($tag->name, $weight++);*/
-      $this->assertTagHasWeight($tag->name, 1);
+      $weight = $weights[$i++];
+      $this->assertTagHasWeight($tag->name, $weight);
     }
   }
 
@@ -158,10 +160,20 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   }
 
   private function assertTagHasWeight($name, $weight, $message = '', $group = 'Other') {
-    if (empty($message)) {
-      $message = "Tag with name '{$name}' and class 'level{$weight}' found";
+    $truthiness = FALSE;
+    $class ='';
+    $xpath = $this->xpath("//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')]");
+
+    if (!empty($xpath)) {
+      $attributes = $xpath[0]->attributes();
+      $class = $attributes["class"];
+      if ($class == "level{$weight}") $truthiness = TRUE;
     }
-    $xpath = "//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')][@class='level{$weight}']";
-    return $this->assertHasXpath($xpath, $message, $group = 'Other');
+
+    if (empty($message)) {
+      $message = "No tag with name '{$name}' and class 'level{$weight}' found. Tag with '{$name}' has class '{$class}'";
+    }
+
+    return $this->assertTrue($truthiness, $message, $group = 'Other');
   }
 }

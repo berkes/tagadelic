@@ -24,7 +24,10 @@ function tagadelic_taxonomy_menu() {
  * Constructs a simple page.
  */
 function tagadelic_taxonomy_cloud() {
-  $tags = tagadelic_taxonomy_get_tags();
+  $cloud = new TagadelicCloud("tagadalic_taxonomy", tagadelic_taxonomy_get_tags());
+  $tags = $cloud->get_tags();
+  var_dump($tags);
+
   $out = theme("tagadelic_taxonomy_cloud", array("tags" => $tags));
   return $out;
 }
@@ -63,7 +66,6 @@ function tagadelic_taxonomy_get_tags() {
   foreach ($result as $term) {
     $tag = new TagadelicTag($term->tid, $term->name, $term->count);
     $tag->set_link("taxonomy/term/{$term->tid}");
-    $tag->set_weight(1);
 
     $tags[] = $tag;
   }
