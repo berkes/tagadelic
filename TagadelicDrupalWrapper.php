@@ -48,4 +48,11 @@ class TagadelicDrupalWrapper {
   public function l($text, $path, $options = array()) {
     return l($text, $path, $options);
   }
+
+  /**
+   * Wraps PHP core function `shuffle()` http://php.net/manual/en/function.shuffle.php
+   */
+  public function shuffle(&$array) {
+    shuffle($array);
+  }
 }

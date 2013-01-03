@@ -12,6 +12,7 @@ class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
    * This method is called before a test is executed.
    */
   protected function setUp() {
+    require_once "tests/support/FakeDrupal.php";
     $this->object = new TagadelicDrupalWrapper();
   }
 
@@ -97,32 +98,21 @@ class TagadelicDrupalWrapperTest extends PHPUnit_Framework_TestCase {
   public function testL_requires_path() {
     $this->object->l("text");
   }
-}
 
-/**
- * Fake Drupal stubs the global functions
- */
-
-function cache_get() {
-  return __sig("cache_get", func_get_args());
-}
-function cache_set() {
-  return __sig("cache_set", func_get_args());
-}
-function check_plain() {
-  return __sig("check_plain", func_get_args());
-}
-function l() {
-  return __sig("l", func_get_args());
-}
-
-function __sig($func, $args) {
-  foreach($args as $id => $arg) {
-    if (is_array($arg) && !empty($arg)) {
-      $args[$id] = serialize($arg);
-    }
+  /**
+   * @covers TagadelicDrupalWrapper::shuffle
+   */
+  public function testShuffle() {
+    $array_to_shuffle = array("a", "b");
+    $this->assertTrue(method_exists($this->object, "shuffle"));
+    //Cannot test the method signature, because we cannot redeclare global "shuffle()"
   }
-  $arglist = join(',', $args);
-  return "{$func}({$arglist})";
+
+  /**
+   * @expectedException PHPUnit_Framework_Error
+   */
+  public function testShuffle_requires_array() {
+    $this->object->shuffle();
+  }
 }
 
