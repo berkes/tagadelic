@@ -98,6 +98,21 @@ class TagadelicCloud {
   }
 
   /**
+   * Sorts the tags by given property.
+   * @return $this; for chaining.
+   */
+  public function sort($by_property) {
+    if ($by_property == "random") {
+      $this->drupal()->shuffle($this->tags);
+    }
+    else {
+      //Bug in PHP https://bugs.php.net/bug.php?id=50688, lets supress the error.
+      @usort($this->tags, array($this, "cb_sort_by_{$by_property}"));
+    }
+    return $this;
+  }
+
+  /**
    * (Re)calculates the weights on the tags.
    * @param $recalculate. Optional flag to enfore recalculation of the weights for the tags in this cloud.
    *        defaults to FALSE, meaning the value will be calculated once per cloud.
@@ -120,5 +135,24 @@ class TagadelicCloud {
       $this->tags[$id]->set_weight(1 + floor($this->steps * ($tag->distributed() - $min) / $range));
     }
     return $this;
+  }
+
+  private function cb_sort_by_name($a, $b) {
+    $al = strtolower($a->get_name());
+    $bl = strtolower($b->get_name());
+    if ($al == $bl) {
+      return 0;
+    }
+    return ($al > $bl) ? +1 : -1;
+  }
+
+  private function cb_sort_by_count($a, $b) {
+    $ac = $a->get_count();
+    $bc = $b->get_count();
+    if ($ac == $bc) {
+      return 0;
+    }
+    //Highest first, High to low
+    return ($ac < $bc) ? +1 : -1;
   }
 }
