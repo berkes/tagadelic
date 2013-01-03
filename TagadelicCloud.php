@@ -11,6 +11,8 @@ class TagadelicCloud {
   private $steps        = 6;  #Amount of steps to weight the cloud in. Defaults to 6. Means: 6 different sized tags.
   private $needs_recalc = true;
 
+  public $fuck_locale = "";
+
   /**
    * Initalize the cloud
    *
@@ -138,12 +140,7 @@ class TagadelicCloud {
   }
 
   private function cb_sort_by_name($a, $b) {
-    $al = strtolower($a->get_name());
-    $bl = strtolower($b->get_name());
-    if ($al == $bl) {
-      return 0;
-    }
-    return ($al > $bl) ? +1 : -1;
+    return strcoll($a->get_name(), $b->get_name());
   }
 
   private function cb_sort_by_count($a, $b) {

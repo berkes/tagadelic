@@ -19,24 +19,8 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
   protected function setUp() {
     $this->object = new TagadelicCloud(1337);
 
-    $this->blackbeard = $this->getMock("TagadelicTag", array("get_name", "count", "set_weight"), array(14, "blackbeard", 100));
-
-    $this->blackbeard->expects($this->any())
-      ->method("get_name")
-      ->will($this->returnValue("blackbeard"));
-    $this->blackbeard->expects($this->any())
-      ->method("count")
-      ->will($this->returnValue(100));
-
-    $this->jane = $this->getMock("TagadelicTag", array("get_name", "count", "set_weight"), array(14, "jane", 200));
-    $this->jane->expects($this->any())
-      ->method("get_name")
-      ->will($this->returnValue("jane"));
-    $this->jane->expects($this->any())
-      ->method("count")
-      ->will($this->returnValue(200));
-
-    $this->mock_tags = array($this->blackbeard, $this->jane);
+    $this->addTagStub("jane", "Jane", 200);
+    $this->addTagStub("blackbeard", "Blackbeard", 100);
   }
 
   /**
@@ -78,15 +62,15 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * @covers TagadelicCloud::add_tag
    */
   public function testAdd_tag() {
-    $this->object->add_tag($this->blackbeard);
-    $this->assertAttributeContains($this->blackbeard, "tags", $this->object);
+    $this->object->add_tag($this->mock_tags["blackbeard"]);
+    $this->assertAttributeContains($this->mock_tags["blackbeard"], "tags", $this->object);
   }
 
   /**
    * @covers TagadelicCloud::add_tag()
    */
   public function testAdd_tagIsChainable() {
-    $this->assertEquals($this->object->add_tag($this->blackbeard), $this->object);
+    $this->assertEquals($this->object->add_tag($this->mock_tags["blackbeard"]), $this->object);
   }
 
   /**
@@ -177,7 +161,7 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
     $i = 1;
 
     foreach($assert_table as $assertion) {
-       $mock = $this->getMock("TagadelicTag", array("name", "count", "set_weight"), array($i++, $assertion[0], $assertion[1]));
+       $mock = $this->getMock("TagadelicTag", array("set_weight"), array($i++, $assertion[0], $assertion[1]));
        $mock->expects($this->once())
         ->method("set_weight")
         ->with($assertion[2])
@@ -193,14 +177,13 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
    * Default is not sorted
    **/
   public function testNotSorted() {
-    $this->object->add_tag($this->jane);
-    $this->object->add_tag($this->blackbeard);
+    $this->object->add_tag($this->addTagStub("bill", "William Kidd", 100));
+    $this->object->add_tag($this->addTagStub("cheung", "Cheung Po Tsai", 20));
 
-    $expected_order = array("jane", "blackbeard");
+    $expected_order = array("William Kidd", "Cheung Po Tsai");
     $given_order = array();
 
     foreach($this->object->get_tags() as $tag) {
-      $tag->force_clean();
       $given_order[] = $tag->get_name();
     }
 
@@ -215,12 +198,46 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
     $drupal->expects($this->any())->method("check_plain")->will($this->returnArgument(0));
     $this->object->set_drupal($drupal);
 
-    $this->object->add_tag($this->jane);
-    $this->object->add_tag($this->blackbeard);
+    $this->object->add_tag($this->addTagStub("bill", "William Kidd", 100));
+    $this->object->add_tag($this->addTagStub("cheung", "Cheung Po Tsai", 20));
 
-    $expected_order = array("blackbeard", "jane");
+    $expected_order = array("Cheung Po Tsai", "William Kidd");
     $given_order = array();
 
+    $this->object->sort("name");
+
+    foreach($this->object->get_tags() as $tag) {
+      $given_order[] = $tag->get_name();
+    }
+
+    $this->assertSame($given_order, $expected_order);
+  }
+
+  /**
+   * Sort By name should sort International characters like ÅÄÖABO
+   *
+   * Uses Locale de_DE, which must be available on your system.
+   *  Debian/Ubuntu users:
+   *   $ locale -a
+   *   $ #lists all locales available. Find if de_DE is there, if not, install it.
+   *   $ sudo apt-get install language-pack-de-base
+   **/
+  public function testSortByNameWithInternationalCharacters() {
+    $drupal = $this->getMock("TagadelicDrupalWrapper", array("check_plain"));
+    $drupal->expects($this->any())->method("check_plain")->will($this->returnArgument(0));
+    $this->object->set_drupal($drupal);
+
+    $this->object->add_tag($this->addTagStub("ae", "Ä", 10));
+    $this->object->add_tag($this->addTagStub("oe", "Ö", 20));
+    $this->object->add_tag($this->addTagStub("ue", "Ü", 30));
+    $this->object->add_tag($this->addTagStub("u", "U", 40));
+    $this->object->add_tag($this->addTagStub("o", "O", 50));
+    $this->object->add_tag($this->addTagStub("a", "A", 60));
+
+    $expected_order = array("A", "Ä", "O", "Ö", "U", "Ü");
+    $given_order = array();
+
+    setlocale(LC_COLLATE, 'de_DE.utf8');
     $this->object->sort("name");
 
     foreach($this->object->get_tags() as $tag) {
@@ -238,10 +255,10 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
     $drupal->expects($this->any())->method("check_plain")->will($this->returnArgument(0));
     $this->object->set_drupal($drupal);
 
-    $this->object->add_tag($this->jane);       //count 200
-    $this->object->add_tag($this->blackbeard); //count 100
+    $this->object->add_tag($this->addTagStub("bill", "William Kidd", 100));
+    $this->object->add_tag($this->addTagStub("cheung", "Cheung Po Tsai", 200));
 
-    $expected_order = array("jane", "blackbeard");
+    $expected_order = array("Cheung Po Tsai", "William Kidd");
     $given_order = array();
 
     $this->object->sort("count");
@@ -263,5 +280,22 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
     $this->object->set_drupal($drupal);
 
     $this->object->sort("random");
+  }
+
+  /**
+   * Creates a stub for a tag
+   */
+  private function addTagStub($id, $name, $count) {
+    $stub = $this->getMock("TagadelicTag", array("get_name", "get_count", "set_weight"), array($id, $name, $count));
+
+    $stub->expects($this->any())
+      ->method("get_name")
+      ->will($this->returnValue($name));
+    $stub->expects($this->any())
+      ->method("get_count")
+      ->will($this->returnValue($count));
+
+    $this->mock_tags[$name] = $stub;
+    return $stub;
   }
 }
