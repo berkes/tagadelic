@@ -17,6 +17,12 @@ function tagadelic_taxonomy_menu() {
     'access callback' => TRUE,
     'expanded' => TRUE,
   );
+  # Admin pages
+  $items['admin/structure/tagadelic_taxonomy'] = array(
+    'title' => 'Tag Cloud',
+    'page callback' => 'tagadelic_taxonomy_admin',
+    'access callback' => TRUE,
+  );
   return $items;
 }
 
@@ -66,4 +72,19 @@ function tagadelic_taxonomy_get_tags($max_amount) {
     ->groupBy("i.tid");
 
   return $query->execute();
+}
+
+/********************************************************************
+ *                      Admin pages methods                         *
+ *******************************************************************/
+
+/**
+ * tagadelic_taxonomy_admin Renders admin page
+ *
+ * @returns String $html The Contents of the page, as HTML
+ */
+function tagadelic_taxonomy_admin() {
+  $html = "foo";
+
+  return $html;
 }

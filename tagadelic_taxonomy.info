@@ -5,6 +5,7 @@ dependencies[] = tagadelic
 package = "Taxonomy"
 
 files[] = tests/tagadelic_taxonomy.test
+files[] = tests/tagadelic_taxonomy.admin.test
 files[] = tagadelic_taxonomy.module
 
 stylesheets[all][] = tagadelic.css

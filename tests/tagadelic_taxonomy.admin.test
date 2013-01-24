@@ -1,0 +1,32 @@
+<?php
+class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
+  /**
+   * getInfo sets information about this test
+   *
+   * @scope public static
+   * @returns Array  Descriptive array for this test
+   */
+  public static function getInfo() {
+    return array(
+      "name" => "Tagadelic Taxonomy Admin Test",
+      "description" => "Tests admin area in Tagadelic Taxonomy",
+      "group" => "Tagadelic",
+    );
+  }
+
+  /**
+   * @scope public
+   * @returns Type  Description of return value
+   */
+  public function setUp() {
+    parent::setUp(array('tagadelic_taxonomy'));
+    $web_user = $this->drupalCreateUser(array('access administration pages'));
+    $this->drupalLogin($web_user);
+  }
+
+  public function testHasTagaDelicPage() {
+    $this->drupalGet("admin/structure/tagadelic_taxonomy");
+    $this->assertResponse(200, "Can Access Page");
+    $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
+  }
+}
