@@ -1,0 +1,135 @@
+<?php
+class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
+  private $admin_url = "admin/structure/tagadelic_taxonomy";
+
+  /**
+   * getInfo sets information about this test
+   *
+   * @scope public static
+   * @returns Array  Descriptive array for this test
+   */
+  public static function getInfo() {
+    return array(
+      "name" => "Tagadelic Taxonomy Admin Test",
+      "description" => "Tests admin area in Tagadelic Taxonomy",
+      "group" => "Tagadelic",
+    );
+  }
+
+  /**
+   * @scope public
+   * @returns Type  Description of return value
+   */
+  public function setUp() {
+    parent::setUp(array('tagadelic_taxonomy'));
+
+    $this->deleteVocabularies();
+
+    $web_user = $this->drupalCreateUser(array('access administration pages'));
+    $this->drupalLogin($web_user);
+  }
+
+  public function testHasTagaDelicPage() {
+    $this->drupalGet($this->admin_url);
+    $this->assertResponse(200, "Can Access Page");
+    $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
+  }
+
+  public function testHasCheckboxesForAllVocabularies() {
+    $this->createVocabularies(5);
+    $this->drupalGet($this->admin_url);
+    foreach($this->vocabularies as $vocabulary) {
+      $id = "edit-tagadelic-taxonomy-vocabularies-{$vocabulary->vid}";
+      $this->assertHasCheckbox($id);
+    }
+  }
+
+  public function testCheckboxesGetDefaults() {
+    $this->createVocabularies(5);
+
+    foreach($this->vocabularies as $vocabulary) {
+      $values[$vocabulary->vid] = $vocabulary->vid;
+    }
+    variable_set("tagadelic_taxonomy_vocabularies", $values);
+
+    $this->drupalGet($this->admin_url);
+    foreach($this->vocabularies as $vocabulary) {
+      $id = "edit-tagadelic-taxonomy-vocabularies-{$vocabulary->vid}";
+      $this->assertFieldChecked($id);
+    }
+  }
+
+  public function testSelectedVocabulariesAreSaved() {
+    $values = $edit = array();
+    $this->createVocabularies(5);
+    $this->drupalGet($this->admin_url); //Create the form item
+
+    foreach($this->vocabularies as $vocabulary) {
+      $values[$vocabulary->vid] = $vocabulary->vid;
+
+      $key = "tagadelic_taxonomy_vocabularies[{$vocabulary->vid}]";
+      $edit[$key] = TRUE;
+    }
+    $this->drupalPost(NULL, $edit, "Save configuration");
+
+    $this->assertVariableIs("tagadelic_taxonomy_vocabularies", $values);
+  }
+
+
+  protected function assertHasCheckbox($id, $message = '', $group = 'Other') {
+    if (empty($message)) {
+      $message = "checkbox '{$id}' not found";
+    }
+
+    $this->assertHasXpath(".//input[@id='{$id}'][@type='checkbox']");
+  }
+
+  protected function assertHasXpath($xpath, $message = '', $group = 'Other') {
+    if (empty($message)) {
+      $message = "xpath '{$xpath}' not found.";
+    }
+    $xpath = $this->xpath($xpath);
+    $truthiness = count($xpath) > 0;
+    return $this->assertTrue($truthiness, $message, $group);
+  }
+
+  protected function assertVariableIs($name, $expected_value, $refresh = FALSE, $message = '', $group = 'Other') {
+    if ($refresh) {
+      $this->refreshVariables();
+    }
+    $real_value = variable_get($name, NULL);
+
+    // We want identical-ish arrays.
+    if (is_array($expected_value)) {
+      ksort($expected_value);
+    }
+    if (is_array($real_value)) {
+      ksort($real_value);
+    }
+
+    if (empty($message)) {
+      $expected = var_export($expected_value, TRUE);
+      $real     = var_export($real_value, TRUE);
+      $message = "variable {$name} with {$expected} not found. Was {$real}.";
+    }
+    return $this->assertIdentical($expected_value, $real_value, $message);
+  }
+
+  /*
+   * Builder functions
+   */
+  private function createVocabularies($amount) {
+    $tx_test = new TaxonomyWebTestCase();
+    for ($i = 0; $i < $amount; $i++) {
+      $this->vocabularies[] = $tx_test->createVocabulary();
+    }
+
+    return $this;
+  }
+
+  private function deleteVocabularies() {
+    foreach(taxonomy_vocabulary_load_multiple(FALSE) as $vocabulary) {
+      taxonomy_vocabulary_delete($vocabulary->vid);
+    }
+  }
+}

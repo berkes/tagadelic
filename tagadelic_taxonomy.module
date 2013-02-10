@@ -1,0 +1,116 @@
+<?php
+/**
+ * @file tagadelic.module
+ * Library to build tagclouds.
+ * @author Bèr Kessels <ber@webschuur.com>
+ * @link http://berk.es
+ */
+
+/**
+ * Implements hook_menu().
+ * @see hook_menu()
+ */
+function tagadelic_taxonomy_menu() {
+  $items['tagadelic_taxonomy'] = array(
+    'title' => 'Tag Cloud',
+    'page callback' => 'tagadelic_taxonomy_cloud',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+  # Admin pages
+  $items['admin/structure/tagadelic_taxonomy'] = array(
+    'title' => 'Tag Cloud',
+    'page callback' => 'tagadelic_taxonomy_admin',
+    'access callback' => TRUE,
+  );
+  return $items;
+}
+
+/**
+ * Constructs a simple page.
+ */
+function tagadelic_taxonomy_cloud() {
+  $cloud = new TagadelicCloud("tagadalic_taxonomy");
+
+  foreach (tagadelic_taxonomy_get_tags(60) as $term) {
+    $tag = new TagadelicTag($term->tid, $term->name, $term->count);
+    $tag->set_link("taxonomy/term/{$term->tid}");
+
+    $cloud->add_tag($tag);
+  }
+
+  return theme("tagadelic_taxonomy_cloud", array("tags" => $cloud->get_tags()));
+}
+
+function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
+  return array(
+    "tagadelic_taxonomy_cloud" => array(
+      "variables" => array(
+        "tags" => array(),
+        "name" => "",
+      ),
+      "path" => "{$path}/templates",
+      "template" => "tagadelic_taxonomy_cloud"
+    ), // tagadelic_taxonomy_cloud
+
+  );
+}
+
+function tagadelic_taxonomy_get_tags($max_amount) {
+  $tags = array();
+
+  $query = db_select('taxonomy_index', 'i');
+
+  $alias = $query->leftjoin('taxonomy_term_data', 't', '%alias.tid = i.tid');
+
+  $query->addExpression('COUNT(i.nid)', 'count');
+  $query->addField($alias, 'tid');
+  $query->addField($alias, 'name');
+  $query->addField($alias, 'description');
+
+  foreach(variable_get("tagadelic_taxonomy_vocabularies", array()) as $vid => $state) {
+    if ($state != $vid) { //Disabled
+      $query->condition('t.vid', $vid, '<>');
+    }
+  }
+
+  $query->range(0, $max_amount)
+    ->groupBy("i.tid");
+
+  return $query->execute();
+}
+
+/********************************************************************
+ *                      Admin pages methods                         *
+ *******************************************************************/
+
+/**
+ * tagadelic_taxonomy_admin Renders admin page
+ *
+ * @returns String $html The Contents of the page, as HTML
+ */
+function tagadelic_taxonomy_admin() {
+  $html = "";
+
+  $form = drupal_get_form("tagadelic_taxonomy_admin_form");
+  $html .= drupal_render($form);
+
+  return $html;
+}
+
+function tagadelic_taxonomy_admin_form($form, &$form_state) {
+  $form    = array();
+  $options = array();
+
+  foreach(taxonomy_get_vocabularies() as $vocabulary) {
+    $options[$vocabulary->vid] = $vocabulary->name;
+  }
+
+  $form["tagadelic_taxonomy_vocabularies"] = array(
+    "#type"          => "checkboxes",
+    "#title"         => "Vocabularies used in Tag Cloud",
+    "#options"       => $options,
+    "#default_value" => variable_get('tagadelic_taxonomy_vocabularies', array()),
+  );
+  return system_settings_form($form);
+}

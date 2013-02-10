@@ -1,0 +1,223 @@
+<?php
+class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
+  protected $vocabulary;
+  protected $tags  = array();
+  protected $nodes = array();
+
+  /**
+   * getInfo sets information about this test
+   *
+   * @scope public static
+   * @returns Array  Descriptive array for this test
+   */
+  public static function getInfo() {
+    return array(
+      "name" => "Tagadelic Taxonomy Test",
+      "description" => "Tests tagclouds from Tagadelic Taxonomy",
+      "group" => "Tagadelic",
+    );
+  }
+
+  /**
+   * @scope public
+   * @returns Type  Description of return value
+   */
+  public function setUp() {
+    parent::setUp(array('tagadelic_taxonomy'));
+  }
+
+  public function testHasTagcloudPage() {
+    $this->drupalGet("tagadelic_taxonomy");
+    $this->assertResponse(200, "Can Access Page");
+    $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
+  }
+
+  public function testTagsWithoutNodesNotOnPage() {
+    $this->createVocAndTags(3, FALSE);
+    $this->drupalGet("tagadelic_taxonomy");
+    foreach($this->tags as $tag) {
+      $this->assertNoText($tag->name);
+    }
+  }
+
+  public function testHasTagsOnPage() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("tagadelic_taxonomy");
+    $tag = $this->tags[0];
+    $this->assertText($tag->name);
+  }
+
+  public function testHasClickableLink() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("tagadelic_taxonomy");
+
+    $link = "/taxonomy/term/{$this->tags[0]->tid}";
+    $this->assertHasXpath("//*/ul[@class='tag-cloud']/li/a[@href='{$link}']");
+  }
+
+  public function testHasFiveTags() {
+    $this->createVocAndTags(5);
+    $this->drupalGet("tagadelic_taxonomy");
+    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
+    $this->assertEqual(5, $amount);
+  }
+
+  public function testHasMaxsixtyTags() {
+    $this->createVocAndTags(100);
+    $this->drupalGet("tagadelic_taxonomy");
+    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
+    $this->assertEqual(60, $amount);
+  }
+
+  public function testOnlyHasTagsFromSelectedVocabularies() {
+    $this->createVocsAndTags(3, 3);
+    $this->createNodesWithTags(100);
+
+    $disabled_voc = $this->vocabularies[0];
+    foreach($this->vocabularies as $vocabulary) {
+      if ($disabled_voc->vid == $vocabulary->vid) {
+        $setting[$vocabulary->vid] = 0;
+      }
+      else {
+        $setting[$vocabulary->vid] = $vocabulary->vid;
+      }
+    }
+    variable_set("tagadelic_taxonomy_vocabularies", $setting);
+    $this->refreshVariables();
+
+    $this->drupalGet("tagadelic_taxonomy");
+    foreach($this->tags_by_voc[$disabled_voc->vid] as $term) {
+      $this->assertNoText($term->name);
+    }
+  }
+
+  public function testHasWeightedTags() {
+    $this->createVocAndTags(10);
+    $this->createNodesWithTags(100);
+    $this->drupalGet("tagadelic_taxonomy");
+
+    $weights = array(1,2,3,4,4,5,5,6,6,6);
+    $i = 0;
+    foreach($this->tags as $tag) {
+      $weight = $weights[$i++];
+      $this->assertTagHasWeight($tag->name, $weight);
+    }
+  }
+
+  public function testAttachesCssToPage() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("tagadelic_taxonomy");
+    $this->assertRaw('/tagadelic.css', "Tagadelic CSS added to styles");
+  }
+
+  private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
+    $tx_test = new TaxonomyWebTestCase();
+
+    $this->tags       = array();
+    $this->vocabulary = $tx_test->createVocabulary();
+    for ($i = 0; $i < $amount_of_tags; $i++) {
+      $this->tags[] = $tx_test->createTerm($this->vocabulary);
+    }
+
+    if ($create_node) $this->createNodesWithTags(1);
+    return $this;
+  }
+
+  private function createVocsAndTags($amount_of_vocs, $amount_of_tags_per_voc) {
+    $tx_test = new TaxonomyWebTestCase();
+
+    $this->tags         = array();
+    $this->tags_by_voc = array();
+
+    for ($v = 0; $v < $amount_of_vocs; $v++) {
+      $voc = $tx_test->createVocabulary();
+      $this->vocabularies[] = $voc;
+      $this->tags_by_voc[$voc->vid] = array();
+
+      for ($t = 0; $t < $amount_of_tags_per_voc; $t++) {
+        $tag = $tx_test->createTerm($voc);
+        $this->tags[]                     = $tag;
+        $this->tags_by_voc[$voc->vid][] = $tag;
+      }
+
+    }
+    return $this;
+  }
+
+  /**
+   * Creates $amount nodes with terms attached.
+   *
+   *
+   * Fuck it, I am poking around in the database directly instead of testing
+   * and preparing all this field, entity, admin-user and whatnot. I am not 
+   * interested in whether or not we can store nodes with tags, only that they
+   * are there. By adding them to the database, we achieve that.
+   */
+  private function createNodesWithTags($amount) {
+    $this->nodes = array();
+    $attachable = $this->tags;
+
+    for ($i = 0; $i < $amount; $i++) {
+      // Post an article.
+      $node = new StdClass();
+      $node->title = $this->randomName();
+      $node->type  = "story";
+      node_save($node);
+      $this->nodes[] = $node;
+
+      // Attach the terms
+      $query = db_insert('taxonomy_index')->fields(array('nid', 'tid', 'sticky', 'created'));
+      foreach($attachable as $tag) {
+        $query->values(array(
+          'nid' => $node->nid,
+          'tid' => $tag->tid,
+          'sticky' => TRUE,
+          'created' => $node->created,
+        ));
+      }
+      $query->execute();
+
+      //remove one tag, so the next node gets one less tag attached.
+      array_shift($attachable);
+    }
+    return $this;
+  }
+
+  /**
+   * assertHasXpath Asserts the existence of an xpath
+   *
+   * @scope private
+   * @returns Boolean Boolean Assertion-result
+   */
+  private function assertHasXpath($xpath, $message = '', $group = 'Other') {
+    if (empty($message)) {
+      $message = "xpath '{$xpath}' not found.";
+    }
+    $xpath = $this->xpath($xpath);
+    $truthiness = count($xpath) > 0;
+    return $this->assertTrue($truthiness, $message, $group);
+  }
+
+  private function assertHasTag($name, $message = '', $group = 'Other') {
+    $xpath = "//ul[@class='tag-cloud']/li/a";
+    return $this->assertHasXpath($xpath, $message, $group);
+  }
+
+  private function assertTagHasWeight($name, $weight, $message = '', $group = 'Other') {
+    $truthiness = FALSE;
+    $class ='';
+    $xpath = $this->xpath("//*/ul[@class='tag-cloud']/li/a[contains(text(),'{$name}')]");
+
+    if (!empty($xpath)) {
+      $attributes = $xpath[0]->attributes();
+      $class = $attributes["class"];
+      if ($class == "level{$weight}") $truthiness = TRUE;
+    }
+
+    if (empty($message)) {
+      $message = "No tag with name '{$name}' and class 'level{$weight}' found. Tag with '{$name}' has class '{$class}'";
+    }
+
+    return $this->assertTrue($truthiness, $message, $group = 'Other');
+  }
+}
