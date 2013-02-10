@@ -102,10 +102,11 @@ function tagadelic_taxonomy_admin_form($form, &$form_state) {
     $options[$vocabulary->vid] = $vocabulary->name;
   }
 
-  $form["tagadelic-taxonomy-vocabularies"] = array(
+  $form["tagadelic_taxonomy_vocabularies"] = array(
     "#type" => "checkboxes",
     "#title" => "Vocabularies used in Tag Cloud",
-    "#options" => $options
+    "#options" => $options,
+    "#default_value" => variable_get('tagadelic_taxonomy_vocabularies', array()),
   );
   return system_settings_form($form);
 }
