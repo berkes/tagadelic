@@ -1,26 +1,20 @@
 # Tagadelic #
+Tagadelic provides an API and a few simple turnkey modules, which allows you to easily create tagclouds, weighted lists, search-clouds and such.
 
-Tagadelic provides an API which allows developers to easily create
-tagclouds, weighted lists, search-clouds and such.
+With the API you can build a module with a few lines of PHP, to turn anything that can be counted into a weighted cloud. Which can be presented to your users anyway and anywhere on your site.
 
-With this API, two very simple modules are shipped that implement this, for your
-ease and reference. Since the project is mostly a library, it is  mostly aimed
-at developers who should use it as a library. 
-
-But end-users can install and use the shipped modules right out of the box too.
-
-* Create a tagcloud from taxonomy terms: terms used more often become
-  larger, terms used less frequent are smaller.
-* Create a weighted list of article-titles, based on the amount of
-  "hits" they got.
+With the turnkey modules, you can add a page that shows taxonomy-terms in a weighted cloud: terms that are used more often are bigger. Another module provides a page that shows article-titles in a cloud: titles from articles that are read more often appear bigger.
 
 ## End-users ##
 Install and enable _"tagadelic taxonomy"_ for a tagcloud from your
 taxonomy-terms, and _"tagadelic titles"_ for a tagcloud from
 article-titles. The required libaries and such will be installed
 automatically.
-Refer to the README of these modules for information on how and what to
-configure.
+
+### Documentation for end-users ###
+
+* [Tagadelic Taxonomy](https://github.com/berkes/tagadelic/wiki/Tagadelic-Taxonomy)
+* [Tagadelic Titles](https://github.com/berkes/tagadelic/wiki/Tagadelic-Titles)
 
 ## Developers ##
 
