@@ -84,7 +84,28 @@ function tagadelic_taxonomy_get_tags($max_amount) {
  * @returns String $html The Contents of the page, as HTML
  */
 function tagadelic_taxonomy_admin() {
-  $html = "foo";
+  $html = "";
+
+
+  $form = drupal_get_form("tagadelic_taxonomy_admin_form");
+  $html .= drupal_render($form);
+  /*$html .= drupal_build_form($form, $form_state);*/
 
   return $html;
+}
+
+function tagadelic_taxonomy_admin_form($form, &$form_state) {
+  $form = array();
+  $options = array();
+
+  foreach(taxonomy_get_vocabularies() as $vocabulary) {
+    $options[$vocabulary->vid] = $vocabulary->name;
+  }
+
+  $form["tagadelic-taxonomy-vocabularies"] = array(
+    "#type" => "checkboxes",
+    "#title" => "Vocabularies used in Tag Cloud",
+    "#options" => $options
+  );
+  return system_settings_form($form);
 }
