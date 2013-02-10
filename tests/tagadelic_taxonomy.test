@@ -69,6 +69,28 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertEqual(60, $amount);
   }
 
+  public function testOnlyHasTagsFromSelectedVocabularies() {
+    $this->createVocsAndTags(3, 3);
+    $this->createNodesWithTags(100);
+
+    $disabled_voc = $this->vocabularies[0];
+    foreach($this->vocabularies as $vocabulary) {
+      if ($disabled_voc->vid == $vocabulary->vid) {
+        $setting[$vocabulary->vid] = 0;
+      }
+      else {
+        $setting[$vocabulary->vid] = $vocabulary->vid;
+      }
+    }
+    variable_set("tagadelic_taxonomy_vocabularies", $setting);
+    $this->refreshVariables();
+
+    $this->drupalGet("tagadelic_taxonomy");
+    foreach($this->tags_by_voc[$disabled_voc->vid] as $term) {
+      $this->assertNoText($term->name);
+    }
+  }
+
   public function testHasWeightedTags() {
     $this->createVocAndTags(10);
     $this->createNodesWithTags(100);
@@ -101,6 +123,27 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     return $this;
   }
 
+  private function createVocsAndTags($amount_of_vocs, $amount_of_tags_per_voc) {
+    $tx_test = new TaxonomyWebTestCase();
+
+    $this->tags         = array();
+    $this->tags_by_voc = array();
+
+    for ($v = 0; $v < $amount_of_vocs; $v++) {
+      $voc = $tx_test->createVocabulary();
+      $this->vocabularies[] = $voc;
+      $this->tags_by_voc[$voc->vid] = array();
+
+      for ($t = 0; $t < $amount_of_tags_per_voc; $t++) {
+        $tag = $tx_test->createTerm($voc);
+        $this->tags[]                     = $tag;
+        $this->tags_by_voc[$voc->vid][] = $tag;
+      }
+
+    }
+    return $this;
+  }
+
   /**
    * Creates $amount nodes with terms attached.
    *
@@ -113,6 +156,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   private function createNodesWithTags($amount) {
     $this->nodes = array();
     $attachable = $this->tags;
+
     for ($i = 0; $i < $amount; $i++) {
       // Post an article.
       $node = new StdClass();
