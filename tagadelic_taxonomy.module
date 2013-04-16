@@ -21,7 +21,7 @@ function tagadelic_taxonomy_menu() {
   $items['admin/structure/tagadelic_taxonomy'] = array(
     'title' => 'Tag Cloud',
     'page callback' => 'tagadelic_taxonomy_admin',
-    'access callback' => TRUE,
+    'access arguments' => array("administer site configuration"),
   );
   return $items;
 }

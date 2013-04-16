@@ -25,7 +25,7 @@ class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
 
     $this->deleteVocabularies();
 
-    $web_user = $this->drupalCreateUser(array('access administration pages'));
+    $web_user = $this->drupalCreateUser(array("administer site configuration"));
     $this->drupalLogin($web_user);
   }
 
@@ -33,6 +33,14 @@ class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
     $this->drupalGet($this->admin_url);
     $this->assertResponse(200, "Can Access Page");
     $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
+  }
+
+  public function testIsOnlyAccessibleForAdmin() {
+    $web_user = $this->drupalCreateUser(array('access content'));
+    $this->drupalLogin($web_user);
+
+    $this->drupalGet($this->admin_url);
+    $this->assertResponse(403);
   }
 
   public function testHasCheckboxesForAllVocabularies() {
