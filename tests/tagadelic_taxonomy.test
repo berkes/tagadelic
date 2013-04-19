@@ -32,6 +32,14 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertText(t("Tag Cloud"), "Title of page is Tag Cloud");
   }
 
+  public function testOnlyAccessContentAccessible() {
+    # Remove access content permission from anonymous user.
+    # As per http://drupal.stackexchange.com/a/70478/787
+    user_role_revoke_permissions(1, array('access content'));
+    $this->drupalGet("tagadelic_taxonomy");
+    $this->assertResponse(403);
+  }
+
   public function testTagsWithoutNodesNotOnPage() {
     $this->createVocAndTags(3, FALSE);
     $this->drupalGet("tagadelic_taxonomy");
