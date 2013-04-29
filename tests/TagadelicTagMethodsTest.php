@@ -147,4 +147,15 @@ class TagadelicTagMethodsTest extends TagadelicTagTest {
   public function testDistributed() {
     $this->assertSame(log(2), $this->object->distributed());
   }
+
+  /**
+   * @covers TagadelicTag::distributed
+   */
+  public function testDistributed_NotInfinite() {
+
+    $this->object = new TagadelicTag(24, "redhair", 0);
+
+    $this->assertFalse((is_infinite($this->object->distributed())));
+  }
+
 }

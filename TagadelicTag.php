@@ -9,7 +9,7 @@ class TagadelicTag {
   private $description = ""; # A human readable piece of HTML-formatted text.
 
   private $link = "";        # Where this tag will point to. If left empty, tag will not be linked. Can be a full url too.
-  private $count = 0;        # Absolute count for the weight. Weight, i.e. tag-size will be extracted from this.
+  private $count = 0.0000001;# Absolute count for the weight. Weight, i.e. tag-size will be extracted from this.
   private $dirty = true;
 
   private $weight = 0.0;
@@ -24,7 +24,9 @@ class TagadelicTag {
   function __construct($id, $name, $count) {
     $this->id    = $id;
     $this->name  = $name;
-    $this->count = $count;
+    if($count != 0) {
+      $this->count = $count;
+    }
   }
 
   /**
@@ -51,7 +53,7 @@ class TagadelicTag {
    **/
   public function get_id() {
     return $this->id;
-  } 
+  }
 
   /**
    * Getter for the name
@@ -103,8 +105,8 @@ class TagadelicTag {
 
   /**
    * Link to a resource.
-   * @param link String Optional a link to a resource that represents 
-   *        the tag. e.g. a listing with all things tagged with Tag, or 
+   * @param link String Optional a link to a resource that represents
+   *        the tag. e.g. a listing with all things tagged with Tag, or
    *        the article that represents the tag.
    */
   public function set_link($link) {
@@ -150,8 +152,8 @@ class TagadelicTag {
   }
 
   /**
-   * Flag $name and $description as safe. 
-   *  XSS-escaping and sanitizing is left to implementer. 
+   * Flag $name and $description as safe.
+   *  XSS-escaping and sanitizing is left to implementer.
    *  BEWARE! Only enforce when you know what you are doing. Seriously!
    */
   public function force_clean() {
