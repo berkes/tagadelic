@@ -118,6 +118,12 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertRaw('/tagadelic.css', "Tagadelic CSS added to styles");
   }
 
+  public function testAttachesCssOnlyToCloudPages() {
+    $this->createVocAndTags(1);
+    $this->drupalGet("node");
+    $this->assertNotRaw('/tagadelic.css', "Tagadelic CSS added to styles");
+  }
+
   private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
     $tx_test = new TaxonomyWebTestCase();
 
@@ -227,5 +233,13 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     }
 
     return $this->assertTrue($truthiness, $message, $group = 'Other');
+  }
+
+  // Inverse of http://api.drupal.org/api/drupal/modules!simpletest!drupal_web_test_case.php/function/DrupalWebTestCase%3A%3AassertRaw/7
+  private function assertNotRaw($raw, $message = '', $group = 'Other') {
+    if (!$message) {
+      $message = t('Raw "@raw" not found', array('@raw' => $raw));
+    }
+    return $this->assert(strpos($this->drupalGetContent(), $raw) === FALSE, $message, $group);
   }
 }
