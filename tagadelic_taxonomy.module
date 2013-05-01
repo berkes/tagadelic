@@ -30,6 +30,8 @@ function tagadelic_taxonomy_menu() {
  * Constructs a simple page.
  */
 function tagadelic_taxonomy_cloud() {
+  drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
+
   $cloud = new TagadelicCloud("tagadalic_taxonomy");
 
   foreach (tagadelic_taxonomy_get_tags(60) as $term) {
