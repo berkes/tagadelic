@@ -114,3 +114,40 @@ function tagadelic_taxonomy_admin_form($form, &$form_state) {
   );
   return system_settings_form($form);
 }
+
+/**
+ * Implementation of hook_block_info
+ *
+ * @returns array $blocks
+ */
+function tagadelic_taxonomy_block_info() {
+  $blocks = array();
+
+  $blocks['tagadelic_taxonomy'] = array(
+    'info' => t('Tagadelic terms cloud'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implementation of hook_block_view
+ *
+ * @param String $delta name key for the block
+ *
+ * @return array $block renderable array of terms cloud
+ */
+function tagadelic_taxonomy_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'tagadelic_taxonomy':
+      $block['subject'] = t('Tag cloud');
+      $block['content'] = array(
+        '#type' => 'markup',
+        '#markup' => tagadelic_taxonomy_cloud(),
+      );
+      break;
+  }
+  return $block;
+}
