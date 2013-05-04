@@ -295,7 +295,7 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
       ->method("get_count")
       ->will($this->returnValue($count));
 
-    $this->mock_tags[$name] = $stub;
+    $this->mock_tags[$id] = $stub;
     return $stub;
   }
 }

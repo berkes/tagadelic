@@ -84,7 +84,7 @@ class TagadelicCloud {
    * Optionally pass $drupal, a Drupalwrapper along, mostly for testing.
    * Returns this
    */
-  public function from_cache($id, $drupal) {
+  public static function from_cache($id, $drupal) {
     $cache_id = "tagadelic_cloud_{$id}";
     return $drupal->cache_get($cache_id);
   }
