@@ -26,6 +26,9 @@ function __sig($func, $args) {
     if (is_array($arg) && !empty($arg)) {
       $args[$id] = serialize($arg);
     }
+    elseif (is_array($arg) && empty($arg)) {
+      $args[$id] = "Array";
+    }
   }
   $arglist = join(',', $args);
   return "{$func}({$arglist})";
