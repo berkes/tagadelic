@@ -13,3 +13,8 @@ php:
   - 5.4
 
 script: phpunit tests/
+
+notifications:
+  email:
+    - tagadelic-devel@widhalm.or.at
+    - ber@webschuur.com
