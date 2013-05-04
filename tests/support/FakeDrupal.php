@@ -5,16 +5,20 @@
  */
 // @codeCoverageIgnoreStart
 function cache_get() {
-  return __sig("cache_get", func_get_args());
+  $args = func_get_args();
+  return __sig("cache_get", $args);
 }
 function cache_set() {
-  return __sig("cache_set", func_get_args());
+  $args = func_get_args();
+  return __sig("cache_set", $args);
 }
 function check_plain() {
-  return __sig("check_plain", func_get_args());
+  $args = func_get_args();
+  return __sig("check_plain", $args);
 }
 function l() {
-  return __sig("l", func_get_args());
+  $args = func_get_args();
+  return __sig("l", $args);
 }
 
 function __sig($func, $args) {
