@@ -14,6 +14,7 @@ function tagadelic_taxonomy_menu() {
   $items['tagadelic_taxonomy'] = array(
     'title' => 'Tag Cloud',
     'page callback' => 'tagadelic_taxonomy_cloud',
+    'page arguments' => array('60'),
     'access arguments' => array("access content"),
     'expanded' => TRUE,
   );
@@ -29,12 +30,12 @@ function tagadelic_taxonomy_menu() {
 /**
  * Constructs a simple page.
  */
-function tagadelic_taxonomy_cloud() {
+function tagadelic_taxonomy_cloud($max_amount) {
   drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
 
   $cloud = new TagadelicCloud("tagadalic_taxonomy");
 
-  foreach (tagadelic_taxonomy_get_tags(60) as $term) {
+  foreach (tagadelic_taxonomy_get_tags($max_amount) as $term) {
     $tag = new TagadelicTag($term->tid, $term->name, $term->count);
     $tag->set_link("taxonomy/term/{$term->tid}");
 
@@ -114,6 +115,7 @@ function tagadelic_taxonomy_admin_form($form, &$form_state) {
     "#options"       => $options,
     "#default_value" => variable_get('tagadelic_taxonomy_vocabularies', array()),
   );
+
   return system_settings_form($form);
 }
 
@@ -123,14 +125,12 @@ function tagadelic_taxonomy_admin_form($form, &$form_state) {
  * @returns array $blocks
  */
 function tagadelic_taxonomy_block_info() {
-  $blocks = array();
-
-  $blocks['tagadelic_taxonomy'] = array(
-    'info' => t('Tagadelic Tag cloud'),
-    'cache' => DRUPAL_NO_CACHE,
+  return array(
+    'tagadelic_taxonomy' => array(
+      'info' => t('Tagadelic Tag cloud'),
+      'cache' => DRUPAL_NO_CACHE,
+    )
   );
-
-  return $blocks;
 }
 
 /**
@@ -141,15 +141,11 @@ function tagadelic_taxonomy_block_info() {
  * @return array $block renderable array of terms cloud
  */
 function tagadelic_taxonomy_block_view($delta = '') {
-  $block = array();
-  switch ($delta) {
-    case 'tagadelic_taxonomy':
-      $block['subject'] = t('Tag cloud');
-      $block['content'] = array(
-        '#type' => 'markup',
-        '#markup' => tagadelic_taxonomy_cloud(),
-      );
-      break;
-  }
-  return $block;
+  return array(
+    'subject' => t('Tag cloud'),
+    'content' => array(
+      '#type'   => 'markup',
+      '#markup' => tagadelic_taxonomy_cloud(12),
+    )
+  );
 }
