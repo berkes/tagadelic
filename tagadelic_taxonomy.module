@@ -14,6 +14,7 @@ function tagadelic_taxonomy_menu() {
   $items['tagadelic_taxonomy'] = array(
     'title' => 'Tag Cloud',
     'page callback' => 'tagadelic_taxonomy_cloud',
+    'page arguments' => array('60'),
     'access arguments' => array("access content"),
     'expanded' => TRUE,
   );
@@ -29,12 +30,12 @@ function tagadelic_taxonomy_menu() {
 /**
  * Constructs a simple page.
  */
-function tagadelic_taxonomy_cloud() {
+function tagadelic_taxonomy_cloud($max_amount) {
   drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
 
   $cloud = new TagadelicCloud("tagadalic_taxonomy");
 
-  foreach (tagadelic_taxonomy_get_tags(60) as $term) {
+  foreach (tagadelic_taxonomy_get_tags($max_amount) as $term) {
     $tag = new TagadelicTag($term->tid, $term->name, $term->count);
     $tag->set_link("taxonomy/term/{$term->tid}");
 
