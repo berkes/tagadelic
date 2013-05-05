@@ -5,6 +5,8 @@ With the API you can build a module with a few lines of PHP, to turn anything th
 
 With the turnkey modules, you can add a page that shows taxonomy-terms in a weighted cloud: terms that are used more often are bigger. Another module provides a page that shows article-titles in a cloud: titles from articles that are read more often appear bigger.
 
+[![Build Status](https://travis-ci.org/berkes/tagadelic.png?branch=develop)](https://travis-ci.org/berkes/tagadelic)
+
 ## End-users ##
 Install and enable _"tagadelic taxonomy"_ for a tagcloud from your
 taxonomy-terms, and _"tagadelic titles"_ for a tagcloud from
