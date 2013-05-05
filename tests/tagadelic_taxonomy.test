@@ -80,10 +80,9 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   }
 
   public function testHasMaxsixtyTags() {
-    $this->createVocAndTags(100);
+    $this->createVocAndTags(61);
     $this->drupalGet("tagadelic_taxonomy");
-    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
-    $this->assertEqual(60, $amount);
+    $this->assertAmountTagsOnPage(60);
   }
 
   public function testOnlyHasTagsFromSelectedVocabularies() {
@@ -139,6 +138,14 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
 
     $this->drupalGet('node');
     $this->assertText(t("Tag Cloud"), "Title of block is Tag Cloud");
+  }
+
+  public function testBlockHasMaxTwelveTags() {
+    $this->enableBlock();
+    $this->createVocAndTags(13);
+
+    $this->drupalGet('node');
+    $this->assertAmountTagsOnPage(12);
   }
 
   /*************************************************************************
@@ -251,6 +258,14 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     return $this->assertHasXpath($xpath, $message, $group);
   }
 
+  private function assertAmountTagsOnPage($expected_amount, $message = '', $group = 'Other') {
+    $amount = count($this->xpath("//*/ul[@class='tag-cloud']/li"));
+    if (!$message) {
+      $message = t("Expected $expected_amount Tags, found $amount");
+    }
+    $this->assertEqual($expected_amount, $amount, $message);
+  }
+
   private function assertTagHasWeight($name, $weight, $message = '', $group = 'Other') {
     $truthiness = FALSE;
     $class ='';
@@ -276,5 +291,4 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     }
     return $this->assert(strpos($this->drupalGetContent(), $raw) === FALSE, $message, $group);
   }
-
 }
