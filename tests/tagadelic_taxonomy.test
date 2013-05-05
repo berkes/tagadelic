@@ -133,6 +133,33 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertNotRaw('/tagadelic.css', "Tagadelic CSS added to styles");
   }
 
+  public function testBlockRendering() {
+    theme_enable(array('seven'));
+    $region = 'content';
+    $module = 'tagadelic_taxonomy';
+
+    $this->createNodesWithTags(10);
+
+    // set the block to a theme region, taken from block.test
+    $delta = db_query("SELECT delta FROM {block} WHERE module = :module AND theme = :theme", array(':module' => $module, ':theme' => 'seven'))->fetchField();
+    $edit = array();
+    $edit['blocks[' . $module . '_' . $delta . '][region]'] = $region;
+
+    $this->drupalLogin($this->admin_user);
+    $this->drupalPost('admin/structure/block', $edit, t('Save blocks'));
+    $this->drupalLogout();
+
+    // get the home and look for the block title
+    $this->drupalGet('node');
+    $this->assertText(t("Tag Cloud"), "Title of block is Tag Cloud");
+  }
+
+  public function testBlockHasMaxsixtyTags() {
+  }
+
+  /*************************************************************************
+   *                     Test Helpers
+   *************************************************************************/
   private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
     $tx_test = new TaxonomyWebTestCase();
 
@@ -206,27 +233,6 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     return $this;
   }
 
-  public function testBlockRendering() {
-
-    theme_enable(array('seven'));
-    $region = 'content';
-    $module = 'tagadelic_taxonomy';
-
-    $this->createNodesWithTags(10);
-
-    // set the block to a theme region, taken from block.test
-    $delta = db_query("SELECT delta FROM {block} WHERE module = :module AND theme = :theme", array(':module' => $module, ':theme' => 'seven'))->fetchField();
-    $edit = array();
-    $edit['blocks[' . $module . '_' . $delta . '][region]'] = $region;
-
-    $this->drupalLogin($this->admin_user);
-    $this->drupalPost('admin/structure/block', $edit, t('Save blocks'));
-    $this->drupalLogout();
-
-    // get the home and look for the block title
-    $this->drupalGet('node');
-    $this->assertText(t("Tag Cloud"), "Title of block is Tag Cloud");
-  }
 
   /**
    * assertHasXpath Asserts the existence of an xpath
