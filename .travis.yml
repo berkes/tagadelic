@@ -12,6 +12,12 @@ php:
   # aliased to a recent 5.4.x version
   - 5.4
 
+# Install german locales, because that is used to test 
+# locale-based ordering.
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq language-pack-de-base
+
 script: phpunit tests/
 
 notifications:
