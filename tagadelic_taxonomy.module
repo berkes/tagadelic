@@ -70,6 +70,7 @@ function tagadelic_taxonomy_get_tags($max_amount) {
   $query->addField($alias, 'tid');
   $query->addField($alias, 'name');
   $query->addField($alias, 'description');
+  $query->orderBy('count', 'DESC');
 
   foreach(variable_get("tagadelic_taxonomy_vocabularies", array()) as $vid => $state) {
     if ($state != $vid) { //Disabled
