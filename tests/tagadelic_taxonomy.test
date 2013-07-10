@@ -85,6 +85,23 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertAmountTagsOnPage(60);
   }
 
+  public function testOrdersTagsByUsage() {
+    $this->createVocAndTags(3, FALSE);
+    # Make sure that we are adding nodes in reversed order from how they are stored in the DB.
+    $this->tags = array_reverse($this->tags);
+    $this->createNodesWithTags(3);
+
+    $this->drupalGet("tagadelic_taxonomy");
+    $tags = $this->xpath("//*/ul[@class='tag-cloud']/li/a");
+
+    $found = array();
+    foreach ($tags as $tag) {
+      $attributes = $tag->attributes();
+      $found[] = (string) $attributes["href"];
+    }
+    $this->assertEqual($found, ["/taxonomy/term/3", "/taxonomy/term/2", "/taxonomy/term/1"]);
+  }
+
   public function testOnlyHasTagsFromSelectedVocabularies() {
     $this->createVocsAndTags(3, 3);
     $this->createNodesWithTags(100);
