@@ -87,8 +87,6 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
 
   public function testOrdersTagsByUsage() {
     $this->createVocAndTags(3, FALSE);
-    # Make sure that we are adding nodes in reversed order from how they are stored in the DB.
-    $this->tags = array_reverse($this->tags);
     $this->createNodesWithTags(3);
 
     $this->drupalGet("tagadelic_taxonomy");
