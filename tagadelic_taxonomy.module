@@ -29,20 +29,26 @@ function tagadelic_taxonomy_menu() {
 
 /**
  * Constructs a simple page.
+ * Callback from the menu.
  */
-function tagadelic_taxonomy_cloud($max_amount) {
+function tagadelic_taxonomy_cloud() {
+  return theme("tagadelic_taxonomy_cloud", array("tags" => tagadelic_taxonomy_get_cloud(60)));
+}
+
+function tagadelic_taxonomy_get_cloud($max_amount) {
   drupal_add_css(drupal_get_path('module', 'tagadelic') . '/tagadelic.css');
 
   $cloud = new TagadelicCloud("tagadalic_taxonomy");
 
-  foreach (tagadelic_taxonomy_get_tags($max_amount) as $term) {
+  foreach (tagadelic_taxonomy_tags_from_db($max_amount) as $term) {
     $tag = new TagadelicTag($term->tid, $term->name, $term->count);
     $tag->set_link("taxonomy/term/{$term->tid}");
 
     $cloud->add_tag($tag);
   }
 
-  return theme("tagadelic_taxonomy_cloud", array("tags" => $cloud->get_tags()));
+  # Because now here wer're returning an array, not HTML.
+  return $cloud->get_tags();
 }
 
 function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
@@ -59,7 +65,7 @@ function tagadelic_taxonomy_theme($existing, $type, $theme, $path) {
   );
 }
 
-function tagadelic_taxonomy_get_tags($max_amount) {
+function tagadelic_taxonomy_tags_from_db($max_amount) {
   $tags = array();
 
   $query = db_select('taxonomy_index', 'i');
@@ -142,11 +148,13 @@ function tagadelic_taxonomy_block_info() {
  * @return array $block renderable array of terms cloud
  */
 function tagadelic_taxonomy_block_view($delta = '') {
+  $body = theme("tagadelic_taxonomy_cloud", array("tags" => tagadelic_taxonomy_get_cloud(12)));
+  $body .= l(t("More tags"), "tagadelic_taxonomy", array("attributes" => array("class" => array("more"))));
   return array(
     'subject' => t('Tag cloud'),
     'content' => array(
       '#type'   => 'markup',
-      '#markup' => tagadelic_taxonomy_cloud(12),
+      '#markup' => $body,
     )
   );
 }

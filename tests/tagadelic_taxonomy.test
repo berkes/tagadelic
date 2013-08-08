@@ -155,6 +155,19 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->assertText(t("Tag Cloud"), "Title of block is Tag Cloud");
   }
 
+  public function testBlockHasMoreLinkToPage() {
+    $this->enableBlock();
+    $this->createVocAndTags(11);
+
+    $this->drupalGet('node');
+
+    $this->assertHasXpath('//*/a[@class="more"]');
+    $this->assertLink("More tags");
+
+    # This will cause a false-positive, as we have a link to tagadelic_taxonomy in the main-menu too!
+    $this->assertLinkByHref("tagadelic_taxonomy");
+  }
+
   public function testBlockHasMaxTwelveTags() {
     $this->enableBlock();
     $this->createVocAndTags(13);
