@@ -97,7 +97,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
       $attributes = $tag->attributes();
       $found[] = (string) $attributes["href"];
     }
-    $this->assertEqual($found, ["/taxonomy/term/3", "/taxonomy/term/2", "/taxonomy/term/1"]);
+    $this->assertEqual($found, array("/taxonomy/term/3", "/taxonomy/term/2", "/taxonomy/term/1"));
   }
 
   public function testOnlyHasTagsFromSelectedVocabularies() {
