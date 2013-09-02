@@ -1,6 +1,10 @@
 <?php
-class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
+namespace Drupal\tagadelic\Tests;
+
+class TagadelicTaxonomyAdminWebTestCase extends TagadelicTaxonomyTestBase {
   private $admin_url = "admin/structure/tagadelic_taxonomy";
+
+  protected $web_user;
 
   /**
    * getInfo sets information about this test
@@ -20,13 +24,12 @@ class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
    * @scope public
    * @returns Type  Description of return value
    */
-  public function setUp() {
-    parent::setUp(array('tagadelic_taxonomy'));
-
+  public function setUp(array $modules = array()) {
+    parent::setUp($modules);
     $this->deleteVocabularies();
 
-    $web_user = $this->drupalCreateUser(array("administer site configuration"));
-    $this->drupalLogin($web_user);
+    $this->web_user = $this->drupalCreateUser(array("administer site configuration", "administer users"));
+    $this->drupalLogin($this->web_user);
   }
 
   public function testHasTagaDelicPage() {
@@ -127,7 +130,7 @@ class TagadelicTaxonomyAdminWebTestCase extends DrupalWebTestCase {
    * Builder functions
    */
   private function createVocabularies($amount) {
-    $tx_test = new TaxonomyWebTestCase();
+    $tx_test = new \TaxonomyWebTestCase();
     for ($i = 0; $i < $amount; $i++) {
       $this->vocabularies[] = $tx_test->createVocabulary();
     }
