@@ -1,11 +1,13 @@
 name = Tagadelic Taxonomy
 description = "Makes weighted tag clouds from "taxonomy"-tags"
 core = 7.x
+dependencies[] = taxonomy
 dependencies[] = tagadelic
 package = "Taxonomy"
 
-files[] = tests/tagadelic_taxonomy.test
-files[] = tests/tagadelic_taxonomy.admin.test
+;files[] = tests/tagadelic_taxonomy_test_base.test
+;files[] = tests/tagadelic_taxonomy.test
+;files[] = tests/tagadelic_taxonomy.admin.test
 files[] = tagadelic_taxonomy.module
 
 configure = admin/config/content/tagadelic_taxonomy

@@ -4,7 +4,8 @@ core = 7.x
 dependencies[] = taxonomy
 package = "Taxonomy"
 
-files[] = tests/tagadelic.test
+;files[] = tests/tagadelic_test_base.test
+;files[] = tests/tagadelic.test
 files[] = tagadelic.module
 files[] = tagadelic.install
 

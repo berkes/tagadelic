@@ -1,5 +1,7 @@
 <?php
-class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
+namespace Drupal\tagadelic\Tests;
+
+class TagadelicTaxonomyTestCase extends TagadelicTaxonomyTestBase {
   protected $vocabulary;
   protected $tags  = array();
   protected $nodes = array();
@@ -24,8 +26,8 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
    * @scope public
    * @returns Type  Description of return value
    */
-  public function setUp() {
-    parent::setUp(array('tagadelic_taxonomy', 'block'));
+  public function setUp(array $modules = array()) {
+    parent::setUp(array('block'));
 
     // Create an admin user allowed to edit block settings
     $this->admin_user = $this->drupalCreateUser(array(
@@ -152,7 +154,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
     $this->createNodesWithTags(10);
 
     $this->drupalGet('node');
-    $this->assertText(t("Tag Cloud"), "Title of block is Tag Cloud");
+    $this->assertText(t("Tag cloud"), "Title of block is Tag Cloud");
   }
 
   public function testBlockHasMoreLinkToPage() {
@@ -180,7 +182,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
    *                     Test Helpers
    *************************************************************************/
   private function createVocAndTags($amount_of_tags, $create_node = TRUE) {
-    $tx_test = new TaxonomyWebTestCase();
+    $tx_test = new \TaxonomyWebTestCase();
 
     $this->tags       = array();
     $this->vocabulary = $tx_test->createVocabulary();
@@ -193,7 +195,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
   }
 
   private function createVocsAndTags($amount_of_vocs, $amount_of_tags_per_voc) {
-    $tx_test = new TaxonomyWebTestCase();
+    $tx_test = new \TaxonomyWebTestCase();
 
     $this->tags         = array();
     $this->tags_by_voc = array();
@@ -228,7 +230,7 @@ class TagadelicTaxonomyTestCase extends DrupalWebTestCase {
 
     for ($i = 0; $i < $amount; $i++) {
       // Post an article.
-      $node = new StdClass();
+      $node = new \StdClass();
       $node->title = $this->randomName();
       $node->type  = "story";
       node_save($node);

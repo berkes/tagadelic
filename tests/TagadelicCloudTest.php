@@ -237,7 +237,7 @@ class TagadelicCloudTest extends PHPUnit_Framework_TestCase {
     $expected_order = array("A", "Ä", "O", "Ö", "U", "Ü");
     $given_order = array();
 
-    setlocale(LC_COLLATE, 'de_DE.utf8');
+    setlocale(LC_COLLATE, 'fr_FR.utf8');
     $this->object->sort("name");
 
     foreach($this->object->get_tags() as $tag) {
