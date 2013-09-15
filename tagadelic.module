@@ -156,24 +156,29 @@ function theme_tagadelic_list_vocs($vocs) {
  * Menu callback renders a tagadelic page.
  */
 function tagadelic_page_chunk($vocs) {
+  $output;
 
   if ($vocs == NULL) {
+    $vocs = array();
     foreach (taxonomy_get_vocabularies(NULL) as $vocabulary) {
       $vocs[] = $vocabulary->vid;
     }
   }
 
-  $tags = tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
-  $tags = tagadelic_sort_tags($tags);
-  $output = theme('tagadelic_weighted', $tags);
+  if ($vocs) {
+    $tags = tagadelic_get_weighted_tags($vocs, variable_get('tagadelic_levels', 6), variable_get('tagadelic_page_amount', '60'));
+    $tags = tagadelic_sort_tags($tags);
+    $output = theme('tagadelic_weighted', $tags);
 
-  if (!$output) {
+    if ($output) {
+      $output = "<div class=\"wrapper tagadelic\">$output</div>";
+    }
+
+    return $output;
+  }
+  else {
     return drupal_not_found();
   }
-
-  $output = "<div class=\"wrapper tagadelic\">$output</div>";
-
-  return $output;
 }
 
 /**
